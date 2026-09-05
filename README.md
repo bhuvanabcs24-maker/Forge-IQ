@@ -146,20 +146,46 @@ ForgeIQ includes purpose-built agentic capabilities:
    RAZORPAY_WEBHOOK_SECRET=...
    NEXT_PUBLIC_PAYMENT_GATEWAY=razorpay
 
+   # ForgeIQ Python AI Microservice
+   AI_SERVICE_URL=http://localhost:8000
+   NEXT_PUBLIC_AI_API_URL=http://localhost:8000
+   AI_SERVICE_API_KEY=forgeiq_internal_service_key_2026
+
+   # AI LLM Provider (gemini | openai | anthropic | ollama | mock)
+   AI_PROVIDER=gemini
+   GEMINI_API_KEY=your_gemini_api_key
+
    # Supabase Auth & Database
    NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
    NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
    ```
    *(Note: ForgeIQ includes rich mock and fallback providers, allowing the entire application to be run and evaluated out-of-the-box without external database setup).*
 
-4. **Run the development server:**
+4. **Start the Python AI Microservice (Terminal 1):**
+   ```bash
+   cd ai-service
+   python3 -m venv .venv
+   source .venv/bin/activate
+   pip install -r requirements.txt
+   uvicorn app.main:app --host 127.0.0.1 --port 8000 --reload
+   ```
+   *OpenAPI Docs: [http://localhost:8000/docs](http://localhost:8000/docs)*
+
+5. **Start the Next.js Frontend (Terminal 2):**
    ```bash
    npm run dev
    ```
 
-5. **Open in Browser:**
+6. **Run Python AI Test Suite:**
+   ```bash
+   PYTHONPATH=ai-service ai-service/.venv/bin/pytest ai-service/tests/ -v
+   ```
+
+7. **Open in Browser:**
    - Landing & Experience Portal: [http://localhost:3000](http://localhost:3000)
    - Factory ERP Dashboard: [http://localhost:3000/dashboard](http://localhost:3000/dashboard)
+   - AI Copilot Multi-Agent Chat: [http://localhost:3000/ai-assistant](http://localhost:3000/ai-assistant)
+   - AI Order Intake Parser: [http://localhost:3000/ai-order-intake](http://localhost:3000/ai-order-intake)
    - Buyer Marketplace: [http://localhost:3000/marketplace](http://localhost:3000/marketplace)
    - Customer Portal: [http://localhost:3000/portal/dashboard](http://localhost:3000/portal/dashboard)
 

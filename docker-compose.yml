@@ -1,6 +1,7 @@
 version: '3.8'
 
 services:
+  # Next.js Frontend Application
   forge-iq-app:
     build:
       context: .
@@ -10,7 +11,30 @@ services:
     environment:
       - NODE_ENV=production
       - PORT=3000
+      - AI_SERVICE_URL=http://ai-service:8000
+      - NEXT_PUBLIC_AI_API_URL=http://localhost:8000
+      - AI_SERVICE_API_KEY=forgeiq_internal_service_key_2026
       - NEXT_PUBLIC_CAD_PARSER=mock
-      - NEXT_PUBLIC_PAYMENT_GATEWAY=mock
+      - NEXT_PUBLIC_PAYMENT_GATEWAY=razorpay
       - NEXT_PUBLIC_MESSAGING_PROVIDER=mock
+    depends_on:
+      - ai-service
+    restart: always
+
+  # Python FastAPI AI Microservice (RAG + Multi-Agent Orchestrator)
+  ai-service:
+    build:
+      context: ./ai-service
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    environment:
+      - AI_PROVIDER=gemini
+      - GEMINI_API_KEY=${GEMINI_API_KEY:-}
+      - OPENAI_API_KEY=${OPENAI_API_KEY:-}
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY:-}
+      - AI_SERVICE_API_KEY=forgeiq_internal_service_key_2026
+      - VECTOR_BACKEND=memory
+      - ENVIRONMENT=production
+      - PORT=8000
     restart: always

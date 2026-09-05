@@ -32,3 +32,11 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# python & ai-service
+.venv
+venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+
