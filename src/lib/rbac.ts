@@ -23,6 +23,7 @@ export const ROUTE_PERMISSIONS: RoutePermission[] = [
   { path: '/cad-analysis', allowedRoles: ['Owner', 'Manager', 'Supervisor', 'Worker'] },
   { path: '/ai-assistant', allowedRoles: ['Owner', 'Manager', 'Supervisor', 'Worker'] },
   { path: '/settings', allowedRoles: ['Owner', 'Manager'] },
+  { path: '/settings/pricing-rules', allowedRoles: ['Owner', 'Manager'] },
   { path: '/settings/workflow-templates', allowedRoles: ['Owner', 'Manager'] },
   { path: '/settings/whatsapp', allowedRoles: ['Owner', 'Manager'] },
   { path: '/settings/billing', allowedRoles: ['Owner', 'Manager'] },

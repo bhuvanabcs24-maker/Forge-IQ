@@ -21,6 +21,8 @@ import {
   BarChart3,
   Bot,
   Settings,
+  Calculator,
+  LogOut,
   ChevronLeft,
   ChevronRight,
   ShieldCheck,
@@ -41,6 +43,7 @@ export const NAV_ITEMS: NavItem[] = [
   { label: 'Customers', href: '/customers', icon: <Users className="h-4 w-4" /> },
   { label: 'Orders', href: '/orders', icon: <ShoppingBag className="h-4 w-4" />, badge: '18' },
   { label: 'Quotations', href: '/quotations', icon: <FileText className="h-4 w-4" /> },
+  { label: 'Pricing Rules', href: '/settings/pricing-rules', icon: <Calculator className="h-4 w-4" /> },
   { label: 'Inventory', href: '/inventory', icon: <Boxes className="h-4 w-4" />, badge: 'Low Stock' },
   { label: 'Production', href: '/production', icon: <Factory className="h-4 w-4" /> },
   { label: 'Machines', href: '/machines', icon: <Cpu className="h-4 w-4" /> },
@@ -63,7 +66,7 @@ export function Sidebar({
 }) {
   const [collapsed, setCollapsed] = useState(false);
   const pathname = usePathname();
-  const { role } = useAuth();
+  const { role, logout } = useAuth();
 
   return (
     <>
@@ -166,8 +169,8 @@ export function Sidebar({
           })}
         </div>
 
-        {/* Footer Organization Profile / Role Indicator */}
-        <div className="p-3 border-t border-slate-200 dark:border-steel-800 bg-slate-50/50 dark:bg-steel-900/60">
+        {/* Footer Organization Profile / Role Indicator & Sign Out */}
+        <div className="p-3 border-t border-slate-200 dark:border-steel-800 bg-slate-50/50 dark:bg-steel-900/60 space-y-2">
           <div className="flex items-center gap-3">
             <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-slate-200 dark:bg-steel-800 text-slate-700 dark:text-steel-300">
               <ShieldCheck className="h-4 w-4 text-emerald-500" />
@@ -183,6 +186,18 @@ export function Sidebar({
               </div>
             )}
           </div>
+
+          <button
+            onClick={logout}
+            className={cn(
+              'flex items-center gap-2 rounded-lg px-2.5 py-1.5 text-xs font-semibold text-rose-600 dark:text-rose-400 hover:bg-rose-500/10 border border-transparent hover:border-rose-500/20 transition-all w-full',
+              collapsed && 'justify-center px-1.5'
+            )}
+            title="Sign Out of ForgeIQ"
+          >
+            <LogOut className="h-4 w-4 shrink-0" />
+            {!collapsed && <span>Sign Out</span>}
+          </button>
         </div>
       </aside>
     </>

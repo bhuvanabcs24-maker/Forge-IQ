@@ -4,8 +4,8 @@ export const SUBSCRIPTION_PLANS: SubscriptionPlan[] = [
   {
     id: 'Starter',
     name: 'Starter Fab',
-    monthlyPrice: 199,
-    yearlyPrice: 159, // 20% annual discount
+    monthlyPrice: 2999,
+    yearlyPrice: 2399, // 20% annual discount
     description: 'Essential shop floor management for small fabrication businesses (1-5 employees).',
     maxSeats: 5,
     maxAiRequestsPerMonth: 100,
@@ -23,8 +23,8 @@ export const SUBSCRIPTION_PLANS: SubscriptionPlan[] = [
   {
     id: 'Professional',
     name: 'Professional Fab',
-    monthlyPrice: 499,
-    yearlyPrice: 399,
+    monthlyPrice: 7999,
+    yearlyPrice: 6399,
     description: 'Complete AI-powered manufacturing intelligence platform for growing fab shops (5-25 employees).',
     maxSeats: 25,
     maxAiRequestsPerMonth: 2500,
@@ -43,8 +43,8 @@ export const SUBSCRIPTION_PLANS: SubscriptionPlan[] = [
   {
     id: 'Enterprise',
     name: 'Enterprise Industrial',
-    monthlyPrice: 999,
-    yearlyPrice: 799,
+    monthlyPrice: 24999,
+    yearlyPrice: 19999,
     description: 'Unlimited multi-tenant manufacturing suite with custom industry workflow engines.',
     maxSeats: 999,
     maxAiRequestsPerMonth: 99999,

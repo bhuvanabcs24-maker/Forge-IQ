@@ -48,7 +48,7 @@ export class CopilotOrchestrator {
       const finRes = await this.financeAgent.processQuery(userQuery);
       const salesRes = await this.salesAgent.processQuery(userQuery);
 
-      responseText = `### 💰 Overdue Accounts Receivable Summary\n\n${finRes.analysisText}\n\nInvoice **INV-2026-0775** ($19,600.00) from Stallion Architectural Metals is **7 days past due** (Due July 31). Apex Aerospace settled their $78,000 invoice earlier today.`;
+      responseText = `### 💰 Overdue Accounts Receivable Summary\n\n${finRes.analysisText}\n\nInvoice **INV-2026-0775** (₹1,96,000.00) from Stallion Architectural Metals is **7 days past due** (Due July 31). Apex Aerospace settled their ₹7,80,000 invoice earlier today.`;
       evidenceList.push(...finRes.evidence, ...salesRes.evidence);
       actionList.push(...finRes.suggestedActions);
       confidenceScore = 99;

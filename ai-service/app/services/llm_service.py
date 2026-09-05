@@ -75,22 +75,53 @@ class MockProvider(BaseLLMProvider):
         model_name = response_model.__name__
         
         if model_name == 'StructuredRFQ':
+            p_lower = prompt.lower()
+            dims = '120 x 80 mm' if ('120' in p_lower and '80' in p_lower) else '250 x 180 x 45 mm'
+            qty = 500
+            if '500' in p_lower:
+                qty = 500
+            elif '1000' in p_lower:
+                qty = 1000
+            
+            mat = 'Stainless Steel'
+            grade = '304' if ('304' in p_lower or 'ss304' in p_lower) else ('316' if '316' in p_lower else '304')
+            thk = '3 mm' if ('3 mm' in p_lower or '3mm' in p_lower) else '3 mm'
+            days = '7 days' if ('7 day' in p_lower or '7 days' in p_lower) else 'Within 7 business days'
+
+            clarifications = []
+            if 'mm' not in p_lower and 'gauge' not in p_lower and 'thick' not in p_lower:
+                clarifications.append('Please specify sheet thickness (e.g. 2mm, 3mm) to calculate machine piercing and bending tonnage.')
+            if 'x' not in p_lower and 'by' not in p_lower and '*' not in p_lower:
+                clarifications.append('What are the outer part dimensions (Length x Width in mm) for raw material nesting?')
+
+            field_confs = {
+                'material': 0.98 if ('stainless' in p_lower or 'ss304' in p_lower) else 0.85,
+                'material_grade': 0.98 if '304' in p_lower else 0.88,
+                'thickness': 0.97 if ('3 mm' in p_lower or '3mm' in p_lower) else 0.70,
+                'dimensions': 0.95 if ('120' in p_lower and '80' in p_lower) else 0.75,
+                'quantity': 0.99 if str(qty) in p_lower else 0.80,
+                'delivery_date': 0.96 if '7' in p_lower else 0.80,
+            }
+
             return response_model(
                 customer_name='NexaSolar Energy Labs',
                 company_name='NexaSolar Industries',
-                part_title='Solar Inverter Chassis Mounting Bracket',
-                material='Stainless Steel',
-                material_grade='304',
-                thickness='3 mm',
-                dimensions='250 x 180 x 45 mm',
-                quantity=500,
-                delivery_date='Friday',
+                part_title='SS304 Stainless Steel Mounting Brackets' if 'bracket' in p_lower else 'Precision Sheet Metal Mounts',
+                material=mat,
+                material_grade=grade,
+                thickness=thk,
+                dimensions=dims,
+                quantity=qty,
+                delivery_date=days,
                 priority='standard',
                 special_instructions='Deburr edges and apply laser protective film',
                 required_processes=['Fiber Laser Cutting', 'CNC Press Brake Bending', 'QC Inspection'],
-                confidence_score=0.96,
-                requires_human_verification=False,
+                confidence_score=round(sum(field_confs.values()) / len(field_confs), 2),
+                field_confidences=field_confs,
+                clarification_questions=clarifications,
+                requires_human_verification=len(clarifications) > 0,
             )
+
 
         if model_name == 'QuotationEstimate':
             return response_model(

@@ -2,10 +2,12 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { formatCurrency } from '@/lib/utils';
+import { RazorpayPaymentModal } from '@/components/billing/razorpay-payment-modal';
 import {
   Sparkles,
   ArrowRight,
@@ -21,34 +23,62 @@ import {
   Layers,
   Star,
   HelpCircle,
+  CreditCard,
 } from 'lucide-react';
 
 export default function MarketingPage() {
+  const router = useRouter();
   const [activeTab, setActiveTab] = useState<'factory' | 'buyer' | 'marketplace'>('factory');
+  const [trialModalOpen, setTrialModalOpen] = useState(false);
+  const [selectedTrialPlan, setSelectedTrialPlan] = useState<{
+    name: string;
+    price: number;
+    description: string;
+  } | null>(null);
 
   const pricingPlans = [
     {
       name: 'Starter',
-      price: 199,
+      price: 2999,
       description: 'Ideal for small machine shops (1-5 users)',
       features: ['Basic Orders & Quotations', 'Inventory Stock Management', 'Max 5 Team Member Seats', '100 AI Requests / mo', 'Standard Support'],
       highlight: false,
     },
     {
       name: 'Professional',
-      price: 499,
+      price: 7999,
       description: 'Built for growing fabrication plants (5-25 users)',
       features: ['AI Vector CAD Feature Extraction', 'AI Interactive Quote Builder', 'Shop Floor Kanban Board', 'WhatsApp Business Cloud API', 'Customer Self-Service Portal', 'Max 25 Team Member Seats', '2,500 AI Requests / mo'],
       highlight: true,
     },
     {
       name: 'Enterprise',
-      price: 999,
+      price: 24999,
       description: 'For multi-plant enterprises requiring custom SLAs',
       features: ['ForgeIQ Copilot Multi-Agent Architecture', 'B2B Manufacturing Marketplace Matching', '4-Stage Milestone Escrow Payments', 'Unlimited Team Member Seats', 'Unlimited AI Requests', '24/7 Priority Support & Dedicated TAM'],
       highlight: false,
     },
   ];
+
+  const handleStartTrialClick = (plan: (typeof pricingPlans)[0]) => {
+    setSelectedTrialPlan(plan);
+    setTrialModalOpen(true);
+  };
+
+  const handleTrialPaymentSuccess = (payment: { paymentId: string; orderId: string }) => {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('FORGEIQ_TRIAL_ACTIVE', 'true');
+      if (selectedTrialPlan) {
+        localStorage.setItem('FORGEIQ_ACTIVE_PLAN', selectedTrialPlan.name);
+      }
+      localStorage.setItem('FORGEIQ_TRIAL_PAYMENT_ID', payment.paymentId);
+    }
+    setTimeout(() => {
+      setTrialModalOpen(false);
+      router.push('/dashboard?trial=active');
+    }, 1500);
+  };
+
 
   const faqs = [
     {
@@ -247,7 +277,7 @@ export default function MarketingPage() {
               </div>
 
               <div className="flex items-baseline gap-1">
-                <span className="text-3xl font-black text-white">${plan.price}</span>
+                <span className="text-3xl font-black text-white">{formatCurrency(plan.price)}</span>
                 <span className="text-xs text-slate-400">/ month</span>
               </div>
 
@@ -260,15 +290,45 @@ export default function MarketingPage() {
                 ))}
               </div>
 
-              <Link href="/dashboard" className="block pt-2">
-                <Button className={`w-full font-bold text-xs ${plan.highlight ? 'bg-brand-600 hover:bg-brand-500 text-white' : 'bg-steel-800 hover:bg-steel-700 text-white'}`}>
-                  Start 14-Day Free Trial
+              <div className="pt-2">
+                <Button
+                  onClick={() => handleStartTrialClick(plan)}
+                  className={`w-full font-bold text-xs flex items-center justify-center gap-2 ${
+                    plan.highlight
+                      ? 'bg-brand-600 hover:bg-brand-500 text-white shadow-lg shadow-brand-500/20'
+                      : 'bg-steel-800 hover:bg-steel-700 text-white'
+                  }`}
+                >
+                  <CreditCard className="h-3.5 w-3.5" /> Start 14-Day Free Trial
                 </Button>
-              </Link>
+                <div className="text-[10px] text-center text-slate-500 mt-1.5 flex items-center justify-center gap-1">
+                  <ShieldCheck className="h-3 w-3 text-emerald-500" /> ₹1 refundable Razorpay verification
+                </div>
+              </div>
             </Card>
           ))}
         </div>
       </section>
+
+      {/* Free Trial Razorpay Authorization Modal */}
+      {selectedTrialPlan && (
+        <RazorpayPaymentModal
+          isOpen={trialModalOpen}
+          onClose={() => setTrialModalOpen(false)}
+          title="Activate 14-Day Free Trial"
+          description={`Verify your account to begin your 14-day free trial on the ${selectedTrialPlan.name} plan.`}
+          itemTitle={`${selectedTrialPlan.name} Plan (14-Day Free Trial)`}
+          itemSubtitle="₹1 nominal verification charge (refundable) to authorize your trial"
+          amount={1}
+          metadata={{
+            plan: selectedTrialPlan.name,
+            monthlyPriceINR: String(selectedTrialPlan.price),
+            type: 'FREE_TRIAL_VERIFICATION',
+          }}
+          onPaymentSuccess={handleTrialPaymentSuccess}
+        />
+      )}
+
 
       {/* FAQ Section */}
       <section id="faqs" className="max-w-4xl mx-auto px-6 py-12 space-y-6">

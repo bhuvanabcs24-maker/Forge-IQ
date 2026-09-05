@@ -4,9 +4,9 @@ import { verifySmsOtp } from '@/lib/auth/otp-dev-provider';
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const { verificationId, code } = body;
+    const { verificationId, code, phone } = body;
 
-    const result = await verifySmsOtp(verificationId, code);
+    const result = await verifySmsOtp(phone || verificationId, code, phone);
     return NextResponse.json(result);
   } catch (error: any) {
     return NextResponse.json(

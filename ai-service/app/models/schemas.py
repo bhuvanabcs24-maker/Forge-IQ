@@ -31,6 +31,8 @@ class StructuredRFQ(BaseModel):
     drawing_reference: Optional[str] = None
     required_processes: List[str] = Field(default_factory=list)
     confidence_score: float = Field(default=0.95, ge=0.0, le=1.0)
+    field_confidences: Dict[str, float] = Field(default_factory=dict)
+    clarification_questions: List[str] = Field(default_factory=list)
     requires_human_verification: bool = False
 
 class QuotationEstimate(BaseModel):

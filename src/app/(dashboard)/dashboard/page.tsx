@@ -264,7 +264,7 @@ export default function DashboardPage() {
           value={INITIAL_METRICS.pendingQuotations}
           trendPercent={INITIAL_METRICS.quotationsTrendPercent}
           icon={<FileText className="h-4 w-4 text-purple-500" />}
-          subtitle="$114,600 pipeline value"
+          subtitle={`${formatCurrency(1146000)} pipeline value`}
         />
         <MetricCard
           title="Active Production Jobs"

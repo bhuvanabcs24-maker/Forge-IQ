@@ -1,7 +1,8 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -12,6 +13,7 @@ import {
   CostBreakdown,
   ExtendedQuotation,
   QuotationRevision,
+  PricingRules,
 } from '@/types/quotation-engine';
 import { DEFAULT_FABRICATION_PRICING_RULES } from '@/lib/pricing/default-rules';
 import { FabricationPricingPlugin } from '@/lib/pricing/fabrication-plugin';
@@ -19,6 +21,7 @@ import { aiEstimatePartItem } from '@/lib/ai/quote-estimator';
 import { ExplainPriceModal } from './explain-price-modal';
 import { QuotePdfModal } from './quote-pdf-modal';
 import { RevisionHistoryDialog } from './revision-history-dialog';
+import { RazorpayPaymentModal } from '@/components/billing/razorpay-payment-modal';
 import { formatCurrency } from '@/lib/utils';
 import {
   Sparkles,
@@ -30,6 +33,9 @@ import {
   History,
   ShoppingBag,
   Zap,
+  CreditCard,
+  CheckCircle2,
+  SlidersHorizontal,
 } from 'lucide-react';
 
 export function QuoteBuilder() {
@@ -40,7 +46,25 @@ export function QuoteBuilder() {
   const [revisionNumber, setRevisionNumber] = useState('v1.0');
   const [status, setStatus] = useState<'Draft' | 'Sent' | 'Approved' | 'Rejected' | 'Expired'>('Draft');
 
-  const [rules] = useState(DEFAULT_FABRICATION_PRICING_RULES);
+  const [rules, setRules] = useState<PricingRules>(DEFAULT_FABRICATION_PRICING_RULES);
+  const [isRazorpayModalOpen, setIsRazorpayModalOpen] = useState(false);
+  const [paymentSuccessData, setPaymentSuccessData] = useState<{
+    paymentId: string;
+    orderId: string;
+  } | null>(null);
+
+  // Load custom owner calculation rules from localStorage if set
+  useEffect(() => {
+    try {
+      const savedRules = localStorage.getItem('FORGEIQ_PRICING_RULES');
+      if (savedRules) {
+        const parsed = JSON.parse(savedRules);
+        setRules(parsed);
+      }
+    } catch (e) {
+      console.error('Error loading custom pricing rules:', e);
+    }
+  }, []);
 
   const [lineItems, setLineItems] = useState<QuotationLineItemDetail[]>([
     aiEstimatePartItem(
@@ -127,6 +151,23 @@ export function QuoteBuilder() {
     setRevisions([newRev, ...revisions]);
   };
 
+  const handleQuotationPaymentSuccess = (payment: { paymentId: string; orderId: string }) => {
+    setStatus('Approved');
+    setPaymentSuccessData(payment);
+    const nextVer = `v1.${revisions.length + 1}`;
+    setRevisionNumber(nextVer);
+    const newRev: QuotationRevision = {
+      revisionNumber: nextVer,
+      createdAt: new Date().toISOString().split('T')[0],
+      createdBy: 'Razorpay Payment Gateway',
+      changeSummary: `Quotation amount ${formatCurrency(costBreakdown.grandTotal)} settled via Razorpay (Payment ID: ${payment.paymentId}). Quote Approved.`,
+      lineItems: [...lineItems],
+      costBreakdown: { ...costBreakdown },
+      validUntil: '2026-08-30',
+    };
+    setRevisions([newRev, ...revisions]);
+  };
+
   const currentQuotationPayload: ExtendedQuotation = {
     id: 'qt-2026-991',
     quotationNumber: 'RFQ-2026-0891',
@@ -165,7 +206,7 @@ export function QuoteBuilder() {
             <Sparkles className="h-5 w-5" />
           </div>
           <div>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 flex-wrap">
               <h2 className="text-lg font-bold text-slate-900 dark:text-slate-100">
                 RFQ-2026-0891
               </h2>
@@ -173,6 +214,11 @@ export function QuoteBuilder() {
                 {revisionNumber}
               </Badge>
               <Badge status={status} />
+              {paymentSuccessData && (
+                <Badge className="bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30 text-xs font-semibold flex items-center gap-1">
+                  <CheckCircle2 className="h-3.5 w-3.5" /> Paid via Razorpay ({paymentSuccessData.paymentId})
+                </Badge>
+              )}
             </div>
             <p className="text-xs text-slate-500 dark:text-steel-400">
               AI Intelligent Quotation Builder • {customerName}
@@ -181,6 +227,14 @@ export function QuoteBuilder() {
         </div>
 
         <div className="flex flex-wrap items-center gap-2">
+          <Button
+            size="sm"
+            className="bg-gradient-to-r from-sky-600 to-brand-600 hover:from-sky-700 hover:to-brand-700 text-white font-semibold flex items-center gap-1.5 shadow-md shadow-sky-900/20"
+            onClick={() => setIsRazorpayModalOpen(true)}
+          >
+            <CreditCard className="h-3.5 w-3.5" /> Send to Razorpay ({formatCurrency(costBreakdown.grandTotal)})
+          </Button>
+
           <Button variant="outline" size="sm" onClick={() => setIsExplainModalOpen(true)}>
             <Sparkles className="h-3.5 w-3.5 mr-1 text-purple-500" /> Explain Price
           </Button>
@@ -195,11 +249,12 @@ export function QuoteBuilder() {
             <Eye className="h-3.5 w-3.5 mr-1" /> Preview Branded PDF
           </Button>
 
-          <Button size="sm" onClick={handleSaveRevision}>
+          <Button size="sm" variant="outline" onClick={handleSaveRevision}>
             <Save className="h-3.5 w-3.5 mr-1" /> Save Revision
           </Button>
         </div>
       </div>
+
 
       {/* Quote Scope & Customer Info */}
       <Card>
@@ -340,18 +395,26 @@ export function QuoteBuilder() {
       {/* Financial Summary Card */}
       <div className="flex flex-col lg:flex-row justify-between items-start gap-6">
         <Card className="flex-1 w-full">
-          <CardHeader>
-            <CardTitle className="text-base">Administrative Pricing Telemetry</CardTitle>
-            <CardDescription>Active rules used in calculation</CardDescription>
+          <CardHeader className="flex flex-row items-center justify-between">
+            <div>
+              <CardTitle className="text-base">Administrative Pricing Telemetry</CardTitle>
+              <CardDescription>Active rules used in AI calculation (configured by owner)</CardDescription>
+            </div>
+            <Link
+              href="/settings/pricing-rules"
+              className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-semibold bg-brand-500/10 text-brand-600 dark:text-brand-400 border border-brand-500/20 hover:bg-brand-500/20 transition-colors"
+            >
+              <SlidersHorizontal className="h-3 w-3" /> Edit Owner Calculation Rules
+            </Link>
           </CardHeader>
           <CardContent className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
             <div className="p-2.5 rounded-lg bg-slate-50 dark:bg-steel-800/50 border border-slate-200 dark:border-steel-700">
               <span className="text-slate-500 block">Laser Rate</span>
-              <span className="font-bold">${rules.machineRates.laserCutterHourly}/hr</span>
+              <span className="font-bold">{formatCurrency(rules.machineRates.laserCutterHourly)}/hr</span>
             </div>
             <div className="p-2.5 rounded-lg bg-slate-50 dark:bg-steel-800/50 border border-slate-200 dark:border-steel-700">
               <span className="text-slate-500 block">Press Brake Rate</span>
-              <span className="font-bold">${rules.machineRates.pressBrakeHourly}/hr</span>
+              <span className="font-bold">{formatCurrency(rules.machineRates.pressBrakeHourly)}/hr</span>
             </div>
             <div className="p-2.5 rounded-lg bg-slate-50 dark:bg-steel-800/50 border border-slate-200 dark:border-steel-700">
               <span className="text-slate-500 block">Factory Overhead</span>
@@ -409,7 +472,16 @@ export function QuoteBuilder() {
 
             <Button
               size="lg"
-              className="w-full mt-4"
+              className="w-full mt-4 bg-gradient-to-r from-sky-600 to-brand-600 hover:from-sky-700 hover:to-brand-700 text-white font-bold flex items-center justify-center gap-2 shadow-lg shadow-sky-900/30"
+              onClick={() => setIsRazorpayModalOpen(true)}
+            >
+              <CreditCard className="h-4 w-4" /> Send to Razorpay ({formatCurrency(costBreakdown.grandTotal)})
+            </Button>
+
+            <Button
+              size="lg"
+              variant="outline"
+              className="w-full mt-2"
               onClick={() => setIsPdfModalOpen(true)}
             >
               Generate Branded PDF Quote
@@ -439,6 +511,26 @@ export function QuoteBuilder() {
         revisions={revisions}
         currentRevision={revisionNumber}
       />
+
+      {/* Razorpay Instant Checkout Modal for Quotation */}
+      <RazorpayPaymentModal
+        isOpen={isRazorpayModalOpen}
+        onClose={() => setIsRazorpayModalOpen(false)}
+        title="Collect Quotation Payment via Razorpay"
+        description={`Direct Razorpay settlement for ${quoteTitle}`}
+        itemTitle={`Quote: ${quoteTitle}`}
+        itemSubtitle={`Customer: ${customerName} • RFQ-2026-0891 (${revisionNumber})`}
+        amount={costBreakdown.grandTotal}
+        metadata={{
+          quoteTitle,
+          customerName,
+          quotationNumber: 'RFQ-2026-0891',
+          revisionNumber,
+          totalINR: String(costBreakdown.grandTotal),
+        }}
+        onPaymentSuccess={handleQuotationPaymentSuccess}
+      />
     </div>
+
   );
 }

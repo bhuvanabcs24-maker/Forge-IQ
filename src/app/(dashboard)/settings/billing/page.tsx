@@ -37,7 +37,7 @@ export default function AdminBillingConsolePage() {
     {
       id: 'sub-inv-1',
       invoiceNumber: 'INV-FORGE-2026-07',
-      amount: 499,
+      amount: 7999,
       status: 'Paid',
       billingDate: '2026-07-01',
       periodStart: '2026-07-01',
@@ -47,7 +47,7 @@ export default function AdminBillingConsolePage() {
     {
       id: 'sub-inv-2',
       invoiceNumber: 'INV-FORGE-2026-06',
-      amount: 499,
+      amount: 7999,
       status: 'Paid',
       billingDate: '2026-06-01',
       periodStart: '2026-06-01',

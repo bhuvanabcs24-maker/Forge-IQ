@@ -533,7 +533,7 @@ export const MOCK_ACTIVITIES: ActivityLog[] = [
     id: 'act-4',
     user: 'Robert Vance',
     role: 'Manager',
-    action: 'Generated Invoice INV-2026-0781 ($78,000.00)',
+    action: 'Generated Invoice INV-2026-0781 (₹78,000.00)',
     target: 'INV-2026-0781',
     timestamp: '2026-08-07T09:45:00Z',
     type: 'order',
@@ -560,7 +560,7 @@ export const MOCK_NOTIFICATIONS: NotificationItem[] = [
   {
     id: 'notif-3',
     title: 'Payment Received',
-    message: 'Apex Aerospace settled Invoice INV-2026-0781 ($78,000.00).',
+    message: 'Apex Aerospace settled Invoice INV-2026-0781 (₹78,000.00).',
     timestamp: '3 hours ago',
     read: true,
     type: 'success',

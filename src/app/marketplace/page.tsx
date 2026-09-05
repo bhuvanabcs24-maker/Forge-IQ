@@ -29,15 +29,17 @@ import {
   Truck,
   Check,
   SlidersHorizontal,
+  RotateCcw,
 } from 'lucide-react';
 
 import { RazorpayPaymentModal } from '@/components/billing/razorpay-payment-modal';
 
 export default function MarketplacePage() {
-  const [rfqPrompt, setRfqPrompt] = useState('500 stainless steel brackets, 3 mm thickness, delivery within 7 days');
+  const [rfqPrompt, setRfqPrompt] = useState('500 SS304 stainless steel brackets, 3 mm thick, approximately 120 x 80 mm, required within 7 days');
   const [preference, setPreference] = useState<BuyerPreference>('balanced');
   const [activeTab, setActiveTab] = useState<'match' | 'bids' | 'escrow'>('match');
   const [marketplaceFeePercent, setMarketplaceFeePercent] = useState<number>(5.0);
+  const [isDeliveryConfirmed, setIsDeliveryConfirmed] = useState(false);
 
   // Razorpay Escrow Modal State
   const [selectedBidForPayment, setSelectedBidForPayment] = useState<FactoryBid | null>(null);
@@ -45,6 +47,12 @@ export default function MarketplacePage() {
 
   // Parse prompt into structured RFQ
   const parsedSpecs = parseBuyerRequirement(rfqPrompt);
+
+  const handleReorderBatch = () => {
+    setRfqPrompt('500 SS304 stainless steel brackets, 3 mm thick, approximately 120 x 80 mm, required within 7 days');
+    setIsDeliveryConfirmed(false);
+    setActiveTab('match');
+  };
 
   const sampleRfq: MarketplaceRfq = {
     id: 'rfq-2026-0891',
@@ -162,24 +170,84 @@ export default function MarketplacePage() {
               </div>
             </div>
 
-            {/* Extracted Specs Badges */}
-            <div className="flex flex-wrap items-center gap-2 pt-1 text-[11px] text-slate-400 font-mono">
-              <span className="text-purple-400 font-bold">AI Extracted Specs:</span>
-              <span className="bg-steel-900 px-2 py-0.5 rounded border border-steel-800 text-slate-200">
-                Material: {parsedSpecs.materialGrade}
-              </span>
-              <span className="bg-steel-900 px-2 py-0.5 rounded border border-steel-800 text-slate-200">
-                Thk: {parsedSpecs.thickness}
-              </span>
-              <span className="bg-steel-900 px-2 py-0.5 rounded border border-steel-800 text-slate-200">
-                Qty: {parsedSpecs.quantity} pcs
-              </span>
-              <span className="bg-steel-900 px-2 py-0.5 rounded border border-steel-800 text-slate-200">
-                Lead Time: {parsedSpecs.requiredDeliveryDays} Days
-              </span>
+            {/* Clarification Alert if critical data is missing */}
+            {parsedSpecs.isClarificationNeeded && (
+              <div className="rounded-xl bg-amber-500/10 border border-amber-500/30 p-3.5 text-xs text-amber-300 space-y-1">
+                <div className="font-bold flex items-center gap-1.5 text-amber-200">
+                  <Sparkles className="h-4 w-4" /> AI Requests Clarification (Missing Parameters):
+                </div>
+                <ul className="list-disc pl-5 space-y-0.5 text-[11px] text-amber-300/90">
+                  {parsedSpecs.clarificationQuestions.map((q, idx) => (
+                    <li key={idx}>{q}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
+            {/* Extracted Specs Badges with Field-Level Confidence */}
+            <div className="rounded-xl bg-steel-900/90 border border-steel-800 p-3.5 space-y-2">
+              <div className="flex items-center justify-between">
+                <span className="text-purple-400 font-bold text-xs flex items-center gap-1.5">
+                  <Sparkles className="h-3.5 w-3.5" /> AI Extracted Specs & Field Confidence:
+                </span>
+                <Badge className="bg-purple-500/20 text-purple-300 border border-purple-500/30 text-[10px] font-mono font-bold">
+                  Overall Confidence: {parsedSpecs.aiConfidenceScore}%
+                </Badge>
+              </div>
+
+              <div className="flex flex-wrap items-center gap-2 text-[11px] font-mono">
+                <span className="bg-steel-950 px-2.5 py-1 rounded-lg border border-steel-800 text-slate-200">
+                  Material: <strong className="text-white">{parsedSpecs.material} ({parsedSpecs.materialGrade})</strong>{' '}
+                  <span className="text-emerald-400 font-semibold">({Math.round(parsedSpecs.fieldConfidence.material * 100)}%)</span>
+                </span>
+                <span className="bg-steel-950 px-2.5 py-1 rounded-lg border border-steel-800 text-slate-200">
+                  Thickness: <strong className="text-white">{parsedSpecs.thickness}</strong>{' '}
+                  <span className="text-emerald-400 font-semibold">({Math.round(parsedSpecs.fieldConfidence.thickness * 100)}%)</span>
+                </span>
+                <span className="bg-steel-950 px-2.5 py-1 rounded-lg border border-steel-800 text-slate-200">
+                  Dimensions: <strong className="text-white">{parsedSpecs.dimensions}</strong>{' '}
+                  <span className="text-emerald-400 font-semibold">({Math.round(parsedSpecs.fieldConfidence.dimensions * 100)}%)</span>
+                </span>
+                <span className="bg-steel-950 px-2.5 py-1 rounded-lg border border-steel-800 text-slate-200">
+                  Quantity: <strong className="text-white">{parsedSpecs.quantity} pcs</strong>{' '}
+                  <span className="text-emerald-400 font-semibold">({Math.round(parsedSpecs.fieldConfidence.quantity * 100)}%)</span>
+                </span>
+                <span className="bg-steel-950 px-2.5 py-1 rounded-lg border border-steel-800 text-slate-200">
+                  Delivery: <strong className="text-white">{parsedSpecs.requiredDeliveryDays} Days</strong>{' '}
+                  <span className="text-emerald-400 font-semibold">({Math.round(parsedSpecs.fieldConfidence.deliveryRequirement * 100)}%)</span>
+                </span>
+              </div>
+            </div>
+
+            {/* Verified Domain RAG Knowledge Citations */}
+            <div className="rounded-xl bg-slate-900/60 border border-purple-500/20 p-3.5 space-y-2">
+              <div className="flex items-center justify-between text-xs">
+                <span className="text-purple-300 font-bold flex items-center gap-1.5">
+                  <Boxes className="h-3.5 w-3.5 text-purple-400" /> Verified RAG Domain Knowledge Citations:
+                </span>
+                <span className="text-[10px] text-slate-400 font-mono">Organization-Scoped RAG Context</span>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 text-[11px]">
+                {parsedSpecs.ragCitations.map((cite, idx) => (
+                  <div key={idx} className="p-2.5 rounded-lg bg-steel-950/80 border border-steel-800 space-y-1">
+                    <div className="flex items-center justify-between">
+                      <Badge variant="outline" className="border-purple-500/30 text-purple-300 bg-purple-500/10 text-[9px] px-1.5 py-0">
+                        {cite.sourceCategory}
+                      </Badge>
+                      <span className="text-[10px] text-emerald-400 font-mono font-bold">
+                        {Math.round(cite.relevanceScore * 100)}% match
+                      </span>
+                    </div>
+                    <div className="font-semibold text-slate-200 text-[11px] leading-tight">{cite.sourceTitle}</div>
+                    <p className="text-slate-400 text-[10px] leading-relaxed line-clamp-3">{cite.snippet}</p>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
         </div>
+
 
         {/* Tab Selection Bar & Buyer Personalization Preference Toggles */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-steel-800 pb-3">
@@ -454,15 +522,59 @@ export default function MarketplacePage() {
 
                   <div className="p-3 rounded-xl border border-steel-800 bg-steel-950 flex justify-between items-center">
                     <div className="flex items-center gap-3">
-                      <div className="h-6 w-6 rounded-full bg-brand-500/20 text-brand-400 flex items-center justify-center font-bold text-xs">
-                        3
+                      <div className={`h-6 w-6 rounded-full flex items-center justify-center font-bold text-xs ${isDeliveryConfirmed ? 'bg-emerald-500/20 text-emerald-400' : 'bg-brand-500/20 text-brand-400'}`}>
+                        {isDeliveryConfirmed ? '✓' : '3'}
                       </div>
                       <div>
-                        <span className="font-bold text-white block">3. Delivery Confirmation & Quality Release (30%)</span>
-                        <span className="text-slate-400 text-[10px]">Released upon dock delivery confirmation (less {marketplaceFeePercent}% marketplace fee)</span>
+                        <span className="font-bold text-white block">3. Delivery Confirmation & Final Payout Release (30%)</span>
+                        <span className="text-slate-400 text-[10px]">
+                          {isDeliveryConfirmed
+                            ? `Disbursed to factory less ${marketplaceFeePercent}% platform fee (Transaction ID: ESC-${Date.now().toString().slice(-6)})`
+                            : `Awaiting buyer delivery inspection confirmation (less ${marketplaceFeePercent}% marketplace fee)`}
+                        </span>
                       </div>
                     </div>
-                    <span className="font-bold text-emerald-400">{formatCurrency(Math.round((acceptedResult?.escrow.totalAmount || 42500) * 0.3))}</span>
+                    <div className="text-right">
+                      <span className="font-bold text-emerald-400 block">{formatCurrency(Math.round((acceptedResult?.escrow.totalAmount || 42500) * 0.3))}</span>
+                      {isDeliveryConfirmed && (
+                        <span className="text-[10px] text-emerald-500 font-semibold">Settled</span>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Delivery Release Action Strip */}
+              <div className="p-4 rounded-xl bg-steel-950 border border-steel-800 space-y-3">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                  <div>
+                    <h5 className="font-bold text-white text-xs">Buyer Quality Acceptance & Escrow Release</h5>
+                    <p className="text-slate-400 text-[11px]">
+                      Confirm goods received in good order to authorize final factory payout ({100 - marketplaceFeePercent}%) and platform transaction fee ({marketplaceFeePercent}%).
+                    </p>
+                  </div>
+
+                  <div className="flex items-center gap-2">
+                    {!isDeliveryConfirmed ? (
+                      <Button
+                        onClick={() => setIsDeliveryConfirmed(true)}
+                        className="bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs"
+                      >
+                        <CheckCircle2 className="h-4 w-4 mr-1.5" /> Confirm Delivery & Release Payout
+                      </Button>
+                    ) : (
+                      <Badge className="bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 text-xs font-semibold py-1.5 px-3">
+                        <CheckCircle2 className="h-3.5 w-3.5 mr-1" /> Delivery Confirmed • Escrow Released
+                      </Badge>
+                    )}
+
+                    <Button
+                      variant="outline"
+                      onClick={handleReorderBatch}
+                      className="border-purple-500/40 text-purple-300 hover:bg-purple-500/10 text-xs font-bold"
+                    >
+                      <RotateCcw className="h-3.5 w-3.5 mr-1.5" /> 1-Click Reorder Batch
+                    </Button>
                   </div>
                 </div>
               </div>
@@ -482,6 +594,7 @@ export default function MarketplacePage() {
             </CardContent>
           </Card>
         )}
+
 
         {selectedBidForPayment && (
           <RazorpayPaymentModal

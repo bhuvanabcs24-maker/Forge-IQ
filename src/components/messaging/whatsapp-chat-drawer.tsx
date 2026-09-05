@@ -57,7 +57,7 @@ export function WhatsAppChatDrawer({
       customerPhone,
       sender: 'business',
       senderName: 'ForgeIQ Business Assistant',
-      content: `Hello Robert! We received PO_Apex_Flanges_WO891.pdf. AI Order Intake processed the laser cutting specs (150 pcs 304 SS). Official PDF Quotation RFQ-2026-0891 ($42,500.00) attached below.`,
+      content: `Hello Robert! We received PO_Apex_Flanges_WO891.pdf. AI Order Intake processed the laser cutting specs (150 pcs 304 SS). Official PDF Quotation RFQ-2026-0891 (₹3,42,500.00) attached below.`,
       media: {
         id: 'pdf-2',
         url: '/api/quotations/RFQ-2026-0891/pdf?action=download',

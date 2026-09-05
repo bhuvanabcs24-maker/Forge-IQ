@@ -269,14 +269,17 @@ export function LiveOrderTracker({ order }: { order: CustomerOrderView }) {
               <Truck className="h-5 w-5" />
             </div>
             <div>
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 flex-wrap">
                 <h5 className="font-bold text-sm text-slate-100">Live Logistics & Dispatch Tracking</h5>
+                <Badge className="bg-amber-500/20 text-amber-300 border border-amber-500/30 text-[10px] font-bold">
+                  DEMO / SIMULATION MODE
+                </Badge>
                 <Badge className="bg-blue-500/20 text-blue-300 border-blue-500/30 text-[10px]">
                   Carrier: FedEx Freight Express
                 </Badge>
               </div>
               <p className="text-slate-400 text-xs font-mono mt-0.5">
-                Tracking Number: TRK-2026-8919 • Dispatch Pallet ID: #PLT-098
+                Tracking Number: TRK-2026-8919 • Dispatch Pallet ID: #PLT-098 (Simulated Telematics)
               </p>
             </div>
           </div>
@@ -332,14 +335,23 @@ export function LiveOrderTracker({ order }: { order: CustomerOrderView }) {
               <PackageCheck className="h-3.5 w-3.5 mr-1" /> Confirm Delivery & Release Payout
             </Button>
           ) : (
-            <Button
-              size="sm"
-              variant="outline"
-              onClick={() => setIsFeedbackOpen(true)}
-              className="border-amber-500/40 text-amber-300"
-            >
-              <Star className="h-3.5 w-3.5 mr-1 fill-current" /> Submit 5-Star Rating
-            </Button>
+            <div className="flex items-center gap-2">
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={() => setIsFeedbackOpen(true)}
+                className="border-amber-500/40 text-amber-300"
+              >
+                <Star className="h-3.5 w-3.5 mr-1 fill-current" /> Submit 5-Star Rating
+              </Button>
+              <Button
+                size="sm"
+                onClick={() => router.push('/marketplace?reorder=FG-2042')}
+                className="bg-purple-600 hover:bg-purple-500 text-white font-bold"
+              >
+                <RotateCcw className="h-3.5 w-3.5 mr-1" /> 1-Click Reorder Batch
+              </Button>
+            </div>
           )}
         </div>
       </div>
