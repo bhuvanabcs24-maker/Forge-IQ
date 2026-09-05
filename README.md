@@ -1,167 +1,247 @@
-# ForgeIQ — AI-Powered Agentic Commerce & Manufacturing Platform
+# ForgeIQ — Autonomous AI Manufacturing Intelligence & Commerce OS
 
 <div align="center">
 
-[![Next.js](https://img.shields.io/badge/Next.js-15.1-black?logo=next.js)](https://nextjs.org/)
-[![React](https://img.shields.io/badge/React-19.0-61dafb?logo=react)](https://react.dev/)
-[![TypeScript](https://img.shields.io/badge/TypeScript-5.7-blue?logo=typescript)](https://www.typescriptlang.org/)
-[![Tailwind CSS](https://img.shields.io/badge/Tailwind-3.4-38b2ac?logo=tailwind-css)](https://tailwindcss.com/)
-[![Supabase](https://img.shields.io/badge/Supabase-Ready-green?logo=supabase)](https://supabase.com/)
-[![License](https://img.shields.io/badge/License-MIT-purple.svg)](LICENSE)
+[![Next.js](https://img.shields.io/badge/Next.js-15.1-black?style=for-the-badge&logo=next.js&logoColor=white)](https://nextjs.org/)
+[![React](https://img.shields.io/badge/React-19.0-61dafb?style=for-the-badge&logo=react&logoColor=black)](https://react.dev/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.7-3178c6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![FastAPI](https://img.shields.io/badge/FastAPI-0.115-009688?style=for-the-badge&logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com/)
+[![Neon PostgreSQL](https://img.shields.io/badge/Neon-PostgreSQL%2018-00e599?style=for-the-badge&logo=postgresql&logoColor=black)](https://neon.tech/)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind-3.4-38b2ac?style=for-the-badge&logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
+[![Razorpay](https://img.shields.io/badge/Razorpay-INR%20%E2%82%B9-0c2340?style=for-the-badge&logo=razorpay&logoColor=3395FF)](https://razorpay.com/)
+[![License](https://img.shields.io/badge/License-MIT-purple.svg?style=for-the-badge)](LICENSE)
 
-**An intelligent end-to-end manufacturing commerce operating system connecting buyers and factory shop floors through autonomous AI agents.**
+<br />
 
-[Overview](#-overview) • [Core Workflow](#-the-core-workflow) • [Key Portals](#-key-portals--experiences) • [Features](#-features--modules) • [Tech Stack](#-tech-stack) • [Getting Started](#-getting-started) • [Deployment](#-deployment)
+**A full-stack agentic manufacturing enterprise operating system that automates the entire B2B fabrication lifecycle: from multimodal RFQ intake and instant CAD geometry costing to shop floor machine scheduling, real-time customer tracking, and Razorpay escrow payments.**
+
+[Explore Features](#-feature-showcase--screenshots) • [System Architecture](#-system-architecture) • [Engineering Highlights](#-engineering-highlights) • [Getting Started](#-getting-started) • [API & Tests](#-testing--quality-assurance)
 
 </div>
 
 ---
 
-## 🏭 Overview
+## 🌟 Executive Summary
 
-**ForgeIQ** bridges the gap between buyers who need precision parts made and the modern manufacturing shop floors that produce them. Traditional manufacturing workflows suffer from fragmented communication, manual quotation delays, opaque production tracking, and disconnected ERP spreadsheets. 
+Traditional precision manufacturing (sheet metal fabrication, CNC machining, additive manufacturing) is held back by slow manual processes:
+- Estimators spend **hours to days** calculating laser cutting runtimes, bend sequences, scrap rates, and material costs from drawings.
+- Buyer requests arrive fragmented across **WhatsApp chats, unstructured PDFs, and hand-drawn sketches**.
+- Shop floors rely on **disjointed whiteboards and Excel sheets**, leading to delayed deliveries and blind spots.
 
-ForgeIQ transforms this into an **agentic manufacturing OS** that automates the entire lifecycle: from RFQ intake and automated engineering cost estimation to machine scheduling, live job tracking, and dispatch delivery.
+**ForgeIQ solves this end-to-end.** Powered by a hybrid Next.js 15 + Python FastAPI AI architecture connected to a live Neon serverless PostgreSQL database, ForgeIQ transforms factory operations into an autonomous, transparent, and data-driven workflow.
 
 ---
 
-## 🔄 The Core Workflow
+## 📸 Feature Showcase & Screenshots
 
-ForgeIQ is built around one unified, friction-free journey:
+### 1. Executive Cockpit & Operational Lifecycle Board
+> **Real-time factory telemetry, active revenue metrics, agentic recommendations, and 7-stage operational tracking (`Receive` ➔ `Quote` ➔ `Plan` ➔ `Manufacture` ➔ `QC` ➔ `Dispatch` ➔ `Get Paid`).**
 
+<p align="center">
+  <img src="docs/screenshots/dashboard.png" alt="ForgeIQ Executive Dashboard" width="100%" />
+</p>
+
+- **Agentic Dispatch Cards**: AI highlights critical path actions (e.g. *"Approve CMM Quality Pass on Job #FG-2042"* or *"500 SS304 Brackets RFQ needs quote response within 4 hours"*).
+- **Interactive Lifecycle Pipeline**: Clickable operational stages with live WIP counts and escrow milestone tracking.
+- **Unified Copilot Search & Command Palette (`⌘K`)**: Instant keyboard-driven navigation across orders, machines, and quotations.
+
+---
+
+### 2. Multimodal AI Order Intake & Document Understanding
+> **Eliminating manual data entry. Drag & drop incoming customer WhatsApp messages, scanned purchase orders, or technical drawings.**
+
+<p align="center">
+  <img src="docs/screenshots/ai-order-intake.png" alt="AI Order Intake Uploader" width="100%" />
+</p>
+
+- **Universal Document Support**: Accepts `.pdf`, `.png`, `.jpg`, `.dwg`, and `.dxf` formats with drag-and-drop or native file picker.
+- **Built-in Demo Presets**: Includes realistic aerospace, heavy machinery, and solar manufacturing datasets for one-click testing.
+
+---
+
+### 3. Automated OCR & Multi-Agent Extraction Pipeline
+> **Automated OCR parsing and entity extraction with statistical confidence scoring and instant customer profile auto-generation.**
+
+<p align="center">
+  <img src="docs/screenshots/ai-extraction-pipeline.png" alt="AI Extraction Pipeline" width="100%" />
+</p>
+
+- **4-Stage Automated Pipeline**: `Document Upload` ➔ `OCR Parsing` ➔ `AI Extraction` ➔ `Order Created`.
+- **Field Confidence Validation**: Visual confidence chips (e.g. `96% Confidence`) across material grade, sheet thickness, tolerances, and quantities.
+- **Raw OCR Audit Trail**: Full transparency with side-by-side raw transcript inspection for quality control.
+
+---
+
+### 4. Work Orders & Production Execution
+> **High-throughput fabrication job management with priority scheduling, dynamic progress tracking, and Rupee (₹) valuations.**
+
+<p align="center">
+  <img src="docs/screenshots/work-orders.png" alt="Work Orders and Sales Orders" width="100%" />
+</p>
+
+- **Live Stage Status**: Instant filtering by `In Production`, `Quality Check`, `Pending`, and `Dispatched`.
+- **Priority Tiering**: Color-coded badges for `Rush`, `High`, and `Normal` jobs linked directly to machine capacity.
+- **Interactive Progression**: Real-time progress bars computed from sub-assembly milestone completions.
+
+---
+
+### 5. B2B Customer Directory & WhatsApp CRM
+> **Direct customer relationship management with lifetime spending analytics, order history, and instant WhatsApp communication.**
+
+<p align="center">
+  <img src="docs/screenshots/customer-directory.png" alt="Customer Directory and WhatsApp CRM" width="100%" />
+</p>
+
+- **Instant WhatsApp Communication**: Integrated chat drawer with Meta WhatsApp Cloud API template dispatching and RFQ PDF attachments.
+- **Financial Telemetry**: Track client lifetime spending (LTV), credit terms (e.g., `Net 30`), and active work orders.
+
+---
+
+### 6. Algorithmic Fabrication Pricing Engine (INR ₹)
+> **Configure factory overheads, laser cutting hourly rates, CNC press brake rates, and material margins with live recalculation.**
+
+<p align="center">
+  <img src="docs/screenshots/pricing-rules.png" alt="Fabrication Pricing Rules" width="100%" />
+</p>
+
+- **Machine Hourly Rates**: Independent machine rate matrices (e.g., Fiber Laser at ₹2,500/hr, CNC Press Brake at ₹1,800/hr).
+- **Logistics & Tax Handling**: Configurable base packaging, weight-based logistics (₹12/kg), scrap rate compensation, and Indian GST (18%).
+
+---
+
+### 7. Quote Builder & Explainable Cost Breakdown
+> **Generate auditable, itemized quotations with natural-language AI price explanations and instant PDF export.**
+
+<p align="center">
+  <img src="docs/screenshots/quote-builder.png" alt="Quotation Builder and Cost Breakdown" width="100%" />
+</p>
+
+- **Natural-Language AI Justification**: Translates complex machine feeds, speeds, and scrap formulas into plain English for client transparency.
+- **Version Control & Revision History**: Create immutable snapshots (`v1.0`, `v1.1`) preserving pricing rules at time of quotation.
+
+---
+
+## 🏗️ System Architecture
+
+ForgeIQ utilizes a distributed microservices and serverless architecture designed for performance, resilience, and horizontal scalability:
+
+```mermaid
+flowchart TD
+    subgraph ClientLayer["🖥️ Frontend & Client Applications"]
+        Browser["Next.js 15 App Router\n(React 19 + Tailwind CSS)"]
+        CustomerPortal["Buyer Customer Portal\n(/portal/dashboard)"]
+        CommandPalette["Global Command Palette\n(⌘K Quick Dispatch)"]
+    end
+
+    subgraph AppServer["⚡ Next.js Full-Stack Application"]
+        Middleware["Role-Based Middleware\n(RBAC: Owner | Manager | Operator | QA | Customer)"]
+        ServerActions["Server Actions & API Routes\n(/api/quotations, /api/auth, /api/razorpay)"]
+        PricingEngine["Deterministic Pricing Engine\n(FabricationPlugin, BOM Calculator)"]
+    end
+
+    subgraph AIService["🤖 Python AI Microservice (FastAPI :8000)"]
+        FastAPIApp["FastAPI REST Application"]
+        CADParser["DXF / DWG Geometry Engine\n(Perimeter, Holes, Bends, Cut Time)"]
+        DocExtractor["Multimodal Vision & OCR\n(Gemini / OpenAI / Fallback Provider)"]
+        CopilotAgent["Agentic Dispatcher & Copilot\n(Operational Reasoning)"]
+    end
+
+    subgraph DatabaseLayer["🗄️ Persistence & Cloud Infrastructure"]
+        NeonDB[("Neon Serverless PostgreSQL\n(PostgreSQL 18.6 Connection Pool)")]
+        Razorpay["Razorpay Payment Gateway\n(INR ₹ Orders & Webhooks)"]
+        WhatsAppAPI["WhatsApp Business Cloud API\n(Meta Webhooks & OTP Service)"]
+    end
+
+    Browser --> Middleware
+    CustomerPortal --> Middleware
+    CommandPalette --> Middleware
+    Middleware --> ServerActions
+
+    ServerActions <--> NeonDB
+    ServerActions --> PricingEngine
+    ServerActions <-->|"HTTP / JSON (Bearer Auth)"| FastAPIApp
+
+    FastAPIApp --> CADParser
+    FastAPIApp --> DocExtractor
+    FastAPIApp --> CopilotAgent
+
+    ServerActions <--> Razorpay
+    ServerActions <--> WhatsAppAPI
 ```
-[ DISCOVER ] ──▶ [ DECIDE ] ──▶ [ BUY ] ──▶ [ MANUFACTURE ] ──▶ [ TRACK ] ──▶ [ DELIVER ]
-   Marketplace      Instant AI     Quote Approval    Gantt Planner      Live Shop Floor    Dispatch &
-   Capabilities      Costing       & Invoicing       & Scheduling       Buyer Portal       Logistics
-```
-
-1. **DISCOVER**: Buyers find vetted manufacturing partners based on material, tolerance, and process capabilities (CNC, sheet metal, injection molding, 3D printing).
-2. **DECIDE**: Intelligent quotation engine parses specifications, drawings, and CAD models to provide instantaneous, accurate pricing and lead times.
-3. **BUY**: Seamless quote approval, digital purchase orders, automated invoice generation, and milestone-based payment schedules.
-4. **MANUFACTURE**: Operational Factory ERP schedules jobs onto machines and assign shifts to operators using smart capacity planning.
-5. **TRACK**: Transparent milestones (Raw Material In ➔ Machining ➔ QC Inspection ➔ Packing) visible to both the shop supervisor and buyer.
-6. **DELIVER**: Final quality sign-off, dispatch documentation, shipping tracking, and customer sign-off.
 
 ---
 
-## 🌐 Key Portals & Experiences
+## 💡 Engineering Highlights
 
-ForgeIQ provides three integrated interfaces tailored for each stakeholder:
+### 1. High-Performance Serverless Architecture
+- **Next.js 15 App Router with React 19**: Leverages Server Components for zero-bundle-size database queries alongside optimized Client Components for high-interactivity features (CAD canvas, drag-and-drop uploader, interactive Gantt timelines).
+- **Neon Serverless PostgreSQL**: Integrated via `@neondatabase/serverless` connection pooling. Includes automated health telemetry at `/api/database/neon/status` returning real-time database version and transaction ping.
 
-### 1. ⚙️ ForgeIQ Factory (Operational Business OS & ERP)
-*Target: Factory Owners, Plant Managers, Estimators, Supervisors, Operators*
-- **Executive Cockpit**: Real-time revenue, machine utilization, on-time delivery rate, and active job alerts.
-- **Production Planner**: Visual Gantt & timeline board for machine capacity, operation routing, and lead-time buffering.
-- **Smart Estimation Engine**: Bill of Materials (BOM) calculator, machining time models, scrap rates, and margin controls.
-- **Resource Management**: Complete machine health registry, maintenance logs, and worker shift assignments.
-- **Inventory & Supply Chain**: Stock levels, reorder threshold alerts, supplier registry, and Purchase Orders.
+### 2. Dual-Engine AI Architecture (Next.js + Python FastAPI)
+- **FastAPI Microservice**: Dedicated Python backend (`ai-service/`) executing compute-heavy geometric computations, DXF entity parsing, and vector embeddings.
+- **Graceful Multi-Tier Fallback**: Intelligent fallback hierarchy across Google Gemini, OpenAI, Anthropic, and realistic deterministic mock engines—ensuring 100% platform uptime even during external API downtime.
 
-### 2. 🛍️ Buyer Experience & Customer Portal
-*Target: Procurement Officers, Hardware Engineers, Product Buyers*
-- **Self-Service Job Tracking**: Real-time progress status (`Pending`, `In Production`, `QC Passed`, `Dispatched`).
-- **Quote Review & Sign-off**: Detailed cost breakdowns, lead time options, and one-click quote approvals.
-- **Drawing & CAD Vault**: Centralized revision control for engineering drawings, 3D models, and design feedback.
-
-### 3. 🌐 Manufacturing Marketplace
-*Target: Open Bidding, Multi-Vendor Sourcing*
-- Discover vetted suppliers across CNC Machining, Sheet Metal Fabrication, 3D Printing, and Injection Molding.
-- Direct RFQ broadcast to matched suppliers for competitive bids.
-
----
-
-## 🤖 AI & Agentic Core
-
-ForgeIQ includes purpose-built agentic capabilities:
-
-- **AI Order Intake**: Parses unstructured RFQs arriving via WhatsApp, emails, or PDFs, extracting dimensions, quantities, materials, and tolerances into structured database orders.
-- **CAD & Drawing Analysis**: Reads engineering prints and geometries to flag difficult tolerances, machining overhangs, and recommend optimal manufacturing operations.
-- **Conversational AI Assistant**: An in-app copilot answering operational questions: *"Which machines are idle tomorrow afternoon?"*, *"Generate an invoice for Acme Corp PO #402"*, or *"Find bottlenecks in Job 104"*.
-
----
-
-## 🛠️ Features & Modules
-
-| Module | Route | Description |
+### 3. Enterprise Role-Based Access Control (RBAC)
+Granular permissions enforced through Next.js middleware across 5 distinct personas:
+| Role | Capabilities | Primary Route |
 | :--- | :--- | :--- |
-| **Executive Dashboard** | `/dashboard` | Factory KPI metrics, revenue charts, job status breakdown, alerts |
-| **Marketplace** | `/marketplace` | Supplier directory, capability matching, verified shop profiles |
-| **Customer Portal** | `/portal/dashboard` | Buyer-facing order tracking, drawing repository, milestone updates |
-| **Orders & RFQs** | `/orders` | End-to-end lifecycle management of incoming buyer requests |
-| **Automated Quotations** | `/quotations` | Dynamic pricing models, markup configuration, PDF export |
-| **Production Planner** | `/production` | Interactive Gantt chart, machine scheduling, route operations |
-| **Shop Floor Machines** | `/machines` | Machine status (Running, Idle, Maintenance), utilization rates |
-| **Workers & Shifts** | `/workers` | Operator rosters, skill certifications, attendance scheduling |
-| **Inventory & Materials** | `/inventory` | Raw metal stocks, hardware consumables, auto-reorder alerts |
-| **Suppliers** | `/suppliers` | Vetted vendor database, lead-time tracking, quality scoring |
-| **Purchase Orders** | `/purchase-orders` | Inbound procurement orders linked directly to production jobs |
-| **Invoices & Billing** | `/invoices` | Automated tax invoices, milestone payments, credit terms |
-| **AI Order Intake** | `/ai-order-intake` | Multi-channel AI parser for WhatsApp / PDF / email orders |
-| **AI Copilot** | `/ai-assistant` | Agentic assistant for factory analytics and task automation |
+| **Owner** | Full administrative control, billing, pricing rules, factory settings | `/dashboard`, `/settings` |
+| **Plant Manager** | Machine scheduling, production oversight, order dispatch | `/production`, `/machines` |
+| **Operator** | Shift tasks, step-by-step digital traveler, scrap recording | `/production`, `/workers` |
+| **QA Inspector** | CMM dimensional reports, quality approval, rework routing | `/orders`, `/reports` |
+| **Customer** | Self-service tracking, drawing vault, quote approval, payment | `/portal/dashboard` |
+
+### 4. Production Payment & Escrow Workflow (INR ₹)
+- Native Indian Rupee (₹) denomination tailored for modern Indian manufacturing hubs (Peenya, Pune, Coimbatore, Sanand).
+- **Razorpay Integration**: End-to-end checkout with automated order creation, cryptographic HMAC-SHA256 signature verification, and escrow disbursal calculation.
 
 ---
 
-## 💻 Tech Stack
+## 🛠️ Complete Tech Stack
 
-- **Framework**: [Next.js 15](https://nextjs.org/) (App Router, Server Actions)
-- **UI Library**: [React 19](https://react.dev/)
-- **Language**: [TypeScript](https://www.typescriptlang.org/)
-- **Styling**: [Tailwind CSS](https://tailwindcss.com/) with custom design tokens
-- **Animations**: [Framer Motion](https://www.framer.com/motion/)
-- **Data Visualization**: [Recharts](https://recharts.org/) (Custom WCAG AA dark-mode tooltips & responsive containers)
-- **Data Tables**: [@tanstack/react-table](https://tanstack.com/table)
-- **Icons**: [Lucide React](https://lucide.dev/)
-- **Forms & Validation**: [React Hook Form](https://react-hook-form.com/) + [Zod](https://zod.dev/)
-- **Backend & Auth**: [Supabase SSR](https://supabase.com/docs/guides/auth/server-side/nextjs) + Next.js API route handlers
-- **Containerization**: Docker & Docker Compose
+| Layer | Technology | Purpose |
+| :--- | :--- | :--- |
+| **Frontend Framework** | **Next.js 15.5.23** | React Server Components, App Router, Nested Layouts |
+| **UI Library** | **React 19.0** | Modern concurrency, hooks, transitions |
+| **Language** | **TypeScript 5.7** | Strict type safety across all frontend and API layers |
+| **Styling** | **Tailwind CSS 3.4** | Custom industrial dark-mode glassmorphism design system |
+| **AI Microservice** | **Python 3.11 + FastAPI** | Asynchronous CAD geometry analysis and OCR parsing |
+| **Database** | **Neon PostgreSQL 18** | Serverless SQL with connection pooling and SSL encryption |
+| **Data Tables** | **@tanstack/react-table** | Virtualized sorting, pagination, and multi-column filtering |
+| **Charts & Data Viz** | **Recharts** | Dark-mode accessible manufacturing KPIs and capacity graphs |
+| **Payment Gateway** | **Razorpay** | Secure ₹ (INR) online transactions and webhook callbacks |
+| **Testing** | **Pytest + Next.js E2E** | Automated microservice unit tests and scenario suites |
 
 ---
 
 ## 🚀 Getting Started
 
 ### Prerequisites
-- **Node.js**: `v18.18.0` or higher (Node 20+ recommended)
-- **Package Manager**: `npm`, `pnpm`, or `yarn`
-- **Git**
+- **Node.js**: `v18.18.0` or higher (`v20.x` LTS recommended)
+- **Python**: `3.10` or higher
+- **npm** or **pnpm**
 
-### Installation
+### Step-by-Step Local Setup
 
 1. **Clone the repository:**
    ```bash
    git clone https://github.com/bhuvanabcs24-maker/Forge-IQ.git
-   cd Forge-IQ
+   cd ForgeIQ
    ```
 
-2. **Install dependencies:**
+2. **Install Node dependencies:**
    ```bash
    npm install
    ```
 
 3. **Configure Environment Variables:**
-   Create a `.env.local` file in the root directory (or copy from `.env.example`):
-   ```env
-   # Razorpay Payment Gateway
-   NEXT_PUBLIC_RAZORPAY_KEY_ID=rzp_test_...
-   RAZORPAY_KEY_ID=rzp_test_...
-   RAZORPAY_KEY_SECRET=...
-   RAZORPAY_WEBHOOK_SECRET=...
-   NEXT_PUBLIC_PAYMENT_GATEWAY=razorpay
-
-   # ForgeIQ Python AI Microservice
-   AI_SERVICE_URL=http://localhost:8000
-   NEXT_PUBLIC_AI_API_URL=http://localhost:8000
-   AI_SERVICE_API_KEY=forgeiq_internal_service_key_2026
-
-   # AI LLM Provider (gemini | openai | anthropic | ollama | mock)
-   AI_PROVIDER=gemini
-   GEMINI_API_KEY=your_gemini_api_key
-
-   # Supabase Auth & Database
-   NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
-   NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
+   Copy `.env.example` to `.env.local`:
+   ```bash
+   cp .env.example .env.local
    ```
-   *(Note: ForgeIQ includes rich mock and fallback providers, allowing the entire application to be run and evaluated out-of-the-box without external database setup).*
+   *The application includes pre-configured fallback providers, so you can immediately explore without requiring external API keys.*
 
-4. **Start the Python AI Microservice (Terminal 1):**
+4. **Start the Python AI Service (Terminal 1):**
    ```bash
    cd ai-service
    python3 -m venv .venv
@@ -169,111 +249,61 @@ ForgeIQ includes purpose-built agentic capabilities:
    pip install -r requirements.txt
    uvicorn app.main:app --host 127.0.0.1 --port 8000 --reload
    ```
-   *OpenAPI Docs: [http://localhost:8000/docs](http://localhost:8000/docs)*
+   *Interactive Swagger Documentation: [http://localhost:8000/docs](http://localhost:8000/docs)*
 
-5. **Start the Next.js Frontend (Terminal 2):**
+5. **Start the Next.js Web Application (Terminal 2):**
    ```bash
    npm run dev
    ```
-
-6. **Run Python AI Test Suite:**
-   ```bash
-   PYTHONPATH=ai-service ai-service/.venv/bin/pytest ai-service/tests/ -v
-   ```
-
-7. **Open in Browser:**
-   - Landing & Experience Portal: [http://localhost:3000](http://localhost:3000)
-   - Factory ERP Dashboard: [http://localhost:3000/dashboard](http://localhost:3000/dashboard)
-   - AI Copilot Multi-Agent Chat: [http://localhost:3000/ai-assistant](http://localhost:3000/ai-assistant)
-   - AI Order Intake Parser: [http://localhost:3000/ai-order-intake](http://localhost:3000/ai-order-intake)
-   - Buyer Marketplace: [http://localhost:3000/marketplace](http://localhost:3000/marketplace)
-   - Customer Portal: [http://localhost:3000/portal/dashboard](http://localhost:3000/portal/dashboard)
+   *The platform is now live at [http://localhost:3000](http://localhost:3000)*
 
 ---
 
-## 📦 Production Build
+## 🧪 Testing & Quality Assurance
 
-To test the production build locally:
+ForgeIQ includes automated test suites covering both the frontend compilation and the Python AI microservice:
 
 ```bash
-# Build the optimized production bundle
+# 1. Run Next.js TypeScript validation & production build
 npm run build
 
-# Start the production server
-npm start
+# 2. Run Python AI microservice test suite (FastAPI endpoints, CAD parsing, pricing math)
+PYTHONPATH=ai-service ai-service/.venv/bin/pytest ai-service/tests/ -v
+
+# 3. Test live Neon database connectivity
+curl http://localhost:3000/api/database/neon/status
+
+# 4. Trigger end-to-end 7-stage manufacturing lifecycle simulation
+curl http://localhost:3000/api/testing/e2e-journey
 ```
 
 ---
 
-## 🐳 Docker Deployment
+## 🗺️ Key Application Routes
 
-Run the entire application using Docker:
-
-```bash
-# Build and run the container
-docker compose up --build -d
-
-# View container logs
-docker compose logs -f
-
-# Stop the container
-docker compose down
-```
-
----
-
-## ☁️ Deploy to Vercel
-
-ForgeIQ is pre-configured for frictionless deployment to [Vercel](https://vercel.com):
-
-1. Push your latest code to your GitHub repository:
-   ```bash
-   git push origin main
-   ```
-2. Go to [**vercel.com/new**](https://vercel.com/new).
-3. Import your **`Forge-IQ`** repository.
-4. Framework preset **Next.js** will be detected automatically.
-5. Click **Deploy**.
+| Experience | Route | Key Functionality |
+| :--- | :--- | :--- |
+| **Platform Gateway** | `/` | Role switcher, capability showcase, unified landing |
+| **Executive Dashboard** | `/dashboard` | Machine utilization, revenue charts, agentic alerts |
+| **AI Order Intake** | `/ai-order-intake` | Drag-and-drop multimodal document extraction |
+| **CAD Analysis** | `/cad-analysis` | 2D/3D geometry viewer, bend detection, cut time estimator |
+| **Quotation Builder** | `/quotations/builder` | Live BOM calculation, margin sliders, PDF generation |
+| **Pricing Rules** | `/settings/pricing-rules` | Custom administrative hourly rates and INR parameters |
+| **Production Planner** | `/production/planner` | Interactive Gantt schedule, machine queue management |
+| **Customer Portal** | `/portal/dashboard` | Client order status, milestone photos, quote approval |
+| **Live Database Status**| `/settings` (Neon Tab) | Real-time PostgreSQL pooler latency & version check |
 
 ---
 
-## 📂 Project Structure
+## 👤 Author
 
-```
-ForgeIQ/
-├── public/                  # Static assets, logos, CAD icons
-├── src/
-│   ├── app/                 # Next.js App Router (Pages & API routes)
-│   │   ├── (auth)/          # Login, Registration, Password recovery
-│   │   ├── (dashboard)/     # Factory ERP (Dashboard, Orders, Production, etc.)
-│   │   ├── (portal)/        # Buyer-facing tracking & quote portal
-│   │   ├── api/             # API routes (webhooks, copilot, quotations)
-│   │   ├── marketplace/     # Public manufacturing marketplace
-│   │   ├── globals.css      # Design system variables & base styles
-│   │   ├── layout.tsx       # Root layout & theme providers
-│   │   └── page.tsx         # Unified experience gateway landing page
-│   ├── components/          # Reusable UI & domain components
-│   │   ├── ui/              # Buttons, inputs, modals, cards, badges
-│   │   ├── dashboard/       # Metrics cards, status widgets, charts
-│   │   ├── production/      # Gantt timelines, shift planners
-│   │   ├── quotations/      # Quotation builder & breakdown tables
-│   │   └── copilot/         # AI chat drawer and agent widgets
-│   ├── context/             # Global React state (Theme, Auth, Cart)
-│   ├── lib/                 # Core utilities, AI models, mock data
-│   │   ├── ai/              # AI providers and prompt engineering
-│   │   ├── cad/             # Drawing geometry parsers
-│   │   ├── supabase/        # Supabase client and SSR middleware
-│   │   └── mock-data/       # Realistic enterprise manufacturing data
-│   └── types/               # TypeScript interfaces & database types
-├── docker-compose.yml       # Container orchestration
-├── next.config.ts           # Next.js configuration
-├── tailwind.config.ts       # Tailwind CSS theme extensions
-├── tsconfig.json            # TypeScript configuration
-└── vercel.json              # Vercel security headers & deployment rules
-```
+**Bhuvan A B**
+- **Institution**: B.M.S. College of Engineering (BMSCE)
+- **Email**: bhuvanab.cs24@bmsce.ac.in
+- **GitHub**: [@bhuvanabcs24-maker](https://github.com/bhuvanabcs24-maker)
 
 ---
 
 ## 📄 License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the MIT License — see the [LICENSE](LICENSE) file for details.

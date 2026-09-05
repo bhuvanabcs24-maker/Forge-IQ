@@ -79,8 +79,8 @@ export function CommandPalette({
   };
 
   return (
-    <Dialog isOpen={isOpen} onClose={onClose} title="" maxWidth="md">
-      <div className="space-y-3 -mt-2">
+    <Dialog isOpen={isOpen} onClose={onClose} maxWidth="md" hideHeader={true}>
+      <div className="space-y-3">
         {/* Search Bar Input */}
         <div className="relative flex items-center border-b border-slate-200 dark:border-steel-800 pb-3">
           <Search className="h-4 w-4 text-slate-400 mr-2.5 shrink-0" />

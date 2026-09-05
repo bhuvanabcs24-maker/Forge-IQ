@@ -7,10 +7,12 @@ import { cn } from '@/lib/utils';
 export interface DialogProps {
   isOpen: boolean;
   onClose: () => void;
-  title: string;
+  title?: string;
   description?: string;
   children: React.ReactNode;
   maxWidth?: 'sm' | 'md' | 'lg' | 'xl' | '2xl';
+  hideHeader?: boolean;
+  noPadding?: boolean;
 }
 
 export function Dialog({
@@ -20,6 +22,8 @@ export function Dialog({
   description,
   children,
   maxWidth = 'md',
+  hideHeader = false,
+  noPadding = false,
 }: DialogProps) {
   React.useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -61,28 +65,30 @@ export function Dialog({
         )}
       >
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200 dark:border-steel-800">
-          <div>
-            <h3 className="text-lg font-semibold text-slate-900 dark:text-slate-100">
-              {title}
-            </h3>
-            {description && (
-              <p className="text-xs text-slate-500 dark:text-steel-400 mt-0.5">
-                {description}
-              </p>
-            )}
+        {!hideHeader && (
+          <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200 dark:border-steel-800">
+            <div>
+              <h3 className="text-lg font-semibold text-slate-900 dark:text-slate-100">
+                {title}
+              </h3>
+              {description && (
+                <p className="text-xs text-slate-500 dark:text-steel-400 mt-0.5">
+                  {description}
+                </p>
+              )}
+            </div>
+            <button
+              onClick={onClose}
+              className="rounded-md p-1.5 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-steel-800 transition-colors cursor-pointer"
+            >
+              <X className="h-5 w-5" />
+              <span className="sr-only">Close</span>
+            </button>
           </div>
-          <button
-            onClick={onClose}
-            className="rounded-md p-1.5 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-steel-800 transition-colors"
-          >
-            <X className="h-5 w-5" />
-            <span className="sr-only">Close</span>
-          </button>
-        </div>
+        )}
 
         {/* Content */}
-        <div className="p-6 overflow-y-auto">{children}</div>
+        <div className={cn('overflow-y-auto', noPadding ? 'p-0' : 'p-6')}>{children}</div>
       </div>
     </div>
   );

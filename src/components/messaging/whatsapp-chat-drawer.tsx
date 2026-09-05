@@ -126,8 +126,8 @@ export function WhatsAppChatDrawer({
   if (!isOpen) return null;
 
   return (
-    <Dialog isOpen={isOpen} onClose={onClose} title="" maxWidth="lg">
-      <div className="flex flex-col h-[580px] -m-6 text-xs">
+    <Dialog isOpen={isOpen} onClose={onClose} maxWidth="lg" hideHeader={true} noPadding={true}>
+      <div className="flex flex-col h-[580px] text-xs">
         {/* WhatsApp Business Header Bar */}
         <div className="flex items-center justify-between p-4 bg-emerald-700 text-white shadow-md">
           <div className="flex items-center gap-3">
@@ -146,7 +146,15 @@ export function WhatsAppChatDrawer({
             <Badge className="bg-emerald-800 text-emerald-100 border-emerald-600 text-[10px]">
               WhatsApp Cloud API Active
             </Badge>
-            <button onClick={onClose} className="p-1 rounded hover:bg-emerald-600 text-emerald-100">
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                onClose();
+              }}
+              className="p-1.5 rounded-full hover:bg-emerald-600 active:bg-emerald-800 text-emerald-100 hover:text-white transition-colors cursor-pointer"
+              aria-label="Close chat modal"
+            >
               <X className="h-5 w-5" />
             </button>
           </div>
