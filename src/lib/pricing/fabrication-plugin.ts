@@ -44,7 +44,7 @@ export class FabricationPricingPlugin implements PricingPlugin {
     const totalPrice = unitPrice * qty;
 
     return {
-      id: item.id || `li-${Date.now()}`,
+      id: item.id || `li-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`,
       partName: item.partName || 'Custom Metal Component',
       material: item.material || 'Stainless Steel',
       materialGrade: item.materialGrade || '304 Stainless Steel',

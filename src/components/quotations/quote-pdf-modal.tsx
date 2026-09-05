@@ -150,7 +150,7 @@ export function QuotePdfModal({
               </thead>
               <tbody className="divide-y divide-slate-200">
                 {quotation.detailedLineItems.map((item, idx) => (
-                  <tr key={item.id}>
+                  <tr key={item.id ? `${item.id}-${idx}` : `pdf-item-${idx}`}>
                     <td className="p-3">
                       <span className="font-bold text-slate-900">{idx + 1}. {item.partName}</span>
                       <p className="text-[10px] text-slate-500">Dims: {item.dimensions} ({item.thickness})</p>

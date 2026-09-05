@@ -69,6 +69,7 @@ export function QuoteBuilder() {
   const [lineItems, setLineItems] = useState<QuotationLineItemDetail[]>([
     aiEstimatePartItem(
       {
+        id: 'li-part-avionics-base',
         partName: 'Avionics Heat Sink Base Plate',
         material: 'Stainless Steel',
         materialGrade: '304 Stainless Steel',
@@ -80,6 +81,7 @@ export function QuoteBuilder() {
     ),
     aiEstimatePartItem(
       {
+        id: 'li-part-mounting-flange',
         partName: 'Mounting Support Flange',
         material: 'Aluminum',
         materialGrade: '6061-T6 Aluminum',
@@ -321,8 +323,8 @@ export function QuoteBuilder() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100 dark:divide-steel-800/60">
-                {lineItems.map((item) => (
-                  <tr key={item.id} className="hover:bg-slate-50/50 dark:hover:bg-steel-800/40">
+                {lineItems.map((item, idx) => (
+                  <tr key={item.id ? `${item.id}-${idx}` : `li-${idx}`} className="hover:bg-slate-50/50 dark:hover:bg-steel-800/40">
                     <td className="p-3 font-semibold">
                       <Input
                         value={item.partName}

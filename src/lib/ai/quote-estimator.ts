@@ -3,6 +3,7 @@ import { FabricationPricingPlugin } from '@/lib/pricing/fabrication-plugin';
 import { DEFAULT_FABRICATION_PRICING_RULES } from '@/lib/pricing/default-rules';
 
 export interface EstimatePartInput {
+  id?: string;
   partName: string;
   material: string;
   materialGrade: string;
@@ -36,6 +37,7 @@ export function aiEstimatePartItem(
   const plugin = new FabricationPricingPlugin();
   return plugin.calculateLineItem(
     {
+      id: input.id,
       partName: input.partName,
       material: input.material,
       materialGrade: input.materialGrade,
