@@ -16,13 +16,15 @@ export interface PaymentGatewayProvider {
 }
 
 import { MockGatewayProvider } from './mock-gateway';
+import { RazorpayGatewayProvider } from './razorpay-gateway';
 
 export function getPaymentGateway(providerName?: string): PaymentGatewayProvider {
-  const selected = (providerName || process.env.NEXT_PUBLIC_PAYMENT_GATEWAY || 'mock').toLowerCase();
+  const selected = (providerName || process.env.NEXT_PUBLIC_PAYMENT_GATEWAY || 'razorpay').toLowerCase();
 
   switch (selected) {
-    case 'stripe':
     case 'razorpay':
+      return new RazorpayGatewayProvider();
+    case 'stripe':
     case 'mock':
     default:
       return new MockGatewayProvider();

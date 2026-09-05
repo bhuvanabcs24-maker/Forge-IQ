@@ -15,15 +15,25 @@ import { getPaymentGateway } from '@/lib/billing/gateways/base-gateway';
 import { formatCurrency } from '@/lib/utils';
 import { CreditCard, Check, Download, Tag, Zap, ShieldCheck } from 'lucide-react';
 
+import { RazorpayPaymentModal } from '@/components/billing/razorpay-payment-modal';
+
 export default function AdminBillingConsolePage() {
   const [currentTier, setCurrentTier] = useState<SubscriptionTier>('Professional');
   const [couponCode, setCouponCode] = useState('');
   const [discountPercent, setDiscountPercent] = useState<number | null>(null);
   const [couponMsg, setCouponMsg] = useState('');
 
+  // Razorpay Upgrade Modal State
+  const [isUpgradeModalOpen, setIsUpgradeModalOpen] = useState(false);
+  const [selectedPlanUpgrade, setSelectedPlanUpgrade] = useState<{
+    tier: SubscriptionTier;
+    cycle: BillingCycle;
+    amount: number;
+  } | null>(null);
+
   const metrics = getLiveUsageMetrics(currentTier);
 
-  const invoices: BillingInvoice[] = [
+  const [invoices, setInvoices] = useState<BillingInvoice[]>([
     {
       id: 'sub-inv-1',
       invoiceNumber: 'INV-FORGE-2026-07',
@@ -44,7 +54,7 @@ export default function AdminBillingConsolePage() {
       periodEnd: '2026-06-30',
       pdfUrl: '/api/quotations/INV-FORGE-2026-06/pdf?action=download',
     },
-  ];
+  ]);
 
   const handleApplyCoupon = () => {
     const res = validateCouponCode(couponCode);
@@ -58,14 +68,37 @@ export default function AdminBillingConsolePage() {
   };
 
   const handleUpgradePlan = async (tier: SubscriptionTier, cycle: BillingCycle) => {
-    const gateway = getPaymentGateway();
-    const session = await gateway.createCheckoutSession({
-      planId: tier,
-      cycle,
-      successUrl: window.location.href,
-      cancelUrl: window.location.href,
-    });
+    const planRates: Record<string, number> = {
+      Starter: cycle === 'yearly' ? 29990 : 2999,
+      Professional: cycle === 'yearly' ? 79990 : 7999,
+      Enterprise: cycle === 'yearly' ? 249990 : 24999,
+    };
+    let amount = planRates[tier] || 4999;
+    if (discountPercent) {
+      amount = Math.round(amount * (1 - discountPercent / 100));
+    }
+
+    setSelectedPlanUpgrade({ tier, cycle, amount });
+    setIsUpgradeModalOpen(true);
+  };
+
+  const handleUpgradeSuccess = (payment: { paymentId: string; orderId: string }) => {
+    if (!selectedPlanUpgrade) return;
+    const { tier, amount } = selectedPlanUpgrade;
     setCurrentTier(tier);
+
+    // Append new billing invoice
+    const newInv: BillingInvoice = {
+      id: `sub-inv-${Date.now()}`,
+      invoiceNumber: `INV-FORGE-${new Date().getFullYear()}-${String(new Date().getMonth() + 1).padStart(2, '0')}`,
+      amount,
+      status: 'Paid',
+      billingDate: new Date().toISOString().split('T')[0],
+      periodStart: new Date().toISOString().split('T')[0],
+      periodEnd: new Date(Date.now() + 30 * 86400000).toISOString().split('T')[0],
+      pdfUrl: `/api/quotations/INV-FORGE-${Date.now()}/pdf?action=download`,
+    };
+    setInvoices((prev) => [newInv, ...prev]);
   };
 
   return (
@@ -194,6 +227,24 @@ export default function AdminBillingConsolePage() {
           </div>
         </CardContent>
       </Card>
+
+      {selectedPlanUpgrade && (
+        <RazorpayPaymentModal
+          isOpen={isUpgradeModalOpen}
+          onClose={() => setIsUpgradeModalOpen(false)}
+          title={`Upgrade to ${selectedPlanUpgrade.tier} Tier`}
+          description={`Billed ${selectedPlanUpgrade.cycle === 'yearly' ? 'annually' : 'monthly'} for full enterprise manufacturing capabilities`}
+          itemTitle={`${selectedPlanUpgrade.tier} Plan (${selectedPlanUpgrade.cycle.toUpperCase()})`}
+          itemSubtitle="Unlimited AI Orders, Copilot Assistant & Multi-tenant factory ERP"
+          amount={selectedPlanUpgrade.amount}
+          metadata={{
+            planId: selectedPlanUpgrade.tier,
+            cycle: selectedPlanUpgrade.cycle,
+            type: 'saas_subscription',
+          }}
+          onPaymentSuccess={handleUpgradeSuccess}
+        />
+      )}
     </div>
   );
 }

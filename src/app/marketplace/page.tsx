@@ -31,11 +31,17 @@ import {
   SlidersHorizontal,
 } from 'lucide-react';
 
+import { RazorpayPaymentModal } from '@/components/billing/razorpay-payment-modal';
+
 export default function MarketplacePage() {
   const [rfqPrompt, setRfqPrompt] = useState('500 stainless steel brackets, 3 mm thickness, delivery within 7 days');
   const [preference, setPreference] = useState<BuyerPreference>('balanced');
   const [activeTab, setActiveTab] = useState<'match' | 'bids' | 'escrow'>('match');
   const [marketplaceFeePercent, setMarketplaceFeePercent] = useState<number>(5.0);
+
+  // Razorpay Escrow Modal State
+  const [selectedBidForPayment, setSelectedBidForPayment] = useState<FactoryBid | null>(null);
+  const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
 
   // Parse prompt into structured RFQ
   const parsedSpecs = parseBuyerRequirement(rfqPrompt);
@@ -43,15 +49,15 @@ export default function MarketplacePage() {
   const sampleRfq: MarketplaceRfq = {
     id: 'rfq-2026-0891',
     buyerOrgId: 'org-1',
-    buyerOrgName: 'Apex Aerospace Solutions',
-    title: parsedSpecs.partTitle,
-    materialGrade: parsedSpecs.materialGrade,
-    thickness: parsedSpecs.thickness,
-    quantity: parsedSpecs.quantity,
-    targetPrice: parsedSpecs.estimatedTargetPrice,
-    deliveryDueDate: `${parsedSpecs.requiredDeliveryDays} Days`,
+    buyerOrgName: 'NexaSolar Energy Labs',
+    title: parsedSpecs.partTitle || 'Precision Sheet Metal Mounts',
+    materialGrade: parsedSpecs.materialGrade || 'Stainless Steel 304',
+    thickness: parsedSpecs.thickness || '3 mm',
+    quantity: parsedSpecs.quantity || 500,
+    targetPrice: parsedSpecs.estimatedTargetPrice || 45000,
+    deliveryDueDate: `${parsedSpecs.requiredDeliveryDays || 7} Days`,
     status: 'Open',
-    createdAt: '2026-09-05',
+    createdAt: '2026-08-20',
   };
 
   const matches = globalFactoryMatchingEngine.matchFactoriesForRfq(sampleRfq, preference);
@@ -60,15 +66,22 @@ export default function MarketplacePage() {
 
   const handleAcceptBid = (bidId: string) => {
     const acceptedBid = bids.find((b) => b.id === bidId) || bids[0];
+    setSelectedBidForPayment(acceptedBid);
+    setIsPaymentModalOpen(true);
+  };
+
+  const handleEscrowPaymentSuccess = (payment: { paymentId: string; orderId: string }) => {
+    if (!selectedBidForPayment) return;
     const escrow = globalEscrowService.createEscrowDeposit(
       sampleRfq.id,
       sampleRfq.buyerOrgId,
-      acceptedBid.factoryId,
-      acceptedBid.bidAmount,
+      selectedBidForPayment.factoryId,
+      selectedBidForPayment.bidAmount,
       marketplaceFeePercent
     );
 
-    setAcceptedResult({ acceptedBid, escrow });
+    setAcceptedResult({ acceptedBid: selectedBidForPayment, escrow });
+    setIsPaymentModalOpen(false);
     setActiveTab('escrow');
   };
 
@@ -468,6 +481,25 @@ export default function MarketplacePage() {
               </div>
             </CardContent>
           </Card>
+        )}
+
+        {selectedBidForPayment && (
+          <RazorpayPaymentModal
+            isOpen={isPaymentModalOpen}
+            onClose={() => setIsPaymentModalOpen(false)}
+            title="Deposit Milestone Escrow"
+            description={`Fund manufacturing escrow for ${sampleRfq.title} with ${selectedBidForPayment.factoryName}`}
+            itemTitle={`Milestone Escrow Deposit (${selectedBidForPayment.factoryName})`}
+            itemSubtitle={`Estimated Delivery: ${selectedBidForPayment.estimatedLeadTimeDays} Days • Platform Fee: ${marketplaceFeePercent}%`}
+            amount={selectedBidForPayment.bidAmount}
+            metadata={{
+              rfqId: sampleRfq.id,
+              factoryId: selectedBidForPayment.factoryId,
+              bidId: selectedBidForPayment.id,
+              type: 'marketplace_escrow_deposit',
+            }}
+            onPaymentSuccess={handleEscrowPaymentSuccess}
+          />
         )}
       </main>
     </div>

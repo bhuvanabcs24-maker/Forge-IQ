@@ -136,9 +136,17 @@ ForgeIQ includes purpose-built agentic capabilities:
    npm install
    ```
 
-3. **Configure Environment Variables (Optional for local mock mode):**
-   Create a `.env.local` file in the root directory:
+3. **Configure Environment Variables:**
+   Create a `.env.local` file in the root directory (or copy from `.env.example`):
    ```env
+   # Razorpay Payment Gateway
+   NEXT_PUBLIC_RAZORPAY_KEY_ID=rzp_test_...
+   RAZORPAY_KEY_ID=rzp_test_...
+   RAZORPAY_KEY_SECRET=...
+   RAZORPAY_WEBHOOK_SECRET=...
+   NEXT_PUBLIC_PAYMENT_GATEWAY=razorpay
+
+   # Supabase Auth & Database
    NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
    NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
    ```

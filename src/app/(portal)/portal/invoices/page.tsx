@@ -1,19 +1,20 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import { useCustomerPortal } from '@/context/customer-portal-context';
 import { PageHeader } from '@/components/shared/page-header';
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { CustomerInvoiceView } from '@/types/customer-portal';
 import { formatCurrency } from '@/lib/utils';
-import { Receipt, Download, CreditCard } from 'lucide-react';
+import { Receipt, Download, CreditCard, CheckCircle } from 'lucide-react';
+import { RazorpayPaymentModal } from '@/components/billing/razorpay-payment-modal';
 
 export default function CustomerInvoicesPage() {
   const { currentCustomer } = useCustomerPortal();
 
-  const invoices: CustomerInvoiceView[] = [
+  const [invoices, setInvoices] = useState<CustomerInvoiceView[]>([
     {
       id: 'inv-1',
       invoiceNumber: 'INV-2026-0771',
@@ -30,7 +31,28 @@ export default function CustomerInvoicesPage() {
       status: 'Pending',
       pdfUrl: '/api/quotations/INV-2026-0775/pdf?action=download',
     },
-  ];
+  ]);
+
+  const [selectedInvoice, setSelectedInvoice] = useState<CustomerInvoiceView | null>(null);
+  const [isPayModalOpen, setIsPayModalOpen] = useState(false);
+  const [recentlyPaidId, setRecentlyPaidId] = useState<string | null>(null);
+
+  const handleOpenPayModal = (inv: CustomerInvoiceView) => {
+    setSelectedInvoice(inv);
+    setIsPayModalOpen(true);
+  };
+
+  const handlePaymentSuccess = (payment: { paymentId: string; orderId: string }) => {
+    if (!selectedInvoice) return;
+
+    // Update invoice status to Paid
+    setInvoices((prev) =>
+      prev.map((item) =>
+        item.id === selectedInvoice.id ? { ...item, status: 'Paid' } : item
+      )
+    );
+    setRecentlyPaidId(selectedInvoice.id);
+  };
 
   return (
     <div className="space-y-6">
@@ -59,6 +81,11 @@ export default function CustomerInvoicesPage() {
                     <Badge variant={inv.status === 'Paid' ? 'success' : 'warning'}>
                       {inv.status}
                     </Badge>
+                    {recentlyPaidId === inv.id && (
+                      <span className="text-emerald-500 flex items-center gap-1 font-semibold text-[11px]">
+                        <CheckCircle className="h-3 w-3" /> Settled via Razorpay
+                      </span>
+                    )}
                   </div>
                   <div className="text-[11px] text-slate-500 dark:text-steel-400 mt-0.5">
                     Due Date: {inv.dueDate}
@@ -82,8 +109,12 @@ export default function CustomerInvoicesPage() {
                   </a>
 
                   {inv.status === 'Pending' && (
-                    <Button size="sm" className="bg-emerald-600 hover:bg-emerald-700 text-white">
-                      <CreditCard className="h-3.5 w-3.5 mr-1" /> Pay Online
+                    <Button
+                      size="sm"
+                      onClick={() => handleOpenPayModal(inv)}
+                      className="bg-emerald-600 hover:bg-emerald-700 text-white font-medium shadow-sm"
+                    >
+                      <CreditCard className="h-3.5 w-3.5 mr-1" /> Pay with Razorpay
                     </Button>
                   )}
                 </div>
@@ -92,6 +123,24 @@ export default function CustomerInvoicesPage() {
           </Card>
         ))}
       </div>
+
+      {selectedInvoice && (
+        <RazorpayPaymentModal
+          isOpen={isPayModalOpen}
+          onClose={() => setIsPayModalOpen(false)}
+          title="Settle Outstanding Invoice"
+          description={`Payment to ForgeIQ Manufacturing Network for ${selectedInvoice.invoiceNumber}`}
+          itemTitle={`Invoice ${selectedInvoice.invoiceNumber}`}
+          itemSubtitle={`Due Date: ${selectedInvoice.dueDate} • Billed to ${currentCustomer.companyName}`}
+          amount={selectedInvoice.amount}
+          metadata={{
+            invoiceNumber: selectedInvoice.invoiceNumber,
+            customerId: currentCustomer.id,
+            companyName: currentCustomer.companyName,
+          }}
+          onPaymentSuccess={handlePaymentSuccess}
+        />
+      )}
     </div>
   );
 }
