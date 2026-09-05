@@ -1,0 +1,40 @@
+import { FactoryProfile } from '@/types/marketplace';
+
+export const VERIFIED_FACTORY_CATALOG: FactoryProfile[] = [
+  {
+    id: 'fac-1',
+    factoryName: 'Precision Metal Fabrication Co.',
+    location: 'Chicago, IL, USA',
+    verifiedStatus: 'Verified',
+    certifications: ['ISO 9001:2015', 'AS9100D Aerospace'],
+    supportedMaterials: ['304 Stainless Steel', '316 Stainless Steel', '6061-T6 Aluminum', 'A36 Carbon Steel'],
+    machineCapabilities: ['TRUMPF 6kW Fiber Laser', 'Bystronic 250T Press Brake', 'Panasonic Robotic Welder Cell', 'Gema Powder Coating Line'],
+    qualityScore: 4.9,
+    onTimeDeliveryRate: 98.4,
+    historicalCompletedOrders: 412,
+  },
+  {
+    id: 'fac-2',
+    factoryName: 'Vanguard Industrial Sheet Metal',
+    location: 'Detroit, MI, USA',
+    verifiedStatus: 'Verified',
+    certifications: ['ISO 9001:2015', 'IATF 16949 Automotive'],
+    supportedMaterials: ['6061-T6 Aluminum', 'A36 Carbon Steel', 'Galvanized Sheet'],
+    machineCapabilities: ['Amada Fiber Laser 4kW', 'CNC Press Brake 150T', 'Haas 5-Axis CNC Mill'],
+    qualityScore: 4.7,
+    onTimeDeliveryRate: 95.8,
+    historicalCompletedOrders: 285,
+  },
+  {
+    id: 'fac-3',
+    factoryName: 'Apex Aerospace Machining Center',
+    location: 'Seattle, WA, USA',
+    verifiedStatus: 'Verified',
+    certifications: ['ISO 9001:2015', 'AS9100D Aerospace', 'NADCAP Welding'],
+    supportedMaterials: ['Titanium Grade 5', '316 Stainless Steel', 'Inconel 718'],
+    machineCapabilities: ['TRUMPF 10kW Fiber Laser', 'Mori Seiki 5-Axis CNC', 'TIG Precision Welding'],
+    qualityScore: 5.0,
+    onTimeDeliveryRate: 99.1,
+    historicalCompletedOrders: 540,
+  },
+];

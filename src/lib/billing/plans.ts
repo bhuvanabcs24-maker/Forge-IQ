@@ -1,0 +1,62 @@
+import { SubscriptionPlan } from '@/types/billing';
+
+export const SUBSCRIPTION_PLANS: SubscriptionPlan[] = [
+  {
+    id: 'Starter',
+    name: 'Starter Fab',
+    monthlyPrice: 199,
+    yearlyPrice: 159, // 20% annual discount
+    description: 'Essential shop floor management for small fabrication businesses (1-5 employees).',
+    maxSeats: 5,
+    maxAiRequestsPerMonth: 100,
+    maxWhatsAppMessagesPerMonth: 250,
+    maxStorageGb: 10,
+    features: [
+      'Customer Directory & Accounts',
+      'Basic Orders & Work Instructions',
+      'Standard Quotation Builder',
+      'Raw Material Inventory SKU Tracking',
+      'Standard Machine Telemetry',
+      'Email Customer Support',
+    ],
+  },
+  {
+    id: 'Professional',
+    name: 'Professional Fab',
+    monthlyPrice: 499,
+    yearlyPrice: 399,
+    description: 'Complete AI-powered manufacturing intelligence platform for growing fab shops (5-25 employees).',
+    maxSeats: 25,
+    maxAiRequestsPerMonth: 2500,
+    maxWhatsAppMessagesPerMonth: 2000,
+    maxStorageGb: 100,
+    isPopular: true,
+    features: [
+      'Everything in Starter',
+      'AI Order Intake OCR & Document Understanding',
+      'AI Interactive Quotation Engine & Pricing Plugins',
+      '9-Stage Shop Floor Production Planner',
+      'Proactive WhatsApp Customer Updates',
+      '24/7 Priority Support & SLA',
+    ],
+  },
+  {
+    id: 'Enterprise',
+    name: 'Enterprise Industrial',
+    monthlyPrice: 999,
+    yearlyPrice: 799,
+    description: 'Unlimited multi-tenant manufacturing suite with custom industry workflow engines.',
+    maxSeats: 999,
+    maxAiRequestsPerMonth: 99999,
+    maxWhatsAppMessagesPerMonth: 99999,
+    maxStorageGb: 1000,
+    features: [
+      'Everything in Professional',
+      'ForgeIQ Copilot Multi-Agent AI Operations Manager',
+      'Custom Industry Workflow Stage Templates',
+      'Dedicated Customer Portal & Digital E-Signatures',
+      'Unlimited Team Seats & AI Processing',
+      'Custom ERP Integrations & Dedicated Manager',
+    ],
+  },
+];

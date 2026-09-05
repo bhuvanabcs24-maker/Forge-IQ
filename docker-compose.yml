@@ -1,0 +1,16 @@
+version: '3.8'
+
+services:
+  forge-iq-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+      - NEXT_PUBLIC_CAD_PARSER=mock
+      - NEXT_PUBLIC_PAYMENT_GATEWAY=mock
+      - NEXT_PUBLIC_MESSAGING_PROVIDER=mock
+    restart: always
