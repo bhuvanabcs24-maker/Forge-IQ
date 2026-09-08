@@ -24,7 +24,7 @@ class RAGRetriever:
             customer_id=tenant.customer_id,
             source_type=source_type,
             top_k=top_k,
-            min_score=0.20
+            min_score=0.03
         )
         return citations
 

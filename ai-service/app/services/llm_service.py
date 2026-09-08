@@ -253,8 +253,14 @@ class GeminiProvider(BaseLLMProvider):
 class OpenAIProvider(BaseLLMProvider):
     provider_name: str = 'openai'
 
-    def __init__(self, api_key: str):
+    def __init__(self, api_key: str, base_url: Optional[str] = None, model: Optional[str] = None):
         self.api_key = api_key
+        detected_base = base_url or settings.OPENAI_BASE_URL
+        # Auto-detect Experiential Labs xpl_ keys and route to gateway endpoint
+        if self.api_key and self.api_key.startswith('xpl_') and 'openai.com' in detected_base:
+            detected_base = 'https://api.experientiallabs.ai/v1'
+        self.base_url = detected_base.rstrip('/')
+        self.model = model or settings.OPENAI_MODEL or 'gpt-4o-mini'
 
     async def generate_text(
         self,
@@ -266,20 +272,34 @@ class OpenAIProvider(BaseLLMProvider):
         if not self.api_key:
             return await MockProvider().generate_text(prompt, system_prompt)
 
-        headers = {'Authorization': f'Bearer {self.api_key}'}
+        headers = {
+            'Authorization': f'Bearer {self.api_key}',
+            'Content-Type': 'application/json',
+        }
         messages = []
         if system_prompt:
             messages.append({'role': 'system', 'content': system_prompt})
         messages.append({'role': 'user', 'content': prompt})
 
-        async with httpx.AsyncClient(timeout=30.0) as client:
-            resp = await client.post(
-                'https://api.openai.com/v1/chat/completions',
-                headers=headers,
-                json={'model': 'gpt-4o-mini', 'messages': messages, 'temperature': temperature, 'max_tokens': max_tokens}
-            )
-            if resp.status_code == 200:
-                return resp.json()['choices'][0]['message']['content']
+        try:
+            async with httpx.AsyncClient(timeout=35.0) as client:
+                resp = await client.post(
+                    f"{self.base_url}/chat/completions",
+                    headers=headers,
+                    json={
+                        'model': self.model,
+                        'messages': messages,
+                        'temperature': temperature,
+                        'max_tokens': max_tokens
+                    }
+                )
+                if resp.status_code == 200:
+                    data = resp.json()
+                    return data['choices'][0]['message']['content']
+                logger.error(f"OpenAI/Gateway error: HTTP {resp.status_code} - {resp.text}")
+                return await MockProvider().generate_text(prompt, system_prompt)
+        except Exception as e:
+            logger.error(f"OpenAI connection error: {e}. Falling back to domain estimate.")
             return await MockProvider().generate_text(prompt, system_prompt)
 
     async def generate_structured(
@@ -394,7 +414,7 @@ def get_llm_provider(override_provider: Optional[str] = None) -> BaseLLMProvider
 
     elif provider == 'openai':
         if settings.OPENAI_API_KEY:
-            return OpenAIProvider(settings.OPENAI_API_KEY)
+            return OpenAIProvider(settings.OPENAI_API_KEY, settings.OPENAI_BASE_URL, settings.OPENAI_MODEL)
         return MockProvider()
 
     elif provider == 'anthropic':

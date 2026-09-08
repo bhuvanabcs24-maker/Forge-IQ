@@ -1,6 +1,9 @@
-import os
+from pathlib import Path
 from typing import Literal
 from pydantic_settings import BaseSettings, SettingsConfigDict
+
+_SERVICE_ENV = Path(__file__).resolve().parent.parent.parent / '.env'
+_ROOT_ENV = Path(__file__).resolve().parent.parent.parent.parent / '.env.local'
 
 class Settings(BaseSettings):
     # Provider: openai | gemini | anthropic | ollama | mock
@@ -8,6 +11,8 @@ class Settings(BaseSettings):
     
     # Provider Keys
     OPENAI_API_KEY: str = ''
+    OPENAI_BASE_URL: str = 'https://api.openai.com/v1'
+    OPENAI_MODEL: str = 'gpt-4o-mini'
     GEMINI_API_KEY: str = ''
     ANTHROPIC_API_KEY: str = ''
     OLLAMA_BASE_URL: str = 'http://localhost:11434'
@@ -27,7 +32,7 @@ class Settings(BaseSettings):
     PORT: int = 8000
     
     model_config = SettingsConfigDict(
-        env_file='.env',
+        env_file=(str(_ROOT_ENV), str(_SERVICE_ENV), '.env'),
         env_file_encoding='utf-8',
         extra='ignore'
     )
