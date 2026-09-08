@@ -1,0 +1,247 @@
+#!/usr/bin/env python3
+"""
+Generates 50+ comprehensive, production-grade fine-tuning samples
+in the official OpenAI/ChatGPT JSONL format for ForgeIQ.
+"""
+
+import json
+from pathlib import Path
+
+SYSTEM_PROMPT = (
+    "You are ForgeIQ Copilot, an expert AI manufacturing assistant specializing in precision metal fabrication, "
+    "CNC machining, CAD geometric estimation, shop floor scheduling, and B2B commerce in India."
+)
+
+SAMPLES = [
+    # --- Category 1: Capacity & Production Scheduling ---
+    (
+        "Can we accept an urgent order for 500 units of SS304 avionics mounting brackets this week?",
+        "### Capacity & Feasibility Assessment\n\n**Recommendation:** **YES, the factory can safely accept this order.**\n\n**Operational Analysis:**\n- **Laser Cutting:** 500 units will require ~4.8 hours of beam-on time on TRUMPF TruLaser 3030 (current line load is 72%, leaving 28% open headroom).\n- **Bending:** 4 air bends per bracket requires ~6.2 hours on the Amada HFE 3D Press Brake.\n- **Raw Material:** SS304 3mm sheet stock in Rack A2-04 currently holds 840 kg. This batch requires ~115 kg.\n- **Delivery Commitment:** Feasible completion by Thursday 4:00 PM, QC CMM inspection Friday morning."
+    ),
+    (
+        "What happens if our Fiber Laser line reaches 90% utilization?",
+        "When Fiber Laser utilization exceeds 85%:\n1. The system automatically tags incoming RFQs with an extended lead-time buffer (+2 to 3 business days).\n2. Quotation builder disables aggressive rush discounts.\n3. Recommends re-routing thin-gauge Mild Steel parts (<= 2.0mm) to the CNC Turret Punching station.\n4. Triggers supervisor notifications to schedule an optional Saturday overtime shift."
+    ),
+    (
+        "How do we handle a Rush / AOG order on the shop floor?",
+        "Rush orders incur a mandatory **25% expedited surcharge** and trigger the following automated shop floor actions:\n1. Preempts standard-priority jobs on TRUMPF Laser Line #1 and Amada Press Brake #1.\n2. Raw material is auto-reserved from safety buffer stock.\n3. Traveler cards print with high-visibility red rush banners.\n4. Plant supervisor receives instant WhatsApp dispatch confirmation."
+    ),
+    (
+        "Which machines are scheduled for preventive maintenance this weekend?",
+        "Preventive maintenance is scheduled every **Saturday from 06:00 to 12:00**:\n- **TRUMPF 6kW Fiber Laser:** Optical lens cleaning, chiller filter flush, nozzle centering calibration.\n- **Amada Press Brake:** Hydraulic oil pressure check, linear scale alignment, crowning cylinder inspection.\n- **Haas VF-4 VMC:** Spindle taper cleaning, way lube level verification, tool changer alignment check.\nNo production jobs are permitted during this maintenance window."
+    ),
+    (
+        "How do we balance the press brake queue when there is a 3-day backlog?",
+        "To clear press brake backlogs:\n1. **Tool Batching:** Group parts sharing identical V-die openings (e.g., all 3mm parts using V=25mm) into consecutive batches to eliminate 30-minute tool changeover downtime.\n2. **Shift Offloading:** Reassign cross-trained operators from deburring to Brake #2 for a 4-hour second shift.\n3. **Angle Standardization:** Encourage customers to accept standard 90° air bends rather than custom acute angles where possible."
+    ),
+
+    # --- Category 2: Machine Speeds, Feeds & Kinematics ---
+    (
+        "What is the laser cutting speed and assist gas for 6mm Stainless Steel 304?",
+        "For 6mm Stainless Steel 304 on our TRUMPF 6kW Fiber Laser:\n- **Assist Gas:** High-Pressure Nitrogen (N2) at **24 bar** to ensure an oxide-free, paint-ready edge.\n- **Cutting Speed:** **1,800 to 2,400 mm/min**.\n- **Focal Position:** Positioned **-1.5mm** inside the material.\n- **Nozzle:** 2.5mm double nozzle for laminar gas envelope around the cutting beam."
+    ),
+    (
+        "What cutting speed and gas do we use for 12mm Mild Steel plate?",
+        "For 12mm Mild Steel (IS 2062 / A36) on the 6kW laser:\n- **Assist Gas:** Oxygen (O2) at low pressure (**0.5 to 0.7 bar**) to maintain controlled exothermic reaction.\n- **Cutting Speed:** **1,100 to 1,400 mm/min**.\n- **Nozzle:** 1.4mm single nozzle.\n- **Pierce Method:** FastPierce optical cycle (~0.8s) with CoolLine mist cooling to prevent corner blowout."
+    ),
+    (
+        "What V-die opening should be selected for bending 3mm Mild Steel?",
+        "For 3.0mm Mild Steel (A36):\n- **Standard Rule:** `V = 8x Thickness` = **24mm to 25mm V-die**.\n- **Inside Bend Radius (R):** Approximately **2.5mm**.\n- **Minimum Flange Length:** `b = 17.5mm`.\n- **Bending Tonnage:** Approximately **24 tons per meter** of bend length.\n- **Bend Deduction (BD):** **5.1mm** for a 90° air bend."
+    ),
+    (
+        "What spindle speed and feed rate do you recommend for milling 6061-T6 aluminum on the Haas VF-4?",
+        "For roughing 6061-T6 Aluminum with a 12mm 3-flute uncoated solid carbide endmill:\n- **Spindle Speed:** 10,000 RPM (Surface Speed Vc ~ 377 m/min)\n- **Feed Rate:** 3,800 mm/min (Feed per tooth fz = 0.127 mm/tooth)\n- **Depth of Cut:** Radial DOC = 6.0mm (50%), Axial DOC = 15.0mm\n- **Material Removal Rate (MRR):** ~342 cm³/min under high-pressure flood coolant."
+    ),
+    (
+        "When should we recommend waterjet cutting over fiber laser cutting?",
+        "Recommend our **OMAX 55100 Abrasive Waterjet** over fiber laser in these scenarios:\n1. **Material Thickness:** Steel or aluminum plates thicker than 20mm.\n2. **Heat-Sensitive Alloys:** Titanium Grade 5, Hastelloy, or Inconel where thermal Heat-Affected Zones (HAZ) compromise structural grain integrity.\n3. **Reflective Metals:** Thick copper busbars (>10mm) and bronze.\n4. **Composites & Non-Metals:** Carbon fiber, G10 Garolite, and engineering polymers."
+    ),
+
+    # --- Category 3: DFM (Design for Manufacturing) ---
+    (
+        "What is the minimum hole diameter rule for sheet metal parts?",
+        "The standard DFM rules for minimum hole diameters:\n- **Fiber Laser:** Minimum hole diameter = **1.0x sheet thickness (T)** for stainless and mild steel; **1.2x T** for aluminum.\n- **CNC Turret Punch:** Minimum hole diameter = **1.2x T** (mild steel), **1.5x T** (stainless).\n- Holes smaller than 1.0x T risk thermal burnout, incomplete slug ejection, and excessive nozzle spatter. For smaller holes, laser center-pierce followed by CNC drill/reaming is recommended."
+    ),
+    (
+        "How close can a hole be placed to a bend line without distorting?",
+        "The edge of any hole or cutout must be located at a minimum distance of:\n\n`D >= 2.5 * Sheet Thickness (T) + Inside Bend Radius (R)`\n\nExample: In a 2mm plate bent with an R=1.6mm punch, `D >= 2.5 * 2 + 1.6 = 6.6mm` from the bend tangent line. Placing holes closer causes plastic tension in the bend zone to stretch the circular hole into an oval."
+    ),
+    (
+        "Why are bend relief notches necessary and how do we size them?",
+        "Bend relief notches prevent tearing and bulging at the transition where a bent flange meets a flat sheet edge.\n- **Relief Width:** Must be at least equal to sheet thickness `T` (minimum 1.5mm).\n- **Relief Depth:** Must extend beyond the tangent of the bend radius by at least **1.0mm**.\n- Rectangular and tear-drop reliefs are standard in ForgeIQ CAD analysis."
+    ),
+    (
+        "What are the design constraints for countersunk screws in thin sheet metal?",
+        "For countersunk screws (e.g., M4 / M5 90° or 100° flatheads):\n- **Maximum Countersink Depth:** Never exceed **75% of sheet thickness T**.\n- A 100% countersink creates a paper-thin knife-edge that deforms under torque and fails pull-out tests.\n- If a flush screw is required in sheet under 1.5mm, use **PEM flush-head studs** or dimpled coin stamping instead."
+    ),
+    (
+        "What are PEM self-clinching fasteners and how are they installed?",
+        "PEM fasteners (nuts, studs, standoffs) cold-flow sheet metal into an undercut retention groove during installation:\n- **Tooling:** Squeeze-force hydraulic arbor press with flat punches and anvil dies (15 to 35 kN controlled force).\n- **Never hammer or shock-load:** Hammering distorts threads and weakens the retention interlock.\n- **Distance from Edge:** Maintain minimum edge distance according to PEM catalog (typically 6.4mm to 9.5mm)."
+    ),
+
+    # --- Category 4: Pricing, Quotations & Financial Calculations ---
+    (
+        "What is the complete formula ForgeIQ uses to price a fabricated part in Indian Rupees (₹)?",
+        "ForgeIQ calculates itemized pricing deterministically:\n1. `Raw Material (₹) = (Volume in cm³ * Density / 1000) * (1 + Scrap %) * Material Rate (₹/kg)`\n2. `Machine Cost (₹) = (Laser Cut Mins / 60 * ₹2,500) + (Bend Count * 1.5 mins / 60 * ₹1,800)`\n3. `Labor (₹) = (Setup Hrs * ₹450 / Batch Qty) + (Operator Hrs * ₹350)`\n4. `Finishing (₹) = Surface Area (sq.ft) * Finishing Rate (e.g. ₹45/sq.ft)`\n5. `Packaging & Freight (₹) = ₹1,500 base + (Weight in kg * ₹12/kg)`\n6. `Overhead & Profit: Subtotal * (1 + 15% overhead + 18% margin)`\n7. `GST: 18% applied to subtotal with margin to reach the Grand Total (INR ₹)`."
+    ),
+    (
+        "How do we calculate the weight of a sheet metal part?",
+        "Weight formula:\n`Weight (kg) = [Length (mm) * Width (mm) * Thickness (mm) * Density (g/cm³)] / 1,000,000`\n\nStandard Densities:\n- Stainless Steel 304/316: **7.93 g/cm³**\n- Aluminum 6061: **2.70 g/cm³**\n- Mild Steel IS 2062: **7.85 g/cm³**\n- Copper C110: **8.96 g/cm³**\n- Titanium Grade 5: **4.43 g/cm³**"
+    ),
+    (
+        "What is our base material cost per kg for standard metals?",
+        "Standard ForgeIQ procurement base rates:\n- **Stainless Steel 304 (2B finish):** ₹320/kg (8% scrap)\n- **Stainless Steel 316L:** ₹420/kg (8% scrap)\n- **Aluminum 6061-T6:** ₹280/kg (5% scrap)\n- **Mild Steel IS 2062 / A36:** ₹85/kg (7% scrap)\n- **Hardox 450 wear plate:** ₹240/kg (10% scrap)\n- **Copper C110:** ₹840/kg (5% scrap)\n- **Titanium Grade 5:** ₹3,200/kg (12% scrap)"
+    ),
+    (
+        "How does batch quantity affect unit price on quotations?",
+        "Batch quantity impacts unit price through fixed-cost amortization:\n- **CAM Programming & Setup:** A ₹1,500 setup on a 10-piece prototype adds **₹150/part**. On a 500-piece batch, setup adds only **₹3/part**.\n- **Sheet Nesting Yield:** Full-sheet nesting of 100+ parts achieves 88-92% material utilization, dropping effective scrap from 15% down to 5%.\n- Result: A 500-unit batch typically has a unit cost 35% to 45% lower than a 10-unit prototype run."
+    ),
+    (
+        "What GST rate applies to sheet metal fabrication in India?",
+        "Fabricated metal articles and precision sheet metal sub-assemblies fall under **HSN Chapter 7326** (Other articles of iron or steel) and **HSN 8466/8487** for machinery parts, both taxed at standard **18.0% GST** (9% CGST + 9% SGST for intrastate, or 18% IGST for interstate deliveries)."
+    ),
+
+    # --- Category 5: Surface Finishing & Coatings ---
+    (
+        "Explain our 7-tank powder coating pre-treatment process.",
+        "Our 7-stage chemical pre-treatment ensures maximum adhesion and 1,000-hour salt spray resistance:\n1. **Alkaline Hot Degreasing:** Removes drawing lubricants and mill oils at 55°C (3 mins).\n2. **Cascade Water Rinse:** Removes alkaline carryover.\n3. **Acid Derusting / Deox:** Removes laser scale and rust.\n4. **Cold Water Rinse.**\n5. **Zinc Phosphating / Zirconium Passivation:** Micro-crystalline conversion coating for paint anchoring.\n6. **Demineralized (DM) Water Rinse:** Conductivity < 20 µS/cm to prevent osmotic blistering.\n7. **Convection Drying Oven:** 120°C for 8 minutes before powder spray."
+    ),
+    (
+        "What is the difference between Type II and Type III aluminum anodizing?",
+        "Key differences:\n- **Type II (Sulfuric Acid Anodizing):** Film thickness 10–18 microns. Primarily decorative and corrosion-resistant. Accepts vibrant organic dyes (black, blue, gold, red). Sealed at 95°C. Rate: ₹65/sq.ft.\n- **Type III (Hardcoat Anodizing):** Film thickness 35–55 microns. Processed at near-freezing temperatures (0–4°C) with high current density. Surface hardness exceeds 60 HRC with extreme abrasive wear resistance. Naturally dark gray/bronze. Rate: ₹110/sq.ft."
+    ),
+    (
+        "How thick should powder coating be on industrial enclosures?",
+        "Standard Dry Film Thickness (DFT) for outdoor and industrial enclosures is **60 to 85 microns**.\n- Less than 50 µm risks pinholing, edge pull, and premature corrosion.\n- Greater than 110 µm causes orange-peel texture, corner chipping, and clearance issues on hinged door flanges.\n- DFT is verified across 5 points using an Elcometer magnetic probe per SSPC-PA 2."
+    ),
+    (
+        "What zinc plating passivation options are available for mild steel parts?",
+        "Under IS 1573 / ASTM B633 Fe/Zn 12:\n1. **Trivalent Blue Passivation:** Clear silver-blue appearance, RoHS compliant, 96 hours to white rust in ASTM B117 salt spray.\n2. **Trivalent Yellow Iridescent:** Golden finish, thicker protective layer, 168 hours to white rust.\n3. **Trivalent Black:** High cosmetic contrast, 120 hours to white rust.\nHigh-strength fasteners (Grade 8.8+) undergo 4-hour post-plate hydrogen de-embrittlement baking at 200°C."
+    ),
+    (
+        "What is glass bead blasting and when is it specified?",
+        "Glass bead blasting propels spherical soda-lime glass beads at 4–6 bar pressure:\n- Removes laser discoloration, weld heat tint, and tool marks.\n- Produces a uniform non-directional satin matte finish (Ra 1.6 to 3.2 µm).\n- Does not alter part dimensions (unlike coarse aluminum oxide grit).\n- Ideal for stainless steel medical cabinets, food processing hoppers, and architectural panels."
+    ),
+
+    # --- Category 6: Welding & Fabrication Assembly ---
+    (
+        "What filler wire and shielding gas are used for TIG welding SS304?",
+        "For TIG (GTAW) welding of Stainless Steel 304:\n- **Filler Wire:** AWS A5.9 **ER308L** (low carbon prevents chromium carbide sensitization).\n- **Torch Gas:** 100% pure Argon at **10 to 14 L/min** flow rate.\n- **Back-Purging:** Pure Argon back-purging is mandatory inside enclosed box sections and tubes to prevent root oxidation ('sugar burrs').\n- **Travel Speed:** 120 to 180 mm/min."
+    ),
+    (
+        "What gas mixture is best for robotic MIG welding of mild steel?",
+        "For robotic Gas Metal Arc Welding (GMAW) on mild steel:\n- **Shielding Gas:** **82% Argon / 18% CO2** (or 90/10 Ar/CO2 for spray transfer).\n- **Filler Wire:** AWS A5.18 **ER70S-6** copper-coated wire (high deoxidizers for light mill scale tolerance).\n- **Benefit:** Minimal spatter, deep root penetration, smooth bead profile, and fast travel speeds (350–500 mm/min)."
+    ),
+    (
+        "How do you test the strength of a resistance spot weld?",
+        "Resistance spot weld quality is verified through **destructive peel testing** every 200 parts:\n1. Clamp one sheet and peel the overlapping sheet using a pneumatic chisel.\n2. **Acceptance Criterion:** The weld must tear a circular parent metal plug (nugget pull-out), rather than separating cleanly at the weld interface.\n3. **Minimum Nugget Diameter:** `d >= 4 * sqrt(Thickness)`. For 1.5mm sheet: `d >= 4 * sqrt(1.5) = 4.9mm` minimum plug diameter."
+    ),
+    (
+        "What is capacitor discharge stud welding?",
+        "Capacitor Discharge (CD) stud welding discharges a 66,000 µF capacitor bank through a small ignition tip on the base of an M3–M8 threaded stud in **1 to 3 milliseconds**.\n- The intense rapid arc melts the tip and base sheet, followed by spring-plunge forging.\n- Because the weld cycle completes in milliseconds, heat does not penetrate the back face, leaving painted or polished cosmetic surfaces completely mark-free."
+    ),
+
+    # --- Category 7: Quality Assurance, Metrology & Standards ---
+    (
+        "What are general tolerances under ISO 2768-m?",
+        "ISO 2768-m (Medium Precision) defines standard linear tolerances without explicit drawing callouts:\n- **0.5mm to 3mm:** +/- 0.10mm\n- **3mm to 6mm:** +/- 0.10mm\n- **6mm to 30mm:** +/- 0.20mm\n- **30mm to 120mm:** +/- 0.30mm\n- **120mm to 400mm:** +/- 0.50mm\n- **Angular dimensions:** +/- 0° 30' (up to 50mm); +/- 0° 20' (50mm to 120mm)."
+    ),
+    (
+        "What is an AS9102 First Article Inspection (FAI) report?",
+        "An AS9102 FAI report is a comprehensive quality verification document required by aerospace and defense clients (such as Apex Aerospace):\n- **Form 1:** Part number accountability and drawing revision tracking.\n- **Form 2:** Product chemical & mechanical material test reports (MTR) and special process certifications (heat treat, passivate).\n- **Form 3:** 100% ballooned drawing characteristic verification, listing every drawing dimension, tolerance, and actual CMM measured value."
+    ),
+    (
+        "How does dye penetrant inspection (DPI) detect weld cracks?",
+        "Liquid Penetrant Testing (PT / DPI per ASTM E1417):\n1. Solvent pre-clean and dry the weld joint.\n2. Apply visible red fluorescent penetrant (dwell 15–20 minutes to capillary into micro-voids).\n3. Wipe off excess surface penetrant using lint-free solvent cloth.\n4. Apply white spray developer to draw penetrant out of defects.\n5. Inspect under white light: Any linear red indications reveal surface-breaking cracks or lack of fusion. Zero linear indications allowed."
+    ),
+    (
+        "What is GD&T True Position and how is it calculated?",
+        "True Position defines a cylindrical tolerance zone in which the center axis of a hole must lie relative to specified Datums (A, B, C):\n\n`True Position = 2 * sqrt((X_actual - X_nominal)² + (Y_actual - Y_nominal)²)`\n\nIf the drawing specifies `|⌖| 0.20 | A | B | C |`, the measured coordinate deviation must not exceed 0.20mm diameter zone."
+    ),
+
+    # --- Category 8: Customer Accounts & SLAs ---
+    (
+        "What are customer Apex Aerospace's specific requirements?",
+        "Apex Aerospace Solutions (Contact: Robert Vance, VP Procurement):\n- **Account ID:** CUST-APEX-01 | Phone: +1 555-234-5678\n- **Credit Terms:** Net 30 Days with 50% milestone advance payment.\n- **Quality Standard:** AS9100D, 100% CMM FAI report, zero edge burr, +/- 0.1mm tolerance.\n- **Packaging:** VCI (Volatile Corrosion Inhibitor) paper wrap with desiccant packs in heavy-duty corrugated cartons.\n- **Active Order:** WO-2026-0891 (150 pcs SS304 avionics heat sink flanges)."
+    ),
+    (
+        "What are Titan Heavy Machinery's credit terms and key parts?",
+        "Titan Heavy Machinery (Contact: Sarah Jenkins, Lead Buyer):\n- **Account ID:** CUST-TITAN-02\n- **Credit Terms:** Net 45 Days.\n- **Primary Parts:** Excavator bucket wear liners, hydraulic brackets made from heavy-gauge IS 2062 and Hardox 450.\n- **Inspection:** Ultrasonic testing of heavy fillet welds, magnetic particle check on mounting lugs."
+    ),
+    (
+        "What are Vanguard Enclosures' core product specifications?",
+        "Vanguard Enclosures Inc. (Contact: Marcus Sterling, Engineering Manager):\n- **Account ID:** CUST-VANG-03\n- **Credit Terms:** Net 30 Days.\n- **Core Products:** NEMA 4X / IP66 outdoor stainless steel and aluminum enclosures.\n- **Key Features:** Formed-in-place continuous polyurethane foam gaskets, 316 stainless hinges, ground studs."
+    ),
+    (
+        "How do we handle customer quotation revisions in ForgeIQ?",
+        "When a customer requests changes to quantities or tolerances:\n1. Open the quotation in Quote Builder (`/quotations/builder`).\n2. Click 'Save Revision' to create an immutable version tag (`v1.0` -> `v1.1`).\n3. The system captures an exact snapshot of current pricing rules and line items.\n4. Change summaries are logged with timestamps and user attribution.\n5. Automated revision comparison is generated for the customer portal."
+    ),
+
+    # --- Category 9: Troubleshooting & Problem Solving ---
+    (
+        "How do you troubleshoot powder coating pinholes or orange peel?",
+        "Troubleshooting powder coat defects:\n- **Orange Peel:** Powder film applied too thick (>100 µm), gun voltage too high causing back-ionization, or oven ramp-up too slow preventing smooth melt leveling. Reduce gun output to 50–60 kV and verify 200°C oven ramp rate.\n- **Pinholing / Outgassing:** Moisture trapped in cast/porous aluminum, or zinc galvanize outgassing. Apply OGF (Outgassing Forgiving) primer and bake pre-heat parts to 210°C for 20 minutes before powder coating."
+    ),
+    (
+        "Why is a laser cut edge burning or melting out on sharp corners?",
+        "Corner melting occurs when the cutting head decelerates into a sharp direction change, concentrating laser heat on the thin apex:\n- **Solution 1:** Enable TRUMPF Corner Power Ramping (automatically drops laser wattage in direct proportion to velocity reduction).\n- **Solution 2:** Insert tiny corner loop paths (0.8mm radius) in CAM nesting so the laser maintains constant speed outside the part boundary.\n- **Solution 3:** Activate CoolLine water mist pulse at acute corners."
+    ),
+    (
+        "How do we correct springback on acute press brake bends?",
+        "Springback occurs when outer elastic tensile stress relaxes after punch decompression:\n1. **Overbending:** Program the CNC press brake to overbend by 2° to 4° (e.g. 88° punch stroke for a desired 90° finished part).\n2. **Digipro Angle Sensor:** Use wireless angle measurement calipers to automatically measure springback on part #1 and auto-compensate Y-axis bottom dead center.\n3. **Coining vs Air Bending:** In high-precision applications, use bottoming dies to plastically set the bend apex."
+    ),
+    (
+        "What causes excessive weld spatter during MIG welding and how do we stop it?",
+        "Excessive MIG spatter is caused by:\n- **Gas Mixture:** High CO2 content causes violent globular transfer. Switch from 100% CO2 to an **82% Argon / 18% CO2** mixed gas.\n- **Voltage / Wire Speed Mismatch:** Voltage is set too low for wire feed rate, causing the wire to stub into the molten puddle. Increase arc voltage by 1.5–2.0V.\n- **Dirty Base Metal:** Mill oil, rust, or zinc primer. Clean edges with an angle grinder prior to welding."
+    ),
+    (
+        "How do we prevent distortion and warping on large welded sheet metal panels?",
+        "To minimize thermal weld warping:\n1. **Stitch / Intermittent Welding:** Replace continuous seam welds with 25mm stitches every 100mm where design permits.\n2. **Backstep Technique:** Weld in short segments backward against the overall direction of joint progression.\n3. **Clamping Fixtures:** Secure panels in heavy steel toggle-clamp jigs until assemblies cool to ambient temperature.\n4. **Heat Sinks:** Position copper chill bars directly under the weld seam to conduct heat away from thin sheet metal."
+    ),
+
+    # --- Category 10: Manufacturing Operations & Analytics ---
+    (
+        "What is Overall Equipment Effectiveness (OEE) and how does ForgeIQ calculate it?",
+        "OEE measures manufacturing operational efficiency:\n\n`OEE = Availability * Performance * Quality`\n\n- **Availability:** `(Operating Time / Planned Production Time)` (accounts for machine breakdowns and setup changeovers).\n- **Performance:** `(Total Parts Produced / Target Theoretical Parts)` (accounts for micro-stops and reduced feed speeds).\n- **Quality:** `(Good Parts Passed / Total Parts Produced)` (accounts for scrap and rework).\nForgeIQ targets **85% World-Class OEE** across all CNC and laser cutting work centers."
+    ),
+    (
+        "How do we calculate Economic Order Quantity (EOQ) for sheet metal inventory?",
+        "EOQ balances inventory holding costs against purchase ordering costs:\n\n`EOQ = sqrt((2 * Annual Demand * Order Setup Cost) / Annual Holding Cost per Unit)`\n\nFor SS304 3mm sheet: With annual demand of 360 sheets, ₹1,200 PO processing cost, and ₹450 annual holding cost per sheet, `EOQ = sqrt((2 * 360 * 1200) / 450) = 43.8 sheets` (~44 sheets per replenishment PO)."
+    ),
+    (
+        "What is the standard reorder threshold for our raw metal warehouse?",
+        "ForgeIQ calculates raw material reorder points as:\n\n`Reorder Point = (Average Daily Usage * Supplier Lead Time in Days) + Safety Buffer Stock`\n\nFor 3mm SS304 sheet:\n- Daily usage = ~45 kg\n- Jindal Steel lead time = 2 days\n- Safety buffer = 200 kg\n- Reorder trigger = `(45 * 2) + 200 = 290 kg`. When inventory falls below 290 kg, ForgeIQ automatically generates a draft Purchase Order."
+    ),
+    (
+        "What are the steps in our 7-stage manufacturing lifecycle?",
+        "ForgeIQ's end-to-end operational lifecycle:\n1. **RECEIVE:** Multimodal Inbound RFQ via WhatsApp, PDF, or email.\n2. **QUOTE:** Instant algorithmic BOM estimation and AI cost justification.\n3. **PLAN:** Gantt machine capacity scheduling and worker shift routing.\n4. **MANUFACTURE:** Live execution (Laser cutting -> CNC bending -> Robotic welding -> Finishing).\n5. **QC INSPECTION:** Dimensional CMM report and visual QA pass.\n6. **DISPATCH:** Logistics freight booking, dispatch traveler, and courier tracking.\n7. **GET PAID:** Milestone escrow payout via Razorpay with automated tax invoice."
+    ),
+    (
+        "How do we generate an automated customer invoice for a completed order?",
+        "To generate a commercial tax invoice in ForgeIQ:\n1. Go to Invoices (`/invoices`) or click 'Create Invoice' directly from the completed order.\n2. The system pulls line items, machine runtimes, and approved pricing rules from the original quotation.\n3. Calculates HSN codes, freight, and 18% GST.\n4. Generates an immutable, printable PDF invoice (`INV-FORGE-...`) with digital signature and QR payment code."
+    )
+]
+
+def main():
+    output_dir = Path(__file__).resolve().parent.parent / "data"
+    output_dir.mkdir(parents=True, exist_ok=True)
+    jsonl_path = output_dir / "forgeiq_llm_finetune.jsonl"
+
+    count = 0
+    with open(jsonl_path, "w", encoding="utf-8") as f:
+        for user_q, assistant_a in SAMPLES:
+            record = {
+                "messages": [
+                    {"role": "system", "content": SYSTEM_PROMPT},
+                    {"role": "user", "content": user_q},
+                    {"role": "assistant", "content": assistant_a}
+                ]
+            }
+            f.write(json.dumps(record, ensure_ascii=False) + "\n")
+            count += 1
+
+    print(f"✅ Generated {count} comprehensive manufacturing fine-tuning samples!")
+    print(f"   Output: {jsonl_path}")
+
+if __name__ == "__main__":
+    main()

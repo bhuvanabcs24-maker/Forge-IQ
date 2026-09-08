@@ -20,6 +20,7 @@ class RAGRetriever:
         
         citations = vector_store.search(
             query_embedding=query_embedding,
+            query_text=query,
             org_id=tenant.org_id,
             customer_id=tenant.customer_id,
             source_type=source_type,

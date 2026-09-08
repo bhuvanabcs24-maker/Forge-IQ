@@ -17,21 +17,25 @@ class IngestionPipeline:
         chunks = []
         start = 0
         while start < len(cleaned):
-            end = start + chunk_size
+            end = min(start + chunk_size, len(cleaned))
             if end < len(cleaned):
-                # Try finding a natural punctuation or sentence break
+                # Try finding a natural punctuation or sentence break in the upper half of chunk
+                search_start = max(start + chunk_size // 2, start + 1)
                 break_point = max(
-                    cleaned.rfind('. ', start, end),
-                    cleaned.rfind('\n', start, end),
-                    cleaned.rfind('; ', start, end),
+                    cleaned.rfind('. ', search_start, end),
+                    cleaned.rfind('\n', search_start, end),
+                    cleaned.rfind('; ', search_start, end),
                 )
-                if break_point > start:
+                if break_point > search_start:
                     end = break_point + 1
 
             chunk = cleaned[start:end].strip()
             if chunk:
                 chunks.append(chunk)
-            start = end - overlap if end < len(cleaned) else len(cleaned)
+
+            # Strictly guarantee start always advances forward
+            next_start = max(start + 1, end - overlap if end < len(cleaned) else len(cleaned))
+            start = next_start
 
         return chunks
 

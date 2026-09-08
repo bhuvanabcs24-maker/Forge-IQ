@@ -1,3 +1,6 @@
+import os
+import json
+from pathlib import Path
 import numpy as np
 from typing import List, Dict, Any, Optional
 from pydantic import BaseModel
@@ -22,19 +25,40 @@ class VectorStore:
         for r in records:
             if not r.org_id:
                 raise ValueError("Cannot index vector record without an org_id tenant identifier")
-        self._records.extend(records)
+        # Overwrite or append uniquely by ID
+        existing_map = {rec.id: i for i, rec in enumerate(self._records)}
+        for r in records:
+            if r.id in existing_map:
+                self._records[existing_map[r.id]] = r
+            else:
+                self._records.append(r)
+                existing_map[r.id] = len(self._records) - 1
+
+    def save_to_disk(self, file_path: str):
+        Path(file_path).parent.mkdir(parents=True, exist_ok=True)
+        data = [r.model_dump() for r in self._records]
+        with open(file_path, 'w', encoding='utf-8') as f:
+            json.dump(data, f, ensure_ascii=False)
+
+    def load_from_disk(self, file_path: str):
+        if os.path.exists(file_path):
+            with open(file_path, 'r', encoding='utf-8') as f:
+                data = json.load(f)
+            records = [VectorRecord.model_validate(item) for item in data]
+            self.add_records(records)
 
     def search(
         self,
         query_embedding: List[float],
         org_id: str,
+        query_text: Optional[str] = None,
         customer_id: Optional[str] = None,
         source_type: Optional[str] = None,
         top_k: int = 5,
         min_score: float = 0.25,
     ) -> List[RAGCitation]:
         """
-        STRICT MULTI-TENANT ISOLATION:
+        STRICT MULTI-TENANT ISOLATION with Hybrid Semantic + Lexical Scoring:
         Only records matching org_id are ever evaluated.
         If customer_id is provided, only records for that customer or public marketplace are returned.
         """
@@ -45,6 +69,12 @@ class VectorStore:
         q_norm = np.linalg.norm(q_vec)
         if q_norm == 0:
             return []
+
+        # Prepare lexical terms if query_text is present
+        stop_words = {'what', 'is', 'are', 'the', 'for', 'and', 'can', 'we', 'our', 'of', 'in', 'to', 'a', 'an'}
+        q_tokens = set()
+        if query_text:
+            q_tokens = {w for w in query_text.lower().replace('?', '').replace(',', '').split() if w not in stop_words and len(w) > 2}
 
         results: List[tuple[float, VectorRecord]] = []
 
@@ -67,6 +97,13 @@ class VectorStore:
             if denom == 0:
                 continue
             sim = float(np.dot(q_vec, r_vec) / denom)
+
+            # 5. Hybrid Lexical Keyword Boost
+            if q_tokens:
+                c_text = record.content.lower()
+                t_text = record.source_title.lower()
+                lex_score = sum(1 for w in q_tokens if w in c_text) + 2.5 * sum(1 for w in q_tokens if w in t_text)
+                sim += 0.08 * lex_score
 
             if sim >= min_score:
                 results.append((sim, record))
@@ -147,5 +184,10 @@ def seed_default_knowledge_base():
         for d in seed_docs
     ]
     vector_store.add_records(records)
+    
+    # Auto-load rich trained knowledge base if persisted
+    trained_kb = Path(__file__).resolve().parent.parent.parent / "data" / "trained_knowledge_records.json"
+    if trained_kb.exists():
+        vector_store.load_from_disk(str(trained_kb))
 
 seed_default_knowledge_base()
