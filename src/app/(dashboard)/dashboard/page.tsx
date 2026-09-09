@@ -71,13 +71,13 @@ export default function DashboardPage() {
 
   // 7-Stage Factory Operating Lifecycle
   const factoryLifecycle = [
-    { step: '1. RECEIVE', label: 'Inbound RFQ', status: 'done', count: '3 New' },
+    { step: '1. RFQ', label: 'Inbound RFQ', status: 'done', count: '3 New' },
     { step: '2. QUOTE', label: 'AI Cost Estimator', status: 'current', count: '1 Pending' },
-    { step: '3. PLAN', label: 'Shop Floor Scheduling', status: 'upcoming', count: `${activeOrdersCount} Scheduled` },
-    { step: '4. MANUFACTURE', label: 'Laser, Bend, Weld', status: 'active', count: `${activeMachinesCount} In-Cut` },
+    { step: '3. PLAN', label: 'Shop Scheduling', status: 'upcoming', count: `${activeOrdersCount} Sched.` },
+    { step: '4. PRODUCE', label: 'Laser, Bend, Weld', status: 'active', count: `${activeMachinesCount} In-Cut` },
     { step: '5. QC', label: 'CMM Inspection', status: 'upcoming', count: '2 Ready' },
     { step: '6. DISPATCH', label: 'Courier & Freight', status: 'upcoming', count: '1 Loaded' },
-    { step: '7. GET PAID', label: 'Escrow Payout', status: 'upcoming', count: '₹48k Due' },
+    { step: '7. PAYOUT', label: 'Escrow Settlement', status: 'upcoming', count: '₹48k Due' },
   ];
 
   return (
@@ -115,7 +115,7 @@ export default function DashboardPage() {
           {factoryLifecycle.map((item) => (
             <div
               key={item.step}
-              className={`p-3 rounded-lg border text-xs transition-colors ${
+              className={`p-3 rounded-lg border text-xs min-h-[72px] flex flex-col justify-between transition-colors ${
                 item.status === 'current'
                   ? 'border-[#155EEF]/60 bg-[#EFF4FF] dark:bg-[#155EEF]/15 ring-1 ring-[#155EEF]/20'
                   : item.status === 'active'
@@ -125,13 +125,25 @@ export default function DashboardPage() {
                   : 'border-[#E4E7EC] dark:border-[#252B33] bg-white dark:bg-[#11161D]'
               }`}
             >
-              <div className="flex items-center justify-between text-[11px] font-mono text-[#667085] dark:text-[#98A2B3]">
-                <span>{item.step}</span>
-                <span className={item.status === 'current' ? 'text-[#175CD3] dark:text-[#528BFF] font-semibold' : 'text-[#667085] dark:text-[#98A2B3]'}>
+              <div className="flex items-center justify-between gap-1.5 text-[11px] font-mono leading-none">
+                <span className="font-semibold text-[#475467] dark:text-[#98A2B3] whitespace-nowrap">
+                  {item.step}
+                </span>
+                <span
+                  className={`text-[10px] font-semibold px-1.5 py-0.5 rounded whitespace-nowrap shrink-0 ${
+                    item.status === 'current'
+                      ? 'bg-[#155EEF]/10 text-[#175CD3] dark:bg-[#155EEF]/25 dark:text-[#528BFF]'
+                      : item.status === 'done'
+                      ? 'bg-[#ECFDF3] text-[#027A48] dark:bg-[#067647]/20 dark:text-[#6CE9A6]'
+                      : item.status === 'active'
+                      ? 'bg-[#F2F4F7] text-[#344054] dark:bg-[#1D2939] dark:text-[#D0D5DD]'
+                      : 'bg-[#F9FAFB] text-[#667085] dark:bg-[#161B22] dark:text-[#8C95A0]'
+                  }`}
+                >
                   {item.count}
                 </span>
               </div>
-              <div className="font-semibold text-[#111827] dark:text-[#F2F4F7] text-xs mt-1.5 truncate">
+              <div className="font-semibold text-[#111827] dark:text-[#F2F4F7] text-xs mt-2 whitespace-nowrap overflow-hidden text-ellipsis leading-tight">
                 {item.label}
               </div>
             </div>
