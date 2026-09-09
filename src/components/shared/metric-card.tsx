@@ -35,59 +35,63 @@ export function MetricCard({
   const prefix = isRupee ? '₹' : isDollar ? '$' : '';
 
   return (
-    <motion.div whileHover={{ y: -1 }} transition={{ duration: 0.15 }}>
+    <motion.div whileHover={{ y: -1 }} transition={{ duration: 0.15 }} className="h-full">
       <Card
         className={cn(
-          'relative overflow-hidden border border-[#E4E7EC] dark:border-[#252B33] bg-white dark:bg-[#11161D] shadow-[0_1px_2px_rgba(16,24,40,0.04)] transition-all',
+          'h-full flex flex-col justify-between overflow-hidden border border-[#E4E7EC] dark:border-[#252B33] bg-white dark:bg-[#11161D] shadow-[0_1px_2px_rgba(16,24,40,0.04)] transition-all',
           highlight && 'border-[#155EEF]/50 ring-1 ring-[#155EEF]/20'
         )}
       >
-        <CardContent className="p-5">
-          {/* Label + small icon */}
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-medium uppercase tracking-[0.01em] text-[#667085] dark:text-[#98A2B3]">
-              {title}
-            </span>
-            {icon && (
-              <div className="flex h-7 w-7 items-center justify-center rounded-md bg-[#F9FAFB] dark:bg-[#18202A] text-[#667085] dark:text-[#98A2B3] border border-[#E4E7EC] dark:border-[#252B33]">
-                {icon}
-              </div>
-            )}
-          </div>
-
-          {/* Large Number / KPI */}
-          <div className="mt-3 flex items-baseline justify-between gap-2">
-            <div className="text-[26px] font-bold tracking-tight text-[#111827] dark:text-[#F2F4F7] tabular-nums font-sans leading-none">
-              {!isNaN(numericValue) ? (
-                <AnimatedKpiCounter value={numericValue} prefix={prefix} />
-              ) : (
-                value
+        <CardContent className="p-4.5 sm:p-5 h-full flex flex-col justify-between">
+          <div>
+            {/* Label + small icon */}
+            <div className="flex items-center justify-between gap-2 min-h-[28px]">
+              <span className="text-xs font-medium uppercase tracking-[0.01em] text-[#667085] dark:text-[#98A2B3] truncate leading-tight">
+                {title}
+              </span>
+              {icon && (
+                <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-[#F9FAFB] dark:bg-[#18202A] text-[#667085] dark:text-[#98A2B3] border border-[#E4E7EC] dark:border-[#252B33]">
+                  {icon}
+                </div>
               )}
             </div>
 
-            {trendPercent !== undefined && (
-              <div
-                className={cn(
-                  'flex items-center gap-1 text-xs font-medium px-2 py-0.5 rounded-[6px] border shrink-0',
-                  isPositive && 'bg-[#ECFDF3] text-[#067647] border-[#ABEFC6] dark:bg-[#067647]/20 dark:text-[#32D583] dark:border-[#067647]/40',
-                  isNegative && 'bg-[#FEF3F2] text-[#B42318] border-[#FECDCA] dark:bg-[#B42318]/20 dark:text-[#FDA29B] dark:border-[#B42318]/40',
-                  !isPositive && !isNegative && 'bg-[#F9FAFB] text-[#667085] border-[#E4E7EC] dark:bg-[#18202A] dark:text-[#98A2B3] dark:border-[#252B33]'
+            {/* Large Number / KPI */}
+            <div className="mt-2.5 flex items-baseline justify-between gap-2">
+              <div className="text-[24px] sm:text-[26px] font-bold tracking-tight text-[#111827] dark:text-[#F2F4F7] tabular-nums font-sans leading-none">
+                {!isNaN(numericValue) ? (
+                  <AnimatedKpiCounter value={numericValue} prefix={prefix} />
+                ) : (
+                  value
                 )}
-              >
-                {isPositive && <TrendingUp className="h-3 w-3" />}
-                {isNegative && <TrendingDown className="h-3 w-3" />}
-                {!isPositive && !isNegative && <Minus className="h-3 w-3" />}
-                <span>{Math.abs(trendPercent)}%</span>
               </div>
-            )}
+
+              {trendPercent !== undefined && (
+                <div
+                  className={cn(
+                    'flex items-center gap-1 text-xs font-medium px-2 py-0.5 rounded-[6px] border shrink-0',
+                    isPositive && 'bg-[#ECFDF3] text-[#067647] border-[#ABEFC6] dark:bg-[#067647]/20 dark:text-[#32D583] dark:border-[#067647]/40',
+                    isNegative && 'bg-[#FEF3F2] text-[#B42318] border-[#FECDCA] dark:bg-[#B42318]/20 dark:text-[#FDA29B] dark:border-[#B42318]/40',
+                    !isPositive && !isNegative && 'bg-[#F9FAFB] text-[#667085] border-[#E4E7EC] dark:bg-[#18202A] dark:text-[#98A2B3] dark:border-[#252B33]'
+                  )}
+                >
+                  {isPositive && <TrendingUp className="h-3 w-3" />}
+                  {isNegative && <TrendingDown className="h-3 w-3" />}
+                  {!isPositive && !isNegative && <Minus className="h-3 w-3" />}
+                  <span>{Math.abs(trendPercent)}%</span>
+                </div>
+              )}
+            </div>
           </div>
 
           {/* Contextual description */}
-          {(subtitle || trendLabel) && (
-            <p className="mt-2 text-[13px] text-[#667085] dark:text-[#98A2B3] font-normal leading-tight">
-              {subtitle || trendLabel}
-            </p>
-          )}
+          <div className="mt-2.5 min-h-[16px]">
+            {(subtitle || trendLabel) && (
+              <p className="text-[12px] sm:text-[13px] text-[#667085] dark:text-[#98A2B3] font-normal leading-tight truncate">
+                {subtitle || trendLabel}
+              </p>
+            )}
+          </div>
         </CardContent>
       </Card>
     </motion.div>

@@ -293,43 +293,42 @@ export default function DashboardPage() {
           title="Total Orders"
           value={totalOrderCount}
           trendPercent={12.5}
-          icon={<ShoppingBag className="h-4 w-4 text-brand-500" />}
+          icon={<ShoppingBag className="h-4 w-4 text-[#155EEF]" />}
           subtitle={`${activeOrdersCount} currently active`}
         />
         <MetricCard
-          title="Pending Quotations"
+          title="Pending Quotes"
           value={3}
           trendPercent={8.4}
-          icon={<FileText className="h-4 w-4 text-purple-500" />}
+          icon={<FileText className="h-4 w-4 text-[#6941C6]" />}
           subtitle={`${formatCurrency(1146000)} pipeline`}
         />
         <MetricCard
-          title="Active Production Jobs"
+          title="Active Production"
           value={activeOrdersCount}
           trendPercent={15.0}
-          icon={<Factory className="h-4 w-4 text-brand-500" />}
-          subtitle={`${activeMachinesCount} machines operational`}
-          highlight
+          icon={<Factory className="h-4 w-4 text-[#155EEF]" />}
+          subtitle={`${activeMachinesCount} machines operating`}
         />
         <MetricCard
-          title="Low Inventory Alerts"
+          title="Low Stock Alerts"
           value={lowStockCount}
           trendPercent={-12.0}
-          icon={<AlertTriangle className="h-4 w-4 text-amber-500" />}
+          icon={<AlertTriangle className="h-4 w-4 text-[#B54708]" />}
           subtitle="Real-time stock threshold"
         />
         <MetricCard
           title="Gross Revenue"
           value={formatCurrency(totalRevenue)}
           trendPercent={18.2}
-          icon={<DollarSign className="h-4 w-4 text-emerald-500" />}
+          icon={<DollarSign className="h-4 w-4 text-[#067647]" />}
           subtitle="Neon DB contract total"
         />
         <MetricCard
           title="Active Machines"
           value={activeMachinesCount}
           trendPercent={100}
-          icon={<Cpu className="h-4 w-4 text-blue-500" />}
+          icon={<Cpu className="h-4 w-4 text-[#175CD3]" />}
           subtitle={`${machines.length} units in fleet`}
         />
       </div>
