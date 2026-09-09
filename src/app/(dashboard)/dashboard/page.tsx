@@ -71,13 +71,13 @@ export default function DashboardPage() {
 
   // 7-Stage Factory Operating Lifecycle
   const factoryLifecycle = [
-    { step: '1. RFQ', label: 'Inbound RFQ', status: 'done', count: '3 New' },
-    { step: '2. QUOTE', label: 'AI Cost Estimator', status: 'current', count: '1 Pending' },
-    { step: '3. PLAN', label: 'Shop Scheduling', status: 'upcoming', count: `${activeOrdersCount} Sched.` },
-    { step: '4. PRODUCE', label: 'Laser, Bend, Weld', status: 'active', count: `${activeMachinesCount} In-Cut` },
-    { step: '5. QC', label: 'CMM Inspection', status: 'upcoming', count: '2 Ready' },
-    { step: '6. DISPATCH', label: 'Courier & Freight', status: 'upcoming', count: '1 Loaded' },
-    { step: '7. PAYOUT', label: 'Escrow Settlement', status: 'upcoming', count: '₹48k Due' },
+    { step: '1.RFQ', label: 'Inbound RFQ', status: 'done', count: '3 New' },
+    { step: '2.QUOTE', label: 'AI Cost Estimator', status: 'current', count: '1 Pending' },
+    { step: '3.PLAN', label: 'Shop Scheduling', status: 'upcoming', count: `${activeOrdersCount} Sched.` },
+    { step: '4.PRODUCE', label: 'Laser, Bend, Weld', status: 'active', count: `${activeMachinesCount} In-Cut` },
+    { step: '5.QC', label: 'CMM Inspection', status: 'upcoming', count: '2 Ready' },
+    { step: '6.DISPATCH', label: 'Courier & Freight', status: 'upcoming', count: '1 Loaded' },
+    { step: '7.PAYOUT', label: 'Escrow Settlement', status: 'upcoming', count: '₹48k Due' },
   ];
 
   return (
