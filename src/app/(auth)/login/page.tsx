@@ -27,7 +27,7 @@ export default function LoginPage() {
   const [authError, setAuthError] = useState<string | null>(null);
 
   // SMS OTP State
-  const [phone, setPhone] = useState('917829023129');
+  const [phone, setPhone] = useState('');
   const [otpCode, setOtpCode] = useState('');
   const [verificationId, setVerificationId] = useState<string | null>(null);
   const [otpSentMsg, setOtpSentMsg] = useState<string | null>(null);
@@ -43,26 +43,45 @@ export default function LoginPage() {
   } = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
-      email: 'sarah.jenkins@precisionfab.com',
-      password: 'password123',
+      email: '',
+      password: '',
       role: 'Owner',
     },
   });
 
   const activeRole = watch('role');
 
-  const onSubmit = (data: LoginFormValues) => {
+  const onSubmit = async (data: LoginFormValues) => {
     setAuthError(null);
     try {
-      login(data.email, data.role as UserRole);
-      router.push('/dashboard');
+      // Connect and verify with real Neon PostgreSQL database
+      const res = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: data.email,
+          password: data.password,
+          role: data.role,
+        }),
+      });
+      const result = await res.json();
+      if (result.success && result.user) {
+        login(result.user.email, result.user.role as UserRole, result.user);
+        router.push('/dashboard');
+      } else {
+        setAuthError(result.message || 'Authentication failed. Please verify credentials.');
+      }
     } catch (err: any) {
-      setAuthError('Authentication failed. Please verify credentials.');
+      setAuthError('Database connection error. Please try again.');
     }
   };
 
   const handleSendSmsOtp = async () => {
     setAuthError(null);
+    if (!phone || phone.trim().replace(/[^0-9]/g, '').length < 10) {
+      setAuthError('Please enter a valid 10-digit mobile number.');
+      return;
+    }
     setIsSendingOtp(true);
 
     try {
@@ -88,18 +107,33 @@ export default function LoginPage() {
 
   const handleVerifySmsOtp = async () => {
     setAuthError(null);
+    if (!phone || phone.trim().replace(/[^0-9]/g, '').length < 10) {
+      setAuthError('Please enter a valid 10-digit mobile number.');
+      return;
+    }
     setIsVerifyingOtp(true);
 
     try {
       const res = await fetch('/api/auth/verify-otp', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ verificationId, code: otpCode }),
+        body: JSON.stringify({ verificationId, code: otpCode, phone }),
       });
       const data = await res.json();
 
       if (data.success) {
-        login('sarah.jenkins@precisionfab.com', activeRole);
+        // Authenticate and fetch/create real user record in Neon PostgreSQL
+        const loginRes = await fetch('/api/auth/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ phone, role: activeRole }),
+        });
+        const loginData = await loginRes.json();
+        if (loginData.success && loginData.user) {
+          login(loginData.user.email, loginData.user.role as UserRole, loginData.user);
+        } else {
+          login(`+${phone.replace(/[^0-9]/g, '')}`, activeRole);
+        }
         router.push('/dashboard');
       } else {
         setAuthError(data.message || 'Invalid verification code.');
@@ -231,6 +265,7 @@ export default function LoginPage() {
                 </label>
                 <Input
                   type="email"
+                  placeholder="e.g. alex.chen@precisionfab.com"
                   icon={<Mail className="h-4 w-4" />}
                   {...register('email')}
                 />
@@ -255,6 +290,7 @@ export default function LoginPage() {
                 </div>
                 <Input
                   type="password"
+                  placeholder="Enter your account password"
                   icon={<Lock className="h-4 w-4" />}
                   {...register('password')}
                 />
@@ -284,11 +320,11 @@ export default function LoginPage() {
                 <Input
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}
-                  placeholder="e.g. 917829023129"
+                  placeholder="e.g. 9876543210"
                   icon={<Phone className="h-4 w-4" />}
                 />
                 <span className="text-[10px] text-steel-400 mt-1 block">
-                  Includes country code without spaces (e.g. 917829023129)
+                  Includes country code without spaces (e.g. 919876543210 or 9876543210)
                 </span>
               </div>
 

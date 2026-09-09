@@ -26,7 +26,7 @@ export function normalizePhoneNumber(rawPhone: string): string {
   if (cleaned.length === 10) {
     cleaned = '91' + cleaned;
   }
-  return cleaned || '917829023129';
+  return cleaned;
 }
 
 export async function sendSmsOtp(phone: string): Promise<SendOtpResponse> {
@@ -99,7 +99,7 @@ export async function verifySmsOtp(
   }
 
   const rawPhone = optionalPhone || (phoneOrVerificationId.match(/^[0-9+ ]+$/) ? phoneOrVerificationId : '');
-  const formattedPhone = rawPhone ? normalizePhoneNumber(rawPhone) : '917829023129';
+  const formattedPhone = rawPhone ? normalizePhoneNumber(rawPhone) : '';
 
   try {
     // Call GET https://api.otp.dev/v1/verifications?code=...&phone=...

@@ -14,17 +14,16 @@ interface AuthContextType {
   clearAllNotifications: () => void;
   isNotificationsOpen: boolean;
   setIsNotificationsOpen: (open: boolean) => void;
-  login: (email: string, role?: UserRole) => void;
+  login: (email: string, role?: UserRole, profile?: Partial<UserProfile>) => void;
   logout: () => void;
 }
 
 const DEFAULT_USER: UserProfile = {
-  id: 'usr-001',
-  email: 'owner@forgeiq.com',
-  fullName: 'Sarah Jenkins',
+  id: 'usr-admin',
+  email: 'admin@forgeiq.com',
+  fullName: 'Plant Administrator',
   role: 'Owner',
   department: 'Executive Operations',
-  phone: '+1 (555) 019-2831',
   createdAt: '2024-01-01',
 };
 
@@ -36,10 +35,32 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [notifications, setNotifications] = useState<NotificationItem[]>(MOCK_NOTIFICATIONS);
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
 
+  // Restore authenticated session from localStorage if present
+  React.useEffect(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        const cached = localStorage.getItem('FORGEIQ_AUTH_USER');
+        if (cached) {
+          const parsed = JSON.parse(cached);
+          if (parsed && parsed.email) {
+            setUser(parsed);
+            if (parsed.role) setRoleState(parsed.role);
+          }
+        }
+      } catch (err) {
+        console.warn('Failed to parse cached user', err);
+      }
+    }
+  }, []);
+
   const setRole = (newRole: UserRole) => {
     setRoleState(newRole);
     if (user) {
-      setUser({ ...user, role: newRole });
+      const updated = { ...user, role: newRole };
+      setUser(updated);
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('FORGEIQ_AUTH_USER', JSON.stringify(updated));
+      }
     }
   };
 
@@ -53,21 +74,27 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setNotifications([]);
   };
 
-  const login = (email: string, targetRole: UserRole = 'Owner') => {
-    setUser({
-      id: 'usr-002',
+  const login = (email: string, targetRole: UserRole = 'Owner', profile?: Partial<UserProfile>) => {
+    const updatedUser: UserProfile = {
+      id: profile?.id || 'usr-' + Date.now().toString(36),
       email,
-      fullName: email.split('@')[0].replace('.', ' ').toUpperCase(),
+      fullName: profile?.fullName || email.split('@')[0].replace(/[._-]/g, ' ').toUpperCase(),
       role: targetRole,
-      department: 'Manufacturing Ops',
-      createdAt: new Date().toISOString().split('T')[0],
-    });
+      department: profile?.department || 'Executive Operations',
+      phone: profile?.phone,
+      createdAt: profile?.createdAt || new Date().toISOString().split('T')[0],
+    };
+    setUser(updatedUser);
     setRoleState(targetRole);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('FORGEIQ_AUTH_USER', JSON.stringify(updatedUser));
+    }
   };
 
   const logout = () => {
     setUser(null);
     if (typeof window !== 'undefined') {
+      localStorage.removeItem('FORGEIQ_AUTH_USER');
       window.location.href = '/login';
     }
   };

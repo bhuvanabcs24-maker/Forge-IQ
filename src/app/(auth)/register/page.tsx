@@ -9,6 +9,7 @@ import * as z from 'zod';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
+import { useAuth } from '@/context/auth-context';
 import {
   Zap,
   Mail,
@@ -40,6 +41,7 @@ type RegisterFormValues = z.infer<typeof registerSchema>;
 
 export default function RegisterPage() {
   const router = useRouter();
+  const { login } = useAuth();
 
   const [step, setStep] = useState<'form' | 'otp' | 'success'>('form');
   const [formData, setFormData] = useState<RegisterFormValues | null>(null);
@@ -62,7 +64,7 @@ export default function RegisterPage() {
       fullName: '',
       companyName: '',
       email: '',
-      phone: '7829023129',
+      phone: '',
       password: '',
     },
   });
@@ -162,17 +164,42 @@ export default function RegisterPage() {
 
       if (result.success) {
         setStep('success');
-        if (typeof window !== 'undefined' && formData) {
-          localStorage.setItem(
-            'FORGEIQ_USER',
-            JSON.stringify({
-              fullName: formData.fullName,
-              companyName: formData.companyName,
-              email: formData.email,
-              phone: formData.phone,
-              verifiedAt: new Date().toISOString(),
-            })
-          );
+
+        // Persist new user in live Neon PostgreSQL database
+        if (formData) {
+          try {
+            const regRes = await fetch('/api/auth/register', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                fullName: formData.fullName,
+                companyName: formData.companyName,
+                email: formData.email,
+                phone: formData.phone,
+                password: formData.password,
+                role: 'Owner',
+              }),
+            });
+            const regData = await regRes.json();
+            if (regData.success && regData.user) {
+              login(regData.user.email, 'Owner', regData.user);
+            }
+          } catch (dbErr) {
+            console.warn('Neon DB registration network error:', dbErr);
+          }
+
+          if (typeof window !== 'undefined') {
+            localStorage.setItem(
+              'FORGEIQ_USER',
+              JSON.stringify({
+                fullName: formData.fullName,
+                companyName: formData.companyName,
+                email: formData.email,
+                phone: formData.phone,
+                verifiedAt: new Date().toISOString(),
+              })
+            );
+          }
         }
         setTimeout(() => {
           router.push('/dashboard?welcome=true');
@@ -273,7 +300,7 @@ export default function RegisterPage() {
                   <Input
                     type="tel"
                     icon={<Phone className="h-4 w-4" />}
-                    placeholder="7829023129"
+                    placeholder="9876543210"
                     className="rounded-l-none"
                     {...register('phone')}
                   />
