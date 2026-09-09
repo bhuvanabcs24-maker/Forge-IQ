@@ -35,100 +35,96 @@ Precision contract manufacturing (sheet metal fabrication, CNC milling, additive
 
 ---
 
-## 📸 Feature Showcase & Compact Screenshots
+## 📸 Feature Showcase & Platform Screenshots
 
-### 1. Executive Cockpit & 7-Stage Factory Telemetry
+### 1. AI Manufacturing Intelligence Cockpit & Operational Lifecycle
 > **Real-time factory telemetry, active revenue metrics, priority attention alerts, and 7-stage operational dispatching (`Receive` ➔ `Quote` ➔ `Plan` ➔ `Manufacture` ➔ `QC` ➔ `Dispatch` ➔ `Get Paid`).**
 
 <p align="center">
-  <img src="docs/screenshots/dashboard.png" alt="ForgeIQ Executive Dashboard" width="70%" style="max-width: 650px; border-radius: 8px; border: 1px solid #334155; box-shadow: 0 4px 16px rgba(0,0,0,0.2);" />
+  <img src="docs/screenshots/dashboard.png" alt="ForgeIQ Executive Cockpit" width="65%" style="max-width: 600px; border-radius: 8px; border: 1px solid #334155; box-shadow: 0 4px 16px rgba(0,0,0,0.18);" />
 </p>
 
-- **Dual-Mode Industrial Theme**: Ultra-clean Light theme and high-contrast Dark theme engineered for shop-floor tablet use and executive desktop displays.
-- **Agentic Dispatching**: Proactive AI recommendation cards highlight critical-path actions (e.g. *"Inbound RFQ from Apex Aerospace requires pricing turnaround within 4 hours"* or *"Approve CMM Quality Pass on Job #JOB-1082"*).
-- **Universal Command Palette (`⌘K`)**: Instant keyboard navigation across orders, CAD analyses, customers, machines, and quotations.
+*Executive command center offering single-pane-of-glass visibility across shop-floor operations, revenue analytics, and equipment telemetry.*  
+*Features proactive AI dispatch cards that highlight urgent shop actions, including incoming RFQs from aerospace clients and tooling changeover alerts.*  
+*Provides one-click shortcuts to analyze CAD files, build itemized quotations, inspect machine capacity, and track live orders.*
+
+- **Dual-Mode Industrial Theme**: High-contrast dark and clean light modes designed for shop-floor rugged tablets and executive desktop monitors.
+- **7-Stage Lifecycle Bar**: Visual milestone tracking from initial RFQ receipt to automated escrow payout upon quality acceptance.
+- **Universal Command Palette (`⌘K`)**: Instant keyboard navigation across work orders, machines, inventory SKUs, and customer accounts.
 
 ---
 
-### 2. Shop Floor Production Kanban & Stage Synchronization
-> **Real-time dispatch board linking parent orders to assigned equipment (`Laser Cutting` ➔ `Bending` ➔ `Welding` ➔ `Finishing` ➔ `QC Inspection` ➔ `Dispatch`).**
+### 2. Work Orders & Sales Orders Management
+> **Live fabrication tracking synchronized with Neon PostgreSQL, featuring priority scheduling, milestone progress bars, and Rupee (₹) valuations.**
 
 <p align="center">
-  <img src="docs/screenshots/production-kanban.png" alt="Production Kanban Board" width="70%" style="max-width: 650px; border-radius: 8px; border: 1px solid #334155; box-shadow: 0 4px 16px rgba(0,0,0,0.2);" />
+  <img src="docs/screenshots/work-orders.png" alt="Work Orders and Sales Orders" width="65%" style="max-width: 600px; border-radius: 8px; border: 1px solid #334155; box-shadow: 0 4px 16px rgba(0,0,0,0.18);" />
 </p>
 
-- **Order-to-Job Synchronization**: Moving jobs between manufacturing stages automatically updates completion percentage on parent orders in Neon PostgreSQL.
-- **Machine Fleet Allocation**: Real-time assignment to Bystronic Fiber Lasers, Amada Press Brakes, and Haas VMC milling centers.
+*Comprehensive work orders dashboard displaying live production jobs, customer accounts, and scheduled due dates directly from Neon PostgreSQL.*  
+*Shows real-time completion progress percentages, active manufacturing stages (`In Production`, `Completed`, `Ready for Shipping`), and priority tiers (`Rush`, `Normal`, `High`).*  
+*Enables plant managers to maintain full financial transparency with total order valuations in Indian Rupees (₹) and one-click database synchronization.*
+
+- **Priority Tiering**: Color-coded badges for rush turnaround jobs linked directly to press brake and laser machine capacity.
+- **Stage Progression Tracking**: Dynamic milestone bars updated automatically as sub-assemblies complete welding, machining, and inspection.
+- **Deduplicated Records**: Direct relational links between verified B2B customers, assigned machine cells, and reserved raw material sheets.
 
 ---
 
-### 3. Algorithmic Fabrication Pricing Rules (INR ₹)
-> **Configure factory overheads, laser cutting hourly rates, CNC press brake rates, and material margins with deterministic recalculation.**
+### 3. Multimodal AI Order Intake & Document Understanding
+> **Zero manual data entry. Upload WhatsApp chat screenshots, corporate PDF purchase orders, and technical drawings for automated OCR extraction.**
 
 <p align="center">
-  <img src="docs/screenshots/pricing-rules.png" alt="Fabrication Pricing Rules" width="70%" style="max-width: 650px; border-radius: 8px; border: 1px solid #334155; box-shadow: 0 4px 16px rgba(0,0,0,0.2);" />
+  <img src="docs/screenshots/ai-order-intake.png" alt="AI Order Intake & Document Understanding" width="65%" style="max-width: 600px; border-radius: 8px; border: 1px solid #334155; box-shadow: 0 4px 16px rgba(0,0,0,0.18);" />
 </p>
 
-- **Machine Hourly Rates**: Independent machine rate matrices (e.g., Fiber Laser at ₹1,850/hr, CNC Press Brake at ₹950/hr, Haas VMC at ₹1,200/hr).
-- **Logistics & Tax Handling**: Configurable packaging, weight-based logistics, scrap rate compensation, and Indian GST (18%).
+*Intelligent order ingestion portal that transforms messy customer communications into verified engineering specifications without human entry.*  
+*Parses complex drawings, PDF purchase orders, blueprint photos, and WhatsApp chat screenshots with statistical confidence verification.*  
+*Includes pre-loaded industry templates for rapid one-click testing of aerospace brackets, heavy equipment components, and sheet metal assemblies.*
+
+- **Universal Document Support**: Handles `.pdf`, `.png`, `.jpg`, `.dwg`, and `.dxf` CAD files with drag-and-drop ease.
+- **Confidence Scoring & Clarification**: Automatically identifies missing tolerances or thickness values and generates targeted clarification questions.
+- **Instant Customer Generation**: Auto-creates client profiles and draft quotation records upon successful document parsing.
 
 ---
 
-### 4. Deterministic Quote Builder & Explainable Cost Breakdown
-> **Generate auditable, itemized quotations with 16-point mathematical traceability, plain-English AI justifications, and explicit `ASSUMPTION` tagging.**
+### 4. Raw Material & Sheet Inventory with Remnant Tracking
+> **Real-time goods inventory with automated reorder alerts, shop-floor bay tracking, and remnant utilization logic.**
 
 <p align="center">
-  <img src="docs/screenshots/quote-builder.png" alt="Quotation Builder and Cost Breakdown" width="70%" style="max-width: 650px; border-radius: 8px; border: 1px solid #334155; box-shadow: 0 4px 16px rgba(0,0,0,0.2);" />
+  <img src="docs/screenshots/inventory.png" alt="Raw Material & Sheet Inventory" width="65%" style="max-width: 600px; border-radius: 8px; border: 1px solid #334155; box-shadow: 0 4px 16px rgba(0,0,0,0.18);" />
 </p>
 
-- **Zero-Hallucination Math**: Material, laser cycle time, bending strokes, CAM programming, and margins are computed deterministically.
-- **Assumption Tracking**: If secondary finishing rates (e.g. powder coating) are unverified, the quote is labeled with `ASSUMPTION` and marked as `LOW` confidence until confirmed.
+*Live shop-floor inventory manager tracking raw sheet metal (AL6061, CRCA, Copper), hardware fasteners (PEM nuts, weld studs), and laser assist gases (Liquid Nitrogen).*  
+*Features automated reorder threshold warnings (`Reorder Alert`) and exact physical bay locations (`Exterior Manifold Yard`, `Bay B, Rack B-01`).*  
+*Integrates directly with ForgeIQ's remnant decision engine to search reusable sheet off-cuts before recommending new material procurement.*
+
+- **Live Neon DB Synchronization**: Reflects real-time material deductions as work orders are released to the shop floor.
+- **Unit Cost Valuation**: Precise tracking of sheet metal and consumable unit costs in Indian Rupees (₹).
+- **Remnant Utilization**: Identifies usable shop-floor remnants to prevent unnecessary raw material purchasing and reduce scrap.
 
 ---
 
-### 5. Multimodal AI Order Intake & Extraction Pipeline
-> **Zero manual data entry. Drag & drop incoming customer WhatsApp messages, scanned purchase orders, or technical drawings.**
+### 5. Swiggy-Style Buyer Customer Portal & Live Order Telemetry
+> **Self-service customer experience providing B2B buyers with real-time manufacturing visibility, machine cell details, and delivery ETAs.**
 
 <p align="center">
-  <img src="docs/screenshots/ai-order-intake.png" alt="AI Order Intake Uploader" width="70%" style="max-width: 650px; border-radius: 8px; border: 1px solid #334155; box-shadow: 0 4px 16px rgba(0,0,0,0.2);" />
+  <img src="docs/screenshots/customer-portal.png" alt="ForgeIQ Customer Portal" width="65%" style="max-width: 600px; border-radius: 8px; border: 1px solid #334155; box-shadow: 0 4px 16px rgba(0,0,0,0.18);" />
 </p>
 
-- **Universal Document Intake**: Accepts `.pdf`, `.png`, `.jpg`, `.dwg`, and text messages.
-- **Field Confidence Scoring**: Visual confidence chips across material grade, sheet thickness, tolerances, and batch quantities with automated clarification questioning.
+*Transparent client-facing portal that gives B2B buyers live visibility into active fabrication orders, pending quotation sign-offs, and deliveries.*  
+*Features granular stage tracking (e.g. 78% progress on Order #FG-2042 in KUKA Robotic TIG Welding Cell 02 with certified welder details).*  
+*Provides intuitive quick actions to view production photos, reorder past parts, rate fabrication quality, and submit natural-language RFQs.*
 
----
-
-### 6. Factory AI Copilot & Live Shop Floor Inquiries
-> **An intelligent manufacturing assistant that queries live database facts and RAG procedures instead of guessing.**
-
-<p align="center">
-  <img src="docs/screenshots/factory-copilot.png" alt="Factory AI Copilot" width="70%" style="max-width: 650px; border-radius: 8px; border: 1px solid #334155; box-shadow: 0 4px 16px rgba(0,0,0,0.2);" />
-</p>
-
-- **Live Operational Q&A**: Answers *"Which machines are available?"*, *"Do we have enough SS304 sheets?"*, *"Can we bend this 12mm flange?"*, and *"Why is this quote ₹23,028?"*.
-- **Tool-Driven Grounding**: Dynamically invokes material calculators, remnant finders, and DFM validators.
-
----
-
-### 7. Secure Authentication & Password Management
-> **Robust authentication powered by Neon PostgreSQL with instant password show/hide eye toggle and OTP SMS verification.**
-
-<p align="center">
-  <img src="docs/screenshots/auth-login.png" alt="Secure Authentication" width="70%" style="max-width: 650px; border-radius: 8px; border: 1px solid #334155; box-shadow: 0 4px 16px rgba(0,0,0,0.2);" />
-</p>
-
-- **Interactive Eye Symbol**: Seamless show/hide toggle for password fields.
-- **Dual Authentication**: Email + password login alongside mobile phone SMS OTP verification.
+- **Swiggy-Style Milestone Tracker**: Real-time progress bar tracking parts through Laser Cutting, Bending, Welding, QC, and Courier Dispatch.
+- **AI Factory Matching**: Natural-language query bar allowing buyers to find compatible factory capacity for custom part batches in seconds.
+- **Financial Account Summary**: Live metrics for active orders, awaiting sign-offs, deliveries scheduled today, and outstanding invoice balances (₹).
 
 ---
 
 ## 🏗️ System Architecture
 
 ForgeIQ utilizes a distributed microservices and serverless architecture designed for sub-second latency, deterministic precision, and zero-hallucination safety:
-
-<p align="center">
-  <img src="docs/screenshots/system-architecture.png" alt="System Architecture" width="70%" style="max-width: 650px; border-radius: 8px; border: 1px solid #334155; box-shadow: 0 4px 16px rgba(0,0,0,0.2);" />
-</p>
 
 ```mermaid
 flowchart TD
