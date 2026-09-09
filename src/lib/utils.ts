@@ -62,20 +62,24 @@ export function getStatusBadgeVariant(status: string): string {
     case 'paid':
     case 'preferred':
     case 'received':
-      return 'bg-emerald-500/15 text-emerald-700 dark:text-emerald-400 border-emerald-500/30';
+    case 'running':
+      return 'bg-[#ECFDF3] text-[#067647] border-[#ABEFC6] dark:bg-[#067647]/20 dark:text-[#32D583] dark:border-[#067647]/40';
     
     case 'in production':
     case 'in use':
     case 'sent':
     case 'lead':
     case 'partial':
-      return 'bg-blue-500/15 text-blue-700 dark:text-blue-400 border-blue-500/30';
+    case 'info':
+      return 'bg-[#EFF8FF] text-[#175CD3] border-[#B2DDFF] dark:bg-[#175CD3]/20 dark:text-[#84ADFF] dark:border-[#175CD3]/40';
     
     case 'pending':
     case 'quality check':
     case 'draft':
     case 'under review':
-      return 'bg-amber-500/15 text-amber-700 dark:text-amber-400 border-amber-500/30';
+    case 'idle':
+    case 'warning':
+      return 'bg-[#FFFAEB] text-[#B54708] border-[#FEDF89] dark:bg-[#B54708]/20 dark:text-[#FDB022] dark:border-[#B54708]/40';
     
     case 'critical':
     case 'cancelled':
@@ -83,13 +87,14 @@ export function getStatusBadgeVariant(status: string): string {
     case 'overdue':
     case 'rejected':
     case 'expired':
-      return 'bg-rose-500/15 text-rose-700 dark:text-rose-400 border-rose-500/30';
+    case 'at risk':
+      return 'bg-[#FEF3F2] text-[#B42318] border-[#FECDCA] dark:bg-[#B42318]/20 dark:text-[#FDA29B] dark:border-[#B42318]/40';
       
     case 'maintenance':
     case 'on leave':
-      return 'bg-purple-500/15 text-purple-700 dark:text-purple-400 border-purple-500/30';
+      return 'bg-[#F9F5FF] text-[#6941C6] border-[#E9D7FE] dark:bg-[#6941C6]/20 dark:text-[#D6BBFB] dark:border-[#6941C6]/40';
 
     default:
-      return 'bg-slate-500/15 text-slate-700 dark:text-slate-400 border-slate-500/30';
+      return 'bg-[#F9FAFB] text-[#344054] border-[#E4E7EC] dark:bg-[#18202A] dark:text-[#98A2B3] dark:border-[#252B33]';
   }
 }

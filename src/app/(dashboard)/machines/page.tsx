@@ -63,10 +63,10 @@ export default function MachinesPage() {
       header: 'Machine Code',
       cell: ({ row }) => (
         <div className="flex items-center gap-2.5">
-          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-blue-500/10 text-blue-600 font-bold text-xs">
+          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-[#EFF8FF] dark:bg-[#155EEF]/15 text-[#155EEF] font-bold text-xs border border-[#B2DDFF] dark:border-[#155EEF]/30">
             <Cpu className="h-4 w-4" />
           </div>
-          <span className="font-mono font-bold text-slate-900 dark:text-slate-100">
+          <span className="font-mono font-semibold text-[#111827] dark:text-[#F2F4F7]">
             {row.original.code}
           </span>
         </div>
@@ -77,10 +77,10 @@ export default function MachinesPage() {
       header: 'Equipment Name & Type',
       cell: ({ row }) => (
         <div>
-          <div className="font-semibold text-slate-800 dark:text-steel-200">
+          <div className="font-semibold text-[#111827] dark:text-[#F2F4F7]">
             {row.original.name}
           </div>
-          <div className="text-xs text-slate-500">Type: {row.original.type}</div>
+          <div className="text-xs text-[#667085] dark:text-[#98A2B3]">Type: {row.original.type}</div>
         </div>
       ),
     },
@@ -94,8 +94,8 @@ export default function MachinesPage() {
       header: 'OEE Efficiency Rate',
       cell: ({ row }) => (
         <div className="flex items-center gap-2">
-          <Activity className="h-3.5 w-3.5 text-emerald-500" />
-          <span className="font-extrabold text-slate-900 dark:text-slate-100">
+          <Activity className="h-3.5 w-3.5 text-[#067647] dark:text-[#32D583]" />
+          <span className="font-bold text-[#111827] dark:text-[#F2F4F7] tabular-nums">
             {row.original.efficiencyRate}%
           </span>
         </div>
@@ -105,14 +105,14 @@ export default function MachinesPage() {
       accessorKey: 'hoursLoggedThisMonth',
       header: 'Hours Logged',
       cell: ({ row }) => (
-        <span className="text-xs font-semibold">{row.original.hoursLoggedThisMonth} hrs</span>
+        <span className="text-xs font-medium text-[#344054] dark:text-[#D0D5DD] tabular-nums">{row.original.hoursLoggedThisMonth} hrs</span>
       ),
     },
     {
       accessorKey: 'nextScheduledMaintenance',
       header: 'Next Maintenance',
       cell: ({ row }) => (
-        <span className="text-xs text-slate-500">{row.original.nextScheduledMaintenance}</span>
+        <span className="text-xs text-[#667085] dark:text-[#98A2B3]">{row.original.nextScheduledMaintenance}</span>
       ),
     },
     {
@@ -122,6 +122,7 @@ export default function MachinesPage() {
         <Button
           size="sm"
           variant="outline"
+          className="h-8 px-2.5 text-xs"
           disabled={togglingId === row.original.id}
           onClick={() => handleToggleMaintenance(row.original)}
         >
@@ -137,7 +138,7 @@ export default function MachinesPage() {
   ];
 
   return (
-    <div className="space-y-6">
+    <div className="max-w-[1400px] mx-auto space-y-6 pb-12 font-sans">
       <PageHeader
         title="Machines Fleet & Telemetry"
         description="Live synchronization with Neon PostgreSQL equipment records, OEE efficiency telemetry, and automated maintenance cycles."

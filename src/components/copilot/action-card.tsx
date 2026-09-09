@@ -21,14 +21,14 @@ export function ActionCard({ action }: { action: CopilotAction }) {
   };
 
   return (
-    <div className="p-2.5 rounded-lg border border-slate-200 dark:border-steel-800 bg-slate-50/70 dark:bg-steel-950/70 flex items-center justify-between gap-3 text-xs shadow-2xs">
+    <div className="p-3 rounded-lg border border-[#E4E7EC] dark:border-[#252B33] bg-[#F9FAFB] dark:bg-[#18202A] flex items-center justify-between gap-3 text-xs shadow-[0_1px_2px_rgba(16,24,40,0.04)]">
       <div className="flex items-center gap-2.5 min-w-0">
-        <div className="flex h-7 w-7 items-center justify-center rounded-md bg-slate-200 dark:bg-steel-800 text-slate-700 dark:text-steel-300 shrink-0 border border-slate-300/80 dark:border-steel-700">
-          <Zap className="h-3.5 w-3.5 text-brand-600 dark:text-brand-400" />
+        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-white dark:bg-[#11161D] text-[#155EEF] shrink-0 border border-[#E4E7EC] dark:border-[#252B33]">
+          <Zap className="h-4 w-4" />
         </div>
         <div className="min-w-0">
-          <div className="font-semibold text-slate-900 dark:text-slate-100 text-xs truncate">{action.label}</div>
-          <div className="text-[10px] text-slate-500 dark:text-steel-400 truncate">
+          <div className="font-semibold text-[#111827] dark:text-[#F2F4F7] text-xs truncate">{action.label}</div>
+          <div className="text-[11px] text-[#667085] dark:text-[#98A2B3] truncate">
             {action.description}
           </div>
         </div>
@@ -36,17 +36,18 @@ export function ActionCard({ action }: { action: CopilotAction }) {
 
       <Button
         size="sm"
+        variant="primary"
         onClick={handleExecute}
         disabled={executed}
-        className="shrink-0 text-[11px] h-7 px-2.5 font-medium"
+        className="shrink-0 text-xs h-8 px-3 font-semibold"
       >
         {executed ? (
-          <span className="flex items-center gap-1 text-emerald-300 font-semibold">
-            <Check className="h-3 w-3" /> Executed
+          <span className="flex items-center gap-1 text-white font-semibold">
+            <Check className="h-3.5 w-3.5" /> Executed
           </span>
         ) : (
           <span className="flex items-center gap-1">
-            Execute <ArrowRight className="h-3 w-3" />
+            Execute <ArrowRight className="h-3.5 w-3.5" />
           </span>
         )}
       </Button>

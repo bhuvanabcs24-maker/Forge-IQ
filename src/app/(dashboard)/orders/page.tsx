@@ -40,14 +40,14 @@ export default function OrdersPage() {
       header: 'Work Order #',
       cell: ({ row }) => (
         <div className="flex items-center gap-2.5">
-          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-brand-500/10 text-brand-600 font-bold text-xs">
+          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-[#EFF8FF] dark:bg-[#155EEF]/15 text-[#155EEF] font-bold text-xs border border-[#B2DDFF] dark:border-[#155EEF]/30">
             <ShoppingBag className="h-4 w-4" />
           </div>
           <div>
-            <span className="font-bold text-slate-900 dark:text-slate-100">
+            <span className="font-bold text-[#111827] dark:text-[#F2F4F7]">
               {row.original.orderNumber}
             </span>
-            <div className="text-[11px] text-slate-400 dark:text-steel-400">
+            <div className="text-[11px] text-[#667085] dark:text-[#98A2B3]">
               Created {formatDate(row.original.createdAt)}
             </div>
           </div>
@@ -59,10 +59,10 @@ export default function OrdersPage() {
       header: 'Part / Assembly Title',
       cell: ({ row }) => (
         <div>
-          <div className="font-semibold text-slate-800 dark:text-steel-200">
+          <div className="font-semibold text-[#111827] dark:text-[#F2F4F7]">
             {row.original.title}
           </div>
-          <div className="text-xs text-slate-500 dark:text-steel-400">
+          <div className="text-xs text-[#667085] dark:text-[#98A2B3]">
             Customer: {row.original.customerName}
           </div>
         </div>
@@ -73,13 +73,13 @@ export default function OrdersPage() {
       header: 'Priority',
       cell: ({ row }) => {
         const p = row.original.priority;
-        const color =
-          p === 'Rush'
-            ? 'bg-rose-500/15 text-rose-600 border-rose-500/30'
-            : p === 'High'
-            ? 'bg-amber-500/15 text-amber-600 border-amber-500/30'
-            : 'bg-slate-100 text-slate-700 dark:bg-steel-800 dark:text-steel-300';
-        return <Badge className={color}>{p}</Badge>;
+        return (
+          <Badge
+            variant={p === 'Rush' ? 'danger' : p === 'High' ? 'warning' : 'default'}
+          >
+            {p}
+          </Badge>
+        );
       },
     },
     {
@@ -92,13 +92,13 @@ export default function OrdersPage() {
       header: 'Completion Progress',
       cell: ({ row }) => (
         <div className="w-32 space-y-1">
-          <div className="flex justify-between text-[11px] font-semibold text-slate-600 dark:text-steel-300">
+          <div className="flex justify-between text-xs font-medium text-[#667085] dark:text-[#98A2B3]">
             <span>Progress</span>
-            <span>{row.original.progressPercent}%</span>
+            <span className="tabular-nums">{row.original.progressPercent}%</span>
           </div>
-          <div className="h-2 w-full rounded-full bg-slate-200 dark:bg-steel-800 overflow-hidden">
+          <div className="h-1.5 w-full rounded-full bg-[#E4E7EC] dark:bg-[#252B33] overflow-hidden">
             <div
-              className="h-full bg-brand-500 rounded-full transition-all duration-300"
+              className="h-full bg-[#155EEF] rounded-full transition-all duration-300"
               style={{ width: `${row.original.progressPercent}%` }}
             />
           </div>
@@ -109,7 +109,7 @@ export default function OrdersPage() {
       accessorKey: 'totalAmount',
       header: 'Total Value',
       cell: ({ row }) => (
-        <span className="font-bold text-slate-900 dark:text-slate-100">
+        <span className="font-bold text-[#111827] dark:text-[#F2F4F7] tabular-nums">
           {formatCurrency(row.original.totalAmount)}
         </span>
       ),
@@ -118,7 +118,7 @@ export default function OrdersPage() {
       accessorKey: 'dueDate',
       header: 'Due Date',
       cell: ({ row }) => (
-        <span className="text-xs font-semibold text-slate-700 dark:text-steel-300">
+        <span className="text-xs font-medium text-[#344054] dark:text-[#D0D5DD]">
           {row.original.dueDate}
         </span>
       ),
@@ -126,7 +126,7 @@ export default function OrdersPage() {
   ];
 
   return (
-    <div className="space-y-6">
+    <div className="max-w-[1400px] mx-auto space-y-6 pb-12 font-sans">
       <PageHeader
         title="Work Orders & Sales Orders"
         description="Live synchronization with Neon PostgreSQL fabrication records, priority schedules, stage completions, and delivery deadlines."

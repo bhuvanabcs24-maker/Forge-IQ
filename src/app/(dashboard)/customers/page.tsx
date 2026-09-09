@@ -41,14 +41,14 @@ export default function CustomersPage() {
       header: 'Company / Client Name',
       cell: ({ row }) => (
         <div className="flex items-center gap-3">
-          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-brand-500/10 text-brand-600 font-bold text-xs">
+          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-[#EFF8FF] dark:bg-[#155EEF]/15 text-[#155EEF] font-bold text-xs border border-[#B2DDFF] dark:border-[#155EEF]/30">
             <Building2 className="h-4 w-4" />
           </div>
           <div>
-            <div className="font-semibold text-slate-900 dark:text-slate-100">
+            <div className="font-semibold text-[#111827] dark:text-[#F2F4F7]">
               {row.original.companyName}
             </div>
-            <div className="text-xs text-slate-500 dark:text-steel-400">
+            <div className="text-xs text-[#667085] dark:text-[#98A2B3]">
               {row.original.industry}
             </div>
           </div>
@@ -60,10 +60,10 @@ export default function CustomersPage() {
       header: 'Primary Contact',
       cell: ({ row }) => (
         <div>
-          <div className="font-medium text-slate-800 dark:text-steel-200">
+          <div className="font-medium text-[#111827] dark:text-[#F2F4F7]">
             {row.original.contactName}
           </div>
-          <div className="flex items-center gap-2 text-xs text-slate-500 dark:text-steel-400 mt-0.5">
+          <div className="flex items-center gap-2 text-xs text-[#667085] dark:text-[#98A2B3] mt-0.5">
             <span className="flex items-center gap-1">
               <Mail className="h-3 w-3" /> {row.original.email}
             </span>
@@ -80,7 +80,7 @@ export default function CustomersPage() {
       accessorKey: 'totalOrders',
       header: 'Total Orders',
       cell: ({ row }) => (
-        <span className="font-semibold text-slate-800 dark:text-steel-200">
+        <span className="font-semibold text-[#344054] dark:text-[#D0D5DD] tabular-nums">
           {row.original.totalOrders}
         </span>
       ),
@@ -89,7 +89,7 @@ export default function CustomersPage() {
       accessorKey: 'lifetimeValue',
       header: 'Lifetime Value',
       cell: ({ row }) => (
-        <span className="font-bold text-slate-900 dark:text-slate-100">
+        <span className="font-bold text-[#111827] dark:text-[#F2F4F7] tabular-nums">
           {formatCurrency(row.original.lifetimeValue)}
         </span>
       ),
@@ -98,7 +98,7 @@ export default function CustomersPage() {
       accessorKey: 'createdAt',
       header: 'Customer Since',
       cell: ({ row }) => (
-        <span className="text-xs text-slate-500 dark:text-steel-400">
+        <span className="text-xs text-[#667085] dark:text-[#98A2B3]">
           {formatDate(row.original.createdAt)}
         </span>
       ),
@@ -111,7 +111,7 @@ export default function CustomersPage() {
           size="sm"
           variant="outline"
           onClick={() => setSelectedChatCustomer(row.original)}
-          className="text-emerald-600 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-950/40 border-emerald-500/30"
+          className="h-8 px-2.5 text-xs text-[#067647] dark:text-[#32D583] hover:bg-[#ECFDF3] dark:hover:bg-[#067647]/20 border-[#ABEFC6] dark:border-[#067647]/40"
         >
           <MessageSquare className="h-3.5 w-3.5 mr-1" /> Chat
         </Button>
@@ -120,7 +120,7 @@ export default function CustomersPage() {
   ];
 
   return (
-    <div className="space-y-6">
+    <div className="max-w-[1400px] mx-auto space-y-6 pb-12 font-sans">
       <PageHeader
         title="Customer Directory"
         description="Live synchronization with Neon PostgreSQL client directory, contact profiles, order history, and lifetime spending."

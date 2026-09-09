@@ -430,60 +430,61 @@ export function QuoteBuilder() {
         </Card>
 
         {/* Cost Summary Breakdown Box */}
-        <Card className="w-full lg:w-80 border-brand-500/30">
+        <Card className="w-full lg:w-80 border border-[#E4E7EC] dark:border-[#252B33] bg-white dark:bg-[#11161D] shadow-[0_1px_2px_rgba(16,24,40,0.04)]">
           <CardContent className="p-5 space-y-2 text-xs">
-            <div className="flex justify-between text-slate-600 dark:text-steel-300">
+            <div className="flex justify-between text-[#667085] dark:text-[#98A2B3]">
               <span>Material Subtotal:</span>
-              <span className="font-medium">{formatCurrency(costBreakdown.materialTotal)}</span>
+              <span className="font-medium text-[#111827] dark:text-[#F2F4F7] tabular-nums">{formatCurrency(costBreakdown.materialTotal)}</span>
             </div>
-            <div className="flex justify-between text-slate-600 dark:text-steel-300">
+            <div className="flex justify-between text-[#667085] dark:text-[#98A2B3]">
               <span>Machine Runtime:</span>
-              <span className="font-medium">{formatCurrency(costBreakdown.machineTotal)}</span>
+              <span className="font-medium text-[#111827] dark:text-[#F2F4F7] tabular-nums">{formatCurrency(costBreakdown.machineTotal)}</span>
             </div>
-            <div className="flex justify-between text-slate-600 dark:text-steel-300">
+            <div className="flex justify-between text-[#667085] dark:text-[#98A2B3]">
               <span>Direct Labor & Setup:</span>
-              <span className="font-medium">{formatCurrency(costBreakdown.laborTotal)}</span>
+              <span className="font-medium text-[#111827] dark:text-[#F2F4F7] tabular-nums">{formatCurrency(costBreakdown.laborTotal)}</span>
             </div>
-            <div className="flex justify-between text-slate-600 dark:text-steel-300">
+            <div className="flex justify-between text-[#667085] dark:text-[#98A2B3]">
               <span>Surface Powder Coat:</span>
-              <span className="font-medium">{formatCurrency(costBreakdown.finishingTotal)}</span>
+              <span className="font-medium text-[#111827] dark:text-[#F2F4F7] tabular-nums">{formatCurrency(costBreakdown.finishingTotal)}</span>
             </div>
-            <div className="flex justify-between text-slate-600 dark:text-steel-300">
+            <div className="flex justify-between text-[#667085] dark:text-[#98A2B3]">
               <span>Packaging & Shipping:</span>
-              <span className="font-medium">{formatCurrency(costBreakdown.packagingAndLogistics)}</span>
+              <span className="font-medium text-[#111827] dark:text-[#F2F4F7] tabular-nums">{formatCurrency(costBreakdown.packagingAndLogistics)}</span>
             </div>
-            <div className="flex justify-between text-slate-600 dark:text-steel-300">
+            <div className="flex justify-between text-[#667085] dark:text-[#98A2B3]">
               <span>Factory Overhead ({rules.overheadPercent}%):</span>
-              <span className="font-medium">{formatCurrency(costBreakdown.overheadAmount)}</span>
+              <span className="font-medium text-[#111827] dark:text-[#F2F4F7] tabular-nums">{formatCurrency(costBreakdown.overheadAmount)}</span>
             </div>
-            <div className="flex justify-between text-slate-600 dark:text-steel-300">
+            <div className="flex justify-between text-[#667085] dark:text-[#98A2B3]">
               <span>Profit Margin ({rules.profitMarginPercent}%):</span>
-              <span className="font-medium">{formatCurrency(costBreakdown.profitMarginAmount)}</span>
+              <span className="font-medium text-[#111827] dark:text-[#F2F4F7] tabular-nums">{formatCurrency(costBreakdown.profitMarginAmount)}</span>
             </div>
-            <div className="flex justify-between text-slate-600 dark:text-steel-300 pt-1 border-t border-slate-200 dark:border-steel-800">
+            <div className="flex justify-between text-[#667085] dark:text-[#98A2B3] pt-2 border-t border-[#E4E7EC] dark:border-[#252B33]">
               <span>GST Tax ({rules.gstTaxPercent}%):</span>
-              <span className="font-medium">{formatCurrency(costBreakdown.taxGstAmount)}</span>
+              <span className="font-medium text-[#111827] dark:text-[#F2F4F7] tabular-nums">{formatCurrency(costBreakdown.taxGstAmount)}</span>
             </div>
 
-            <div className="flex justify-between text-slate-900 dark:text-slate-100 font-extrabold text-base pt-2 border-t-2 border-brand-500">
+            <div className="flex justify-between items-baseline text-[#111827] dark:text-[#F2F4F7] font-bold text-base pt-3 border-t border-[#E4E7EC] dark:border-[#252B33]">
               <span>Grand Total:</span>
-              <span className="text-brand-600 dark:text-brand-400">
+              <span className="text-[20px] font-bold text-[#155EEF] tabular-nums">
                 {formatCurrency(costBreakdown.grandTotal)}
               </span>
             </div>
 
             <Button
               size="lg"
-              className="w-full mt-4 bg-gradient-to-r from-sky-600 to-brand-600 hover:from-sky-700 hover:to-brand-700 text-white font-bold flex items-center justify-center gap-2 shadow-lg shadow-sky-900/30"
+              variant="primary"
+              className="w-full mt-4 h-10 font-semibold flex items-center justify-center gap-2 rounded-lg"
               onClick={() => setIsRazorpayModalOpen(true)}
             >
-              <CreditCard className="h-4 w-4" /> Send to Razorpay ({formatCurrency(costBreakdown.grandTotal)})
+              <CreditCard className="h-4 w-4" /> Collect via Razorpay ({formatCurrency(costBreakdown.grandTotal)})
             </Button>
 
             <Button
               size="lg"
               variant="outline"
-              className="w-full mt-2"
+              className="w-full mt-2 h-10 font-medium rounded-lg"
               onClick={() => setIsPdfModalOpen(true)}
             >
               Generate Branded PDF Quote

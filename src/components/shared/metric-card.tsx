@@ -12,7 +12,7 @@ interface MetricCardProps {
   value: string | number;
   trendPercent?: number;
   trendLabel?: string;
-  icon: React.ReactNode;
+  icon?: React.ReactNode;
   subtitle?: string;
   highlight?: boolean;
 }
@@ -35,25 +35,29 @@ export function MetricCard({
   const prefix = isRupee ? '₹' : isDollar ? '$' : '';
 
   return (
-    <motion.div whileHover={{ y: -2 }} transition={{ duration: 0.15 }}>
+    <motion.div whileHover={{ y: -1 }} transition={{ duration: 0.15 }}>
       <Card
         className={cn(
-          'relative overflow-hidden transition-all duration-150 border-slate-200 dark:border-steel-800 bg-white dark:bg-steel-900/90 shadow-2xs hover:border-slate-300 dark:hover:border-steel-700',
-          highlight && 'border-brand-500/40 dark:border-brand-500/30'
+          'relative overflow-hidden border border-[#E4E7EC] dark:border-[#252B33] bg-white dark:bg-[#11161D] shadow-[0_1px_2px_rgba(16,24,40,0.04)] transition-all',
+          highlight && 'border-[#155EEF]/50 ring-1 ring-[#155EEF]/20'
         )}
       >
-        <CardContent className="p-4.5 sm:p-5">
+        <CardContent className="p-5">
+          {/* Label + small icon */}
           <div className="flex items-center justify-between">
-            <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-500 dark:text-steel-400 font-sans">
+            <span className="text-xs font-medium uppercase tracking-[0.01em] text-[#667085] dark:text-[#98A2B3]">
               {title}
             </span>
-            <div className="flex h-7.5 w-7.5 items-center justify-center rounded-md bg-slate-100 dark:bg-steel-800 text-slate-600 dark:text-steel-300 border border-slate-200/80 dark:border-steel-700">
-              {icon}
-            </div>
+            {icon && (
+              <div className="flex h-7 w-7 items-center justify-center rounded-md bg-[#F9FAFB] dark:bg-[#18202A] text-[#667085] dark:text-[#98A2B3] border border-[#E4E7EC] dark:border-[#252B33]">
+                {icon}
+              </div>
+            )}
           </div>
 
-          <div className="mt-2.5 flex items-baseline justify-between">
-            <div className="text-2xl font-bold tracking-tight text-slate-900 dark:text-slate-100 tabular-nums font-sans">
+          {/* Large Number / KPI */}
+          <div className="mt-3 flex items-baseline justify-between gap-2">
+            <div className="text-[26px] font-bold tracking-tight text-[#111827] dark:text-[#F2F4F7] tabular-nums font-sans leading-none">
               {!isNaN(numericValue) ? (
                 <AnimatedKpiCounter value={numericValue} prefix={prefix} />
               ) : (
@@ -64,10 +68,10 @@ export function MetricCard({
             {trendPercent !== undefined && (
               <div
                 className={cn(
-                  'flex items-center gap-1 text-[11px] font-mono font-medium px-1.5 py-0.2 rounded border',
-                  isPositive && 'bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800/60',
-                  isNegative && 'bg-rose-50 dark:bg-rose-950/40 text-rose-700 dark:text-rose-300 border-rose-200 dark:border-rose-800/60',
-                  !isPositive && !isNegative && 'bg-slate-50 dark:bg-steel-800 text-slate-600 dark:text-steel-300 border-slate-200 dark:border-steel-700'
+                  'flex items-center gap-1 text-xs font-medium px-2 py-0.5 rounded-[6px] border shrink-0',
+                  isPositive && 'bg-[#ECFDF3] text-[#067647] border-[#ABEFC6] dark:bg-[#067647]/20 dark:text-[#32D583] dark:border-[#067647]/40',
+                  isNegative && 'bg-[#FEF3F2] text-[#B42318] border-[#FECDCA] dark:bg-[#B42318]/20 dark:text-[#FDA29B] dark:border-[#B42318]/40',
+                  !isPositive && !isNegative && 'bg-[#F9FAFB] text-[#667085] border-[#E4E7EC] dark:bg-[#18202A] dark:text-[#98A2B3] dark:border-[#252B33]'
                 )}
               >
                 {isPositive && <TrendingUp className="h-3 w-3" />}
@@ -78,8 +82,9 @@ export function MetricCard({
             )}
           </div>
 
+          {/* Contextual description */}
           {(subtitle || trendLabel) && (
-            <p className="mt-1.5 text-xs text-slate-500 dark:text-steel-400 font-normal">
+            <p className="mt-2 text-[13px] text-[#667085] dark:text-[#98A2B3] font-normal leading-tight">
               {subtitle || trendLabel}
             </p>
           )}
@@ -88,3 +93,4 @@ export function MetricCard({
     </motion.div>
   );
 }
+

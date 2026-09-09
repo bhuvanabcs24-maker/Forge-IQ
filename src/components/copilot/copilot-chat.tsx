@@ -76,21 +76,21 @@ Ask me any natural-language operational query about delayed work orders, machine
   };
 
   return (
-    <Card className="flex flex-col h-[calc(100vh-14rem)] min-h-[580px] max-h-[740px] border border-slate-200 dark:border-steel-800 bg-white dark:bg-steel-900/95 shadow-2xs overflow-hidden rounded-xl font-sans">
+    <Card className="flex flex-col h-[calc(100vh-14rem)] min-h-[580px] max-h-[760px] border border-[#E4E7EC] dark:border-[#252B33] bg-white dark:bg-[#11161D] shadow-[0_1px_2px_rgba(16,24,40,0.04)] overflow-hidden rounded-xl font-sans">
       {/* Console Header */}
-      <CardHeader className="border-b border-slate-200 dark:border-steel-800 bg-slate-50/80 dark:bg-steel-950/80 px-4.5 py-3 flex flex-row items-center justify-between">
+      <CardHeader className="border-b border-[#E4E7EC] dark:border-[#252B33] bg-[#F9FAFB] dark:bg-[#18202A] px-5 py-3.5 flex flex-row items-center justify-between">
         <div className="flex items-center gap-3">
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-slate-900 text-white dark:bg-brand-600 shadow-2xs">
-            <Terminal className="h-4 w-4" />
+          <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#155EEF] text-white shadow-sm">
+            <Terminal className="h-4.5 w-4.5" />
           </div>
           <div>
-            <CardTitle className="text-sm font-semibold text-slate-900 dark:text-white flex items-center gap-2">
+            <CardTitle className="text-sm font-semibold text-[#111827] dark:text-[#F2F4F7] flex items-center gap-2">
               Manufacturing Intelligence Console
-              <span className="flex items-center gap-1 rounded bg-emerald-50 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-400 text-[10px] font-mono font-semibold px-2 py-0.2 border border-emerald-200 dark:border-emerald-800/60">
-                <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" /> 7 Agents Online
+              <span className="flex items-center gap-1.5 rounded-[6px] bg-[#ECFDF3] dark:bg-[#067647]/20 text-[#067647] dark:text-[#32D583] text-[11px] font-medium px-2 py-0.5 border border-[#ABEFC6] dark:border-[#067647]/40">
+                <span className="h-1.5 w-1.5 rounded-full bg-[#067647] dark:bg-[#32D583]" /> 7 Agents Online
               </span>
             </CardTitle>
-            <CardDescription className="text-slate-500 dark:text-steel-400 text-[11px]">
+            <CardDescription className="text-[#667085] dark:text-[#98A2B3] text-xs">
               Multi-Agent Orchestrator with RAG Provenance & Real-Time Deterministic Tools
             </CardDescription>
           </div>
@@ -100,88 +100,97 @@ Ask me any natural-language operational query about delayed work orders, machine
           variant="outline"
           size="sm"
           onClick={() => setMessages([messages[0]])}
-          className="text-[11px] h-7 px-2.5 text-slate-600 dark:text-steel-300 border-slate-200 dark:border-steel-700 bg-white dark:bg-steel-800 hover:bg-slate-50 dark:hover:bg-steel-700 shadow-2xs"
+          className="text-xs h-8 px-3 text-[#344054] dark:text-[#D0D5DD] border-[#D0D5DD] dark:border-[#344054] bg-white dark:bg-[#11161D] hover:bg-[#F9FAFB] dark:hover:bg-[#18202A]"
         >
-          <Trash2 className="h-3 w-3 mr-1" /> Clear
+          <Trash2 className="h-3.5 w-3.5 mr-1.5 text-[#667085]" /> Clear
         </Button>
       </CardHeader>
 
-      {/* Messages Stream */}
-      <CardContent className="flex-1 p-4.5 overflow-y-auto space-y-3.5 bg-slate-50/30 dark:bg-steel-950/40">
+      {/* Messages Stream - Natural Canvas Layout */}
+      <CardContent className="flex-1 p-6 overflow-y-auto space-y-6 bg-white dark:bg-[#11161D]">
         {messages.map((msg) => (
           <div
             key={msg.id}
             className={cn(
-              'flex gap-2.5 max-w-3xl animate-in fade-in duration-100',
+              'flex gap-3.5 max-w-3xl animate-in fade-in duration-100',
               msg.sender === 'user' ? 'ml-auto flex-row-reverse' : ''
             )}
           >
             {/* Avatar */}
             <div
               className={cn(
-                'flex h-7 w-7 items-center justify-center rounded-md shrink-0 font-mono font-bold text-[10px] shadow-2xs',
+                'flex h-8 w-8 items-center justify-center rounded-lg shrink-0 text-xs',
                 msg.sender === 'user'
-                  ? 'bg-slate-900 text-white dark:bg-steel-800'
-                  : 'bg-slate-100 dark:bg-steel-800 text-slate-700 dark:text-steel-300 border border-slate-200/80 dark:border-steel-700'
+                  ? 'bg-[#111827] text-white dark:bg-[#18202A] dark:text-[#F2F4F7] border border-[#344054]'
+                  : 'bg-[#EFF4FF] text-[#155EEF] dark:bg-[#155EEF]/20 border border-[#B2DDFF] dark:border-[#155EEF]/40'
               )}
             >
-              {msg.sender === 'user' ? <User className="h-3.5 w-3.5" /> : <Bot className="h-3.5 w-3.5 text-brand-600 dark:text-brand-400" />}
+              {msg.sender === 'user' ? <User className="h-4 w-4" /> : <Bot className="h-4 w-4" />}
             </div>
 
-            {/* Message Bubble */}
-            <div className="space-y-2.5 flex-1 min-w-0">
-              {/* Agent Active Routing Pill Badges */}
-              {msg.activeAgents && msg.activeAgents.length > 0 && (
-                <div className="flex items-center gap-1.5 text-[10px] text-slate-500 dark:text-steel-400">
-                  <Layers className="h-3 w-3 text-slate-400" />
-                  <span className="font-mono uppercase text-[9px]">Domain Agent:</span>
-                  {msg.activeAgents.map((agent) => (
-                    <Badge
-                      key={agent}
-                      variant="outline"
-                      className="text-[9px] font-mono bg-slate-100 dark:bg-steel-800 text-slate-700 dark:text-steel-300 border-slate-200 dark:border-steel-700"
-                    >
-                      {agent} Agent
-                    </Badge>
-                  ))}
-                  {msg.confidenceScore && (
-                    <span className="ml-auto font-mono text-[10px] font-semibold text-emerald-600 dark:text-emerald-400">
-                      {msg.confidenceScore}% Confidence
-                    </span>
-                  )}
+            {/* Message Content Container */}
+            <div className="space-y-3 flex-1 min-w-0">
+              {/* AI Execution Timeline & Domain Verification */}
+              {msg.sender === 'copilot' && msg.activeAgents && msg.activeAgents.length > 0 && (
+                <div className="p-2.5 rounded-lg border border-[#E4E7EC] dark:border-[#252B33] bg-[#F9FAFB] dark:bg-[#18202A] space-y-1.5">
+                  <div className="flex items-center justify-between text-[11px] font-medium text-[#667085] dark:text-[#98A2B3]">
+                    <span className="uppercase tracking-wider">Execution Pipeline</span>
+                    {msg.confidenceScore && (
+                      <span className="text-[#067647] dark:text-[#32D583] font-semibold">
+                        Confidence {msg.confidenceScore}%
+                      </span>
+                    )}
+                  </div>
+                  <div className="flex flex-wrap gap-2 pt-0.5">
+                    {msg.activeAgents.map((agent) => (
+                      <div
+                        key={agent}
+                        className="inline-flex items-center gap-1 text-[11px] font-medium text-[#344054] dark:text-[#D0D5DD]"
+                      >
+                        <span className="text-[#067647] dark:text-[#32D583]">✓</span>
+                        <span>{agent} capability verified</span>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               )}
 
-              {/* Text Body */}
-              <div
-                className={cn(
-                  'rounded-lg p-3.5 text-xs leading-relaxed border shadow-2xs',
-                  msg.sender === 'user'
-                    ? 'rounded-tr-none bg-slate-900 text-white dark:bg-steel-800 dark:text-slate-100 border-slate-800 dark:border-steel-700 font-normal'
-                    : 'rounded-tl-none bg-white dark:bg-steel-900/90 border-slate-200 dark:border-steel-800 text-slate-900 dark:text-slate-100'
-                )}
-              >
-                <div className="space-y-2 whitespace-pre-wrap">
-                  {msg.content.split('\n\n').map((para, i) => (
-                    <div key={i}>
-                      {para.startsWith('###') ? (
-                        <h4 className="font-semibold text-slate-900 dark:text-white text-xs mt-1 border-b border-slate-100 dark:border-steel-800 pb-1">{para.replace('###', '')}</h4>
-                      ) : (
-                        <p>{para}</p>
-                      )}
-                    </div>
-                  ))}
+              {/* Message Typography */}
+              {msg.sender === 'user' ? (
+                <div className="rounded-lg p-3.5 text-sm leading-relaxed border border-[#E4E7EC] dark:border-[#252B33] bg-[#F9FAFB] dark:bg-[#18202A] text-[#111827] dark:text-[#F2F4F7] shadow-sm">
+                  <p className="whitespace-pre-wrap">{msg.content}</p>
+                  <div suppressHydrationWarning className="mt-2 text-[11px] text-[#667085] dark:text-[#98A2B3] text-right font-mono">
+                    {msg.timestamp}
+                  </div>
                 </div>
-                <div suppressHydrationWarning className="mt-2 text-[9px] font-mono opacity-60 text-right text-slate-500 dark:text-slate-400">{msg.timestamp}</div>
-              </div>
+              ) : (
+                <div className="text-sm leading-relaxed text-[#111827] dark:text-[#F2F4F7] space-y-3">
+                  <div className="space-y-2.5 whitespace-pre-wrap">
+                    {msg.content.split('\n\n').map((para, i) => (
+                      <div key={i}>
+                        {para.startsWith('###') ? (
+                          <h4 className="font-semibold text-base text-[#111827] dark:text-[#F2F4F7] mt-3 pb-1 border-b border-[#E4E7EC] dark:border-[#252B33]">
+                            {para.replace('###', '').trim()}
+                          </h4>
+                        ) : (
+                          <p className="leading-[1.6] text-sm text-[#111827] dark:text-[#F2F4F7]">{para}</p>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                  <div suppressHydrationWarning className="text-xs text-[#667085] dark:text-[#98A2B3] font-mono">
+                    {msg.timestamp}
+                  </div>
+                </div>
+              )}
 
               {/* Live Data Evidence Citations */}
               {msg.evidence && msg.evidence.length > 0 && (
-                <div className="space-y-1.5 pt-0.5">
-                  <div className="text-[10px] font-mono font-semibold uppercase tracking-wider text-slate-500 dark:text-steel-400 px-0.5">
-                    Data Citations ({msg.evidence.length})
+                <div className="space-y-2 pt-1 border-t border-[#E4E7EC] dark:border-[#252B33]">
+                  <div className="text-xs font-semibold uppercase tracking-wider text-[#667085] dark:text-[#98A2B3]">
+                    Sources · {msg.evidence.length}
                   </div>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                     {msg.evidence.map((ev) => (
                       <EvidenceCard key={ev.id} evidence={ev} />
                     ))}
@@ -191,11 +200,11 @@ Ask me any natural-language operational query about delayed work orders, machine
 
               {/* Suggested Action Cards */}
               {msg.suggestedActions && msg.suggestedActions.length > 0 && (
-                <div className="space-y-1.5 pt-0.5">
-                  <div className="text-[10px] font-mono font-semibold uppercase tracking-wider text-slate-500 dark:text-steel-400 px-0.5">
-                    Recommended Actions
+                <div className="space-y-2 pt-1 border-t border-[#E4E7EC] dark:border-[#252B33]">
+                  <div className="text-xs font-semibold uppercase tracking-wider text-[#667085] dark:text-[#98A2B3]">
+                    Recommended Operations Actions
                   </div>
-                  <div className="grid grid-cols-1 gap-1.5">
+                  <div className="grid grid-cols-1 gap-2">
                     {msg.suggestedActions.map((act) => (
                       <ActionCard key={act.id} action={act} />
                     ))}
@@ -208,34 +217,34 @@ Ask me any natural-language operational query about delayed work orders, machine
 
         {/* Typing indicator */}
         {isTyping && (
-          <div className="flex items-center gap-2 text-xs text-brand-600 dark:text-brand-400 animate-pulse p-2">
-            <Cpu className="h-3.5 w-3.5 animate-spin" /> Synthesizing multi-agent response...
+          <div className="flex items-center gap-2 text-xs font-medium text-[#155EEF] animate-pulse p-2">
+            <Cpu className="h-3.5 w-3.5 animate-spin" /> Synthesizing deterministic multi-agent response...
           </div>
         )}
 
         <div ref={scrollRef} />
       </CardContent>
 
-      {/* Input Bar & Prompt Chips */}
-      <div className="p-3.5 border-t border-slate-200 dark:border-steel-800 bg-white dark:bg-steel-950/90 space-y-2.5">
+      {/* Input Bar & Prompt Chips - 64px Premium Composer */}
+      <div className="p-4 border-t border-[#E4E7EC] dark:border-[#252B33] bg-[#F9FAFB] dark:bg-[#18202A] space-y-3">
         <PromptChips onSelectPrompt={(p) => handleSend(p)} />
 
-        <div className="relative flex items-center">
-          <Input
+        <div className="flex items-center h-14 rounded-xl border border-[#D0D5DD] dark:border-[#344054] bg-white dark:bg-[#11161D] px-3 shadow-[0_1px_2px_rgba(16,24,40,0.04)] focus-within:border-[#155EEF] focus-within:ring-2 focus-within:ring-[#155EEF]/15 transition-all">
+          <input
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && handleSend()}
             placeholder="Ask Copilot about delayed orders, stock alerts, press brake bottlenecks, or overdue invoices..."
-            className="pr-12 py-2 bg-slate-50 dark:bg-steel-900 border-slate-200 dark:border-steel-700 text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-steel-500 rounded-lg shadow-2xs focus-visible:ring-brand-500 text-xs"
+            className="w-full bg-transparent px-2 py-2 text-sm text-[#111827] dark:text-[#F2F4F7] placeholder:text-[#667085] dark:placeholder:text-[#98A2B3] outline-none font-sans"
           />
-          <Button
-            size="icon"
+          <button
             onClick={() => handleSend()}
             disabled={!input.trim() || isTyping}
-            className="absolute right-1.5 h-6.5 w-6.5 bg-slate-900 hover:bg-slate-800 dark:bg-brand-600 dark:hover:bg-brand-500 text-white shadow-2xs rounded-md"
+            className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#155EEF] hover:bg-[#124ec7] active:bg-[#0d3ea8] text-white shadow-sm transition-all disabled:opacity-50 disabled:cursor-not-allowed shrink-0 cursor-pointer"
+            title="Send query"
           >
-            <Send className="h-3 w-3" />
-          </Button>
+            <Send className="h-4 w-4" />
+          </button>
         </div>
       </div>
     </Card>

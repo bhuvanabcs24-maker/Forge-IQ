@@ -13,7 +13,6 @@ import {
   Sun,
   Moon,
   Shield,
-  User,
   LogOut,
   Sliders,
   ChevronDown,
@@ -35,56 +34,56 @@ export function Header({ onMobileMenuToggle }: { onMobileMenuToggle: () => void 
 
   return (
     <>
-      <header className="sticky top-0 z-30 flex h-14 w-full items-center justify-between border-b border-slate-200 dark:border-steel-800/90 bg-white/95 dark:bg-steel-950/95 backdrop-blur-md px-4 sm:px-6 select-none">
-        {/* Left Side: Mobile Menu Button & Search Trigger */}
-        <div className="flex items-center gap-2.5">
+      <header className="sticky top-0 z-30 flex h-16 w-full items-center justify-between border-b border-[#E4E7EC] dark:border-[#252B33] bg-white dark:bg-[#11161D] px-6 select-none shadow-[0_1px_2px_rgba(16,24,40,0.02)]">
+        {/* Left Side: Mobile Menu Button & Search Field */}
+        <div className="flex items-center gap-3">
           <button
             onClick={onMobileMenuToggle}
-            className="md:hidden p-1.5 rounded-md text-slate-500 hover:text-slate-900 dark:text-steel-400 dark:hover:text-slate-100 hover:bg-slate-100 dark:hover:bg-steel-800"
+            className="md:hidden p-2 rounded-lg text-[#667085] hover:text-[#111827] dark:hover:text-[#F2F4F7] hover:bg-[#F9FAFB] dark:hover:bg-[#18202A] cursor-pointer"
           >
-            <Menu className="h-4.5 w-4.5" />
+            <Menu className="h-5 w-5" />
           </button>
 
-          {/* Quick Command Search Trigger */}
+          {/* Premium Global Command Search */}
           <button
             onClick={() => setIsCommandOpen(true)}
-            className="flex items-center gap-2 rounded-lg border border-slate-200 dark:border-steel-800 bg-slate-50 dark:bg-steel-900/90 px-2.5 py-1.5 text-xs text-slate-500 dark:text-steel-400 hover:border-slate-300 dark:hover:border-steel-700 transition-colors w-40 sm:w-60 shadow-2xs"
+            className="flex items-center gap-2.5 rounded-lg border border-[#E4E7EC] dark:border-[#252B33] bg-[#F9FAFB] dark:bg-[#18202A] px-3.5 h-10 text-sm text-[#667085] dark:text-[#98A2B3] hover:border-[#D0D5DD] dark:hover:border-[#344054] transition-colors w-[260px] sm:w-[320px] cursor-pointer shadow-[0_1px_2px_rgba(16,24,40,0.02)]"
           >
-            <Search className="h-3.5 w-3.5" />
-            <span className="truncate">Search SKUs, orders, machines...</span>
-            <kbd className="ml-auto hidden sm:inline-block rounded border border-slate-200 dark:border-steel-700 bg-white dark:bg-steel-950 px-1 py-0.2 text-[9px] font-mono text-slate-400 dark:text-steel-400">
+            <Search className="h-[18px] w-[18px] shrink-0 text-[#667085] dark:text-[#98A2B3]" />
+            <span className="truncate text-sm font-normal">Search orders, SKUs, machines...</span>
+            <kbd className="ml-auto hidden sm:inline-flex items-center justify-center rounded border border-[#D0D5DD] dark:border-[#344054] bg-white dark:bg-[#11161D] px-1.5 h-5 text-[11px] font-medium text-[#667085] dark:text-[#98A2B3] shadow-2xs font-mono">
               ⌘K
             </kbd>
           </button>
         </div>
 
         {/* Right Side Controls */}
-        <div className="flex items-center gap-2 sm:gap-2.5">
+        <div className="flex items-center gap-2 sm:gap-3">
           {/* Live RBAC Role Switcher */}
           <div className="relative">
             <button
               onClick={() => setIsRoleDropdownOpen(!isRoleDropdownOpen)}
               className={cn(
-                'flex items-center gap-1.5 rounded-md border px-2.5 py-1 text-xs font-semibold tracking-tight transition-all shadow-2xs cursor-pointer',
+                'flex items-center gap-1.5 rounded-lg border px-3 h-10 text-xs font-semibold tracking-tight transition-colors cursor-pointer shadow-[0_1px_2px_rgba(16,24,40,0.02)]',
                 ROLE_BADGE_COLORS[role]
               )}
             >
-              <Shield className="h-3 w-3" />
+              <Shield className="h-3.5 w-3.5" />
               <span>{role}</span>
-              <ChevronDown className="h-3 w-3 opacity-60 ml-0.5" />
+              <ChevronDown className="h-3.5 w-3.5 opacity-60 ml-0.5" />
             </button>
 
             {isRoleDropdownOpen && (
               <div
-                className="absolute right-0 mt-2 w-52 rounded-lg border border-slate-200 dark:border-steel-800 bg-white dark:bg-steel-900 p-1.5 shadow-xl z-50 animate-in fade-in duration-100"
+                className="absolute right-0 mt-2 w-52 rounded-xl border border-[#E4E7EC] dark:border-[#252B33] bg-white dark:bg-[#11161D] p-1.5 shadow-[0_8px_24px_-4px_rgba(16,24,40,0.08)] z-50 animate-in fade-in duration-100"
                 onClick={() => setIsRoleDropdownOpen(false)}
               >
-                <div className="px-2.5 py-1.5 border-b border-slate-100 dark:border-steel-800">
-                  <p className="text-xs font-semibold text-slate-900 dark:text-slate-100">
+                <div className="px-3 py-2 border-b border-[#E4E7EC] dark:border-[#252B33]">
+                  <p className="text-xs font-semibold text-[#111827] dark:text-[#F2F4F7]">
                     Switch Perspective
                   </p>
-                  <p className="text-[10px] text-slate-500 dark:text-steel-400">
-                    Test RBAC permissions live
+                  <p className="text-[11px] text-[#667085] dark:text-[#98A2B3]">
+                    Live RBAC permissions preview
                   </p>
                 </div>
                 <div className="py-1 space-y-0.5">
@@ -93,14 +92,14 @@ export function Header({ onMobileMenuToggle }: { onMobileMenuToggle: () => void 
                       key={r}
                       onClick={() => setRole(r)}
                       className={cn(
-                        'flex w-full items-center justify-between rounded-md px-2.5 py-1.5 text-xs font-medium transition-colors cursor-pointer',
+                        'flex w-full items-center justify-between rounded-lg px-2.5 py-1.5 text-xs font-medium transition-colors cursor-pointer',
                         role === r
-                          ? 'bg-slate-100 dark:bg-steel-800 text-slate-900 dark:text-white font-semibold'
-                          : 'hover:bg-slate-50 dark:hover:bg-steel-800/60 text-slate-700 dark:text-steel-300'
+                          ? 'bg-[#EFF4FF] dark:bg-[#155EEF]/15 text-[#175CD3] dark:text-[#528BFF] font-semibold'
+                          : 'hover:bg-[#F9FAFB] dark:hover:bg-[#18202A] text-[#344054] dark:text-[#D0D5DD]'
                       )}
                     >
                       <span>{r}</span>
-                      {role === r && <span className="h-1.5 w-1.5 rounded-full bg-brand-500" />}
+                      {role === r && <span className="h-1.5 w-1.5 rounded-full bg-[#155EEF]" />}
                     </button>
                   ))}
                 </div>
@@ -111,32 +110,31 @@ export function Header({ onMobileMenuToggle }: { onMobileMenuToggle: () => void 
           {/* Customer Portal Link */}
           <a
             href="/portal/dashboard"
-            className="hidden sm:flex items-center gap-1.5 px-2.5 py-1 rounded-md border border-slate-200 dark:border-steel-800 bg-slate-50 dark:bg-steel-900 text-slate-700 dark:text-steel-300 font-medium text-xs hover:bg-slate-100 dark:hover:bg-steel-800 transition-colors shadow-2xs"
+            className="hidden sm:inline-flex items-center gap-1.5 px-3 h-10 rounded-lg border border-[#D0D5DD] dark:border-[#252B33] bg-white dark:bg-[#11161D] text-[#344054] dark:text-[#D0D5DD] font-medium text-xs hover:bg-[#F9FAFB] dark:hover:bg-[#18202A] transition-colors shadow-[0_1px_2px_rgba(16,24,40,0.02)]"
             title="Launch Customer Self-Service Portal"
           >
             <span>Customer Portal</span>
-            <ExternalLink className="h-3 w-3 opacity-60" />
+            <ExternalLink className="h-3 w-3 text-[#667085]" />
           </a>
 
-          {/* Theme Toggle (Dark / Light) */}
+          {/* Theme Toggle (40x40px, 8px radius) */}
           <button
             onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-            className="flex h-8 w-8 items-center justify-center rounded-md border border-slate-200 dark:border-steel-800 text-slate-600 dark:text-steel-300 hover:bg-slate-100 dark:hover:bg-steel-800 transition-colors shadow-2xs cursor-pointer"
+            className="flex h-10 w-10 items-center justify-center rounded-lg border border-[#D0D5DD] dark:border-[#252B33] bg-white dark:bg-[#11161D] text-[#667085] dark:text-[#98A2B3] hover:bg-[#F9FAFB] dark:hover:bg-[#18202A] transition-colors shadow-[0_1px_2px_rgba(16,24,40,0.02)] cursor-pointer"
             title="Toggle theme"
           >
-            {theme === 'dark' ? <Sun className="h-3.5 w-3.5 text-amber-400" /> : <Moon className="h-3.5 w-3.5" />}
+            {theme === 'dark' ? <Sun className="h-[18px] w-[18px] text-amber-400" /> : <Moon className="h-[18px] w-[18px]" />}
           </button>
 
-          {/* Notifications Trigger */}
+          {/* Notifications Trigger (40x40px, 8px radius) */}
           <button
             onClick={() => setIsNotificationsOpen(true)}
-            className="relative flex h-8 w-8 items-center justify-center rounded-md border border-slate-200 dark:border-steel-800 text-slate-600 dark:text-steel-300 hover:bg-slate-100 dark:hover:bg-steel-800 transition-colors shadow-2xs cursor-pointer"
+            className="relative flex h-10 w-10 items-center justify-center rounded-lg border border-[#D0D5DD] dark:border-[#252B33] bg-white dark:bg-[#11161D] text-[#667085] dark:text-[#98A2B3] hover:bg-[#F9FAFB] dark:hover:bg-[#18202A] transition-colors shadow-[0_1px_2px_rgba(16,24,40,0.02)] cursor-pointer"
+            title="Notifications"
           >
-            <Bell className="h-3.5 w-3.5" />
+            <Bell className="h-[18px] w-[18px]" />
             {unreadCount > 0 && (
-              <span className="absolute -top-1 -right-1 flex h-3.5 w-3.5 items-center justify-center rounded-full bg-brand-600 text-[9px] font-mono font-bold text-white shadow-xs">
-                {unreadCount}
-              </span>
+              <span className="absolute top-2 right-2 flex h-2 w-2 rounded-full bg-[#155EEF]" />
             )}
           </button>
 
@@ -144,23 +142,22 @@ export function Header({ onMobileMenuToggle }: { onMobileMenuToggle: () => void 
           <div className="relative">
             <button
               onClick={() => setIsProfileMenuOpen(!isProfileMenuOpen)}
-              className="flex items-center gap-2 rounded-md p-0.5 hover:bg-slate-100 dark:hover:bg-steel-800 transition-colors cursor-pointer"
+              className="flex h-10 w-10 items-center justify-center rounded-lg bg-[#F2F4F7] dark:bg-[#18202A] border border-[#E4E7EC] dark:border-[#252B33] text-[#344054] dark:text-[#D0D5DD] text-xs font-semibold shadow-[0_1px_2px_rgba(16,24,40,0.02)] hover:bg-[#E4E7EC] transition-colors cursor-pointer"
+              title="Account Menu"
             >
-              <div className="flex h-7 w-7 items-center justify-center rounded-md bg-slate-900 dark:bg-steel-800 text-white text-[11px] font-mono font-bold shadow-2xs">
-                {user?.fullName ? user.fullName.substring(0, 2).toUpperCase() : 'US'}
-              </div>
+              {user?.fullName ? user.fullName.substring(0, 2).toUpperCase() : 'US'}
             </button>
 
             {isProfileMenuOpen && (
               <div
-                className="absolute right-0 mt-2 w-52 rounded-lg border border-slate-200 dark:border-steel-800 bg-white dark:bg-steel-900 p-1.5 shadow-xl z-50 animate-in fade-in duration-100"
+                className="absolute right-0 mt-2 w-56 rounded-xl border border-[#E4E7EC] dark:border-[#252B33] bg-white dark:bg-[#11161D] p-1.5 shadow-[0_8px_24px_-4px_rgba(16,24,40,0.08)] z-50 animate-in fade-in duration-100"
                 onClick={() => setIsProfileMenuOpen(false)}
               >
-                <div className="px-2.5 py-1.5 border-b border-slate-100 dark:border-steel-800">
-                  <p className="text-xs font-semibold text-slate-900 dark:text-slate-100 truncate">
+                <div className="px-3 py-2 border-b border-[#E4E7EC] dark:border-[#252B33]">
+                  <p className="text-sm font-semibold text-[#111827] dark:text-[#F2F4F7] truncate">
                     {user?.fullName || 'User Account'}
                   </p>
-                  <p className="text-[10px] text-slate-500 dark:text-steel-400 truncate">
+                  <p className="text-xs text-[#667085] dark:text-[#98A2B3] truncate">
                     {user?.email || 'user@forgeiq.com'}
                   </p>
                 </div>
@@ -168,16 +165,16 @@ export function Header({ onMobileMenuToggle }: { onMobileMenuToggle: () => void 
                 <div className="py-1 space-y-0.5">
                   <a
                     href="/settings"
-                    className="flex items-center gap-2 rounded-md px-2.5 py-1.5 text-xs text-slate-700 dark:text-steel-300 hover:bg-slate-50 dark:hover:bg-steel-800 transition-colors"
+                    className="flex items-center gap-2 rounded-lg px-3 py-2 text-xs text-[#344054] dark:text-[#D0D5DD] hover:bg-[#F9FAFB] dark:hover:bg-[#18202A] transition-colors"
                   >
-                    <Sliders className="h-3.5 w-3.5 text-slate-400" />
-                    Settings
+                    <Sliders className="h-4 w-4 text-[#667085]" />
+                    Account Settings
                   </a>
                   <button
                     onClick={logout}
-                    className="flex w-full items-center gap-2 rounded-md px-2.5 py-1.5 text-xs text-rose-600 dark:text-rose-400 hover:bg-rose-50/60 dark:hover:bg-rose-950/30 transition-colors cursor-pointer"
+                    className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-xs text-[#B42318] hover:bg-[#FEF3F2] dark:hover:bg-rose-950/20 transition-colors cursor-pointer"
                   >
-                    <LogOut className="h-3.5 w-3.5" />
+                    <LogOut className="h-4 w-4" />
                     Sign Out
                   </button>
                 </div>

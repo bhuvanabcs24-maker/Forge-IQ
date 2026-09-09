@@ -30,17 +30,17 @@ export function EvidenceCard({ evidence }: { evidence: DataEvidence }) {
   return (
     <Link
       href={evidence.linkHref || '/dashboard'}
-      className="flex items-center justify-between p-2 rounded-md border border-slate-200 dark:border-steel-800 bg-white dark:bg-steel-950/80 hover:border-slate-300 dark:hover:border-steel-700 transition-colors text-xs group shadow-2xs"
+      className="flex items-center justify-between p-2.5 rounded-lg border border-[#E4E7EC] dark:border-[#252B33] bg-[#F9FAFB] dark:bg-[#18202A] hover:border-[#D0D5DD] dark:hover:border-[#344054] hover:bg-white dark:hover:bg-[#11161D] transition-colors text-xs group shadow-[0_1px_2px_rgba(16,24,40,0.04)]"
     >
       <div className="flex items-center gap-2 min-w-0">
-        <div className="p-1 rounded bg-slate-100 dark:bg-steel-800 shrink-0 border border-slate-200/80 dark:border-steel-700">
+        <div className="p-1.5 rounded-md bg-white dark:bg-[#11161D] shrink-0 border border-[#E4E7EC] dark:border-[#252B33]">
           {getIcon()}
         </div>
         <div className="min-w-0">
-          <div className="font-semibold text-slate-900 dark:text-slate-100 truncate text-[11px]">
+          <div className="font-semibold text-[#111827] dark:text-[#F2F4F7] truncate text-xs">
             {evidence.title}
           </div>
-          <div className="text-[10px] font-mono text-slate-500 dark:text-steel-400 truncate">
+          <div className="text-[11px] font-mono text-[#667085] dark:text-[#98A2B3] truncate">
             {evidence.subtitle}
           </div>
         </div>
@@ -48,10 +48,10 @@ export function EvidenceCard({ evidence }: { evidence: DataEvidence }) {
 
       {evidence.keyMetric && (
         <div className="flex items-center gap-1.5 shrink-0 ml-2">
-          <span className="font-mono text-[10px] font-semibold text-slate-700 dark:text-steel-300 bg-slate-100 dark:bg-steel-800 px-1.5 py-0.2 rounded border border-slate-200 dark:border-steel-700">
+          <span className="font-mono text-[11px] font-semibold text-[#344054] dark:text-[#D0D5DD] bg-white dark:bg-[#11161D] px-2 py-0.5 rounded-[6px] border border-[#E4E7EC] dark:border-[#252B33]">
             {evidence.keyMetric}
           </span>
-          <ExternalLink className="h-3 w-3 text-slate-400 opacity-0 group-hover:opacity-100 transition-opacity" />
+          <ExternalLink className="h-3 w-3 text-[#667085] opacity-0 group-hover:opacity-100 transition-opacity" />
         </div>
       )}
     </Link>

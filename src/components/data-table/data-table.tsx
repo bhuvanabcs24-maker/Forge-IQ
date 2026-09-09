@@ -79,32 +79,32 @@ export function DataTable<TData, TValue>({
       </div>
 
       {/* Table Container */}
-      <div className="rounded-xl border border-slate-200 dark:border-steel-800 bg-white dark:bg-steel-900/95 overflow-hidden shadow-2xs">
+      <div className="rounded-xl border border-[#E4E7EC] dark:border-[#252B33] bg-white dark:bg-[#11161D] overflow-hidden shadow-[0_1px_2px_rgba(16,24,40,0.04)]">
         <div className="overflow-x-auto">
-          <table className="w-full text-left text-xs border-collapse">
+          <table className="w-full text-left text-sm border-collapse">
             <thead>
               {table.getHeaderGroups().map((headerGroup) => (
                 <tr
                   key={headerGroup.id}
-                  className="border-b border-slate-200 dark:border-steel-800 bg-slate-50/80 dark:bg-steel-950/70"
+                  className="border-b border-[#E4E7EC] dark:border-[#252B33] bg-[#F9FAFB] dark:bg-[#18202A]"
                 >
                   {headerGroup.headers.map((header) => (
                     <th
                       key={header.id}
-                      className="px-3.5 py-2.5 text-[11px] font-semibold uppercase tracking-wider text-slate-500 dark:text-steel-400 select-none"
+                      className="px-4 py-3 text-xs font-semibold text-[#667085] dark:text-[#98A2B3] select-none whitespace-nowrap"
                     >
                       {header.isPlaceholder ? null : (
                         <div
                           className={
                             header.column.getCanSort()
-                              ? 'flex items-center gap-1.5 cursor-pointer hover:text-slate-900 dark:hover:text-slate-200'
+                              ? 'flex items-center gap-1.5 cursor-pointer hover:text-[#111827] dark:hover:text-[#F2F4F7]'
                               : ''
                           }
                           onClick={header.column.getToggleSortingHandler()}
                         >
                           {flexRender(header.column.columnDef.header, header.getContext())}
                           {header.column.getCanSort() && (
-                            <ArrowUpDown className="h-3 w-3 opacity-60" />
+                            <ArrowUpDown className="h-3.5 w-3.5 opacity-60" />
                           )}
                         </div>
                       )}
@@ -113,15 +113,15 @@ export function DataTable<TData, TValue>({
                 </tr>
               ))}
             </thead>
-            <tbody className="divide-y divide-slate-100 dark:divide-steel-800/70">
+            <tbody className="divide-y divide-[#E4E7EC] dark:divide-[#252B33]">
               {table.getRowModel().rows?.length ? (
                 table.getRowModel().rows.map((row) => (
                   <tr
                     key={row.id}
-                    className="hover:bg-slate-50/60 dark:hover:bg-steel-800/40 transition-colors"
+                    className="hover:bg-[#F9FAFB] dark:hover:bg-[#18202A]/50 transition-colors h-[52px]"
                   >
                     {row.getVisibleCells().map((cell) => (
-                      <td key={cell.id} className="px-3.5 py-2.5 text-slate-700 dark:text-steel-200">
+                      <td key={cell.id} className="px-4 py-3 text-sm text-[#111827] dark:text-[#F2F4F7]">
                         {flexRender(cell.column.columnDef.cell, cell.getContext())}
                       </td>
                     ))}
@@ -129,7 +129,7 @@ export function DataTable<TData, TValue>({
                 ))
               ) : (
                 <tr>
-                  <td colSpan={columns.length} className="h-40 text-center">
+                  <td colSpan={columns.length} className="h-44 text-center">
                     <EmptyState
                       title="No matching records found"
                       description="Try adjusting your search query or clear active filters."
@@ -142,14 +142,14 @@ export function DataTable<TData, TValue>({
         </div>
 
         {/* Pagination Bar */}
-        <div className="flex items-center justify-between px-3.5 py-2.5 border-t border-slate-100 dark:border-steel-800/70 bg-slate-50/40 dark:bg-steel-950/40 text-[11px] text-slate-500 dark:text-steel-400">
+        <div className="flex items-center justify-between px-4 py-3 border-t border-[#E4E7EC] dark:border-[#252B33] bg-[#FFFFFF] dark:bg-[#11161D] text-xs text-[#667085] dark:text-[#98A2B3]">
           <div>
             Showing{' '}
-            <span className="font-semibold text-slate-800 dark:text-slate-200">
+            <span className="font-semibold text-[#111827] dark:text-[#F2F4F7]">
               {table.getState().pagination.pageIndex * table.getState().pagination.pageSize + 1}
             </span>{' '}
             to{' '}
-            <span className="font-semibold text-slate-800 dark:text-slate-200">
+            <span className="font-semibold text-[#111827] dark:text-[#F2F4F7]">
               {Math.min(
                 (table.getState().pagination.pageIndex + 1) *
                   table.getState().pagination.pageSize,
@@ -157,35 +157,35 @@ export function DataTable<TData, TValue>({
               )}
             </span>{' '}
             of{' '}
-            <span className="font-semibold text-slate-800 dark:text-slate-200">
+            <span className="font-semibold text-[#111827] dark:text-[#F2F4F7]">
               {table.getFilteredRowModel().rows.length}
             </span>{' '}
             entries
           </div>
 
-          <div className="flex items-center gap-1.5">
+          <div className="flex items-center gap-2">
             <Button
               variant="outline"
               size="sm"
-              className="h-7 px-2 text-[11px]"
+              className="h-8 px-2.5 text-xs rounded-lg"
               onClick={() => table.previousPage()}
               disabled={!table.getCanPreviousPage()}
             >
-              <ChevronLeft className="h-3 w-3 mr-0.5" />
+              <ChevronLeft className="h-3.5 w-3.5 mr-1" />
               Previous
             </Button>
-            <span className="px-2 font-mono text-[11px] text-slate-700 dark:text-steel-300">
+            <span className="px-2 font-mono text-xs text-[#344054] dark:text-[#D0D5DD]">
               {table.getState().pagination.pageIndex + 1} / {table.getPageCount() || 1}
             </span>
             <Button
               variant="outline"
               size="sm"
-              className="h-7 px-2 text-[11px]"
+              className="h-8 px-2.5 text-xs rounded-lg"
               onClick={() => table.nextPage()}
               disabled={!table.getCanNextPage()}
             >
               Next
-              <ChevronRight className="h-3 w-3 ml-0.5" />
+              <ChevronRight className="h-3.5 w-3.5 ml-1" />
             </Button>
           </div>
         </div>

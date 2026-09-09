@@ -81,19 +81,19 @@ export default function DashboardPage() {
   ];
 
   return (
-    <div className="space-y-6 pb-10 font-sans">
+    <div className="max-w-[1400px] mx-auto space-y-6 pb-12 font-sans">
       {/* Enterprise AI Command Hero Header */}
       <AiCommandHero />
 
       {/* FACTORY LIFECYCLE STRIP */}
-      <div className="p-4 rounded-xl border border-slate-200 dark:border-steel-800 bg-white dark:bg-steel-900/90 shadow-2xs space-y-3">
+      <div className="p-5 rounded-xl border border-[#E4E7EC] dark:border-[#252B33] bg-white dark:bg-[#11161D] shadow-[0_1px_2px_rgba(16,24,40,0.04)] space-y-3.5">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-slate-500 dark:text-steel-400">
+            <span className="text-[11px] font-semibold uppercase tracking-wider text-[#667085] dark:text-[#98A2B3]">
               OPERATIONAL WORKFLOW
             </span>
-            <span className="text-slate-300 dark:text-steel-600 text-xs">•</span>
-            <span className="text-xs font-semibold text-slate-800 dark:text-slate-200">
+            <span className="text-[#D0D5DD] dark:text-[#344054] text-xs">•</span>
+            <span className="text-xs font-semibold text-[#111827] dark:text-[#F2F4F7]">
               RFQ ➔ Quote ➔ Plan ➔ Manufacture ➔ QC ➔ Dispatch ➔ Payout
             </span>
           </div>
@@ -101,37 +101,37 @@ export default function DashboardPage() {
           <div className="flex items-center gap-3">
             <button
               onClick={fetchDashboardData}
-              className="text-[11px] text-slate-500 hover:text-slate-800 dark:hover:text-slate-200 flex items-center gap-1 cursor-pointer"
+              className="text-xs text-[#667085] hover:text-[#111827] dark:hover:text-[#F2F4F7] flex items-center gap-1.5 cursor-pointer font-medium"
             >
-              <RefreshCw className={`h-3 w-3 ${loading ? 'animate-spin' : ''}`} /> Sync DB
+              <RefreshCw className={`h-3.5 w-3.5 ${loading ? 'animate-spin' : ''}`} /> Sync DB
             </button>
-            <Link href="/production/planner" className="text-[11px] text-brand-600 dark:text-brand-400 font-semibold hover:underline flex items-center gap-1">
-              Shop Floor Board <ArrowUpRight className="h-3 w-3" />
+            <Link href="/production/planner" className="text-xs text-[#155EEF] font-semibold hover:underline flex items-center gap-1">
+              Shop Floor Board <ArrowUpRight className="h-3.5 w-3.5" />
             </Link>
           </div>
         </div>
 
-        <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-2">
+        <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-2.5">
           {factoryLifecycle.map((item) => (
             <div
               key={item.step}
-              className={`p-2.5 rounded-lg border text-xs transition-colors ${
+              className={`p-3 rounded-lg border text-xs transition-colors ${
                 item.status === 'current'
-                  ? 'border-brand-500/80 bg-brand-50/50 dark:bg-brand-950/30 ring-1 ring-brand-500/20'
+                  ? 'border-[#155EEF]/60 bg-[#EFF4FF] dark:bg-[#155EEF]/15 ring-1 ring-[#155EEF]/20'
                   : item.status === 'active'
-                  ? 'border-slate-300 dark:border-steel-700 bg-slate-50 dark:bg-steel-800/80'
+                  ? 'border-[#D0D5DD] dark:border-[#344054] bg-[#F9FAFB] dark:bg-[#18202A]'
                   : item.status === 'done'
-                  ? 'border-emerald-200 dark:border-emerald-900/40 bg-emerald-50/40 dark:bg-emerald-950/20'
-                  : 'border-slate-200 dark:border-steel-800/80 bg-white dark:bg-steel-950/50'
+                  ? 'border-[#ABEFC6] dark:border-[#067647]/40 bg-[#ECFDF3]/60 dark:bg-[#067647]/15'
+                  : 'border-[#E4E7EC] dark:border-[#252B33] bg-white dark:bg-[#11161D]'
               }`}
             >
-              <div className="flex items-center justify-between text-[10px] font-mono text-slate-500 dark:text-steel-400">
+              <div className="flex items-center justify-between text-[11px] font-mono text-[#667085] dark:text-[#98A2B3]">
                 <span>{item.step}</span>
-                <span className={item.status === 'current' ? 'text-brand-600 dark:text-brand-400 font-semibold' : 'text-slate-500'}>
+                <span className={item.status === 'current' ? 'text-[#175CD3] dark:text-[#528BFF] font-semibold' : 'text-[#667085] dark:text-[#98A2B3]'}>
                   {item.count}
                 </span>
               </div>
-              <div className="font-semibold text-slate-900 dark:text-slate-100 text-[11px] mt-1 truncate">
+              <div className="font-semibold text-[#111827] dark:text-[#F2F4F7] text-xs mt-1.5 truncate">
                 {item.label}
               </div>
             </div>
@@ -142,70 +142,70 @@ export default function DashboardPage() {
       {/* WHAT NEEDS MY ATTENTION & WHAT SHOULD I DO NEXT CARDS */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
         {/* WHAT NEEDS MY ATTENTION? */}
-        <Card className="border border-slate-200 dark:border-steel-800 bg-white dark:bg-steel-900/90 p-4.5 space-y-3 shadow-2xs">
+        <Card className="border border-[#E4E7EC] dark:border-[#252B33] bg-white dark:bg-[#11161D] p-5 space-y-3.5 shadow-[0_1px_2px_rgba(16,24,40,0.04)]">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <div className="p-1 rounded-md bg-amber-50 dark:bg-amber-950/40 text-amber-600 dark:text-amber-400 border border-amber-200 dark:border-amber-800/60">
-                <AlertTriangle className="h-3.5 w-3.5" />
+            <div className="flex items-center gap-2.5">
+              <div className="p-1.5 rounded-lg bg-[#FFFAEB] dark:bg-[#B54708]/20 text-[#B54708] dark:text-[#FDB022] border border-[#FEDF89] dark:border-[#B54708]/40">
+                <AlertTriangle className="h-4 w-4" />
               </div>
-              <h3 className="font-semibold text-xs sm:text-sm text-slate-900 dark:text-slate-100 tracking-tight">
+              <h3 className="font-semibold text-xs sm:text-sm text-[#111827] dark:text-[#F2F4F7] tracking-tight">
                 OPERATIONAL ATTENTION REQUIRED
               </h3>
             </div>
-            <Badge variant="warning" className="text-[10px]">
+            <Badge variant="warning">
               Triage
             </Badge>
           </div>
 
-          <div className="space-y-2 text-xs">
-            <div className="p-3 rounded-lg bg-slate-50/60 dark:bg-steel-950/60 border border-slate-200/80 dark:border-steel-800 shadow-2xs hover:border-slate-300 dark:hover:border-steel-700 transition-colors flex items-center justify-between gap-3">
+          <div className="space-y-2.5 text-xs">
+            <div className="p-3.5 rounded-lg bg-[#F9FAFB] dark:bg-[#18202A] border border-[#E4E7EC] dark:border-[#252B33] shadow-[0_1px_2px_rgba(16,24,40,0.04)] hover:border-[#D0D5DD] dark:hover:border-[#344054] transition-colors flex items-center justify-between gap-3">
               <div className="space-y-0.5 min-w-0">
-                <span className="font-semibold text-slate-900 dark:text-slate-200 flex items-center gap-1.5 truncate text-xs">
-                  <FileText className="h-3.5 w-3.5 text-brand-600 dark:text-brand-400 shrink-0" />
+                <span className="font-semibold text-[#111827] dark:text-[#F2F4F7] flex items-center gap-1.5 truncate text-xs">
+                  <FileText className="h-3.5 w-3.5 text-[#155EEF] shrink-0" />
                   Inbound RFQ #RFQ-2026-0891 from Apex Aerospace
                 </span>
-                <p className="text-[11px] text-slate-500 dark:text-steel-400">
+                <p className="text-[12px] text-[#667085] dark:text-[#98A2B3]">
                   500 SS304 Brackets (3mm) requires pricing estimate turnaround within 4 hours.
                 </p>
               </div>
               <Link href="/quotations/builder" className="shrink-0">
-                <Button size="sm" variant="primary" className="text-[11px] h-7 px-2.5">
+                <Button size="sm" variant="primary" className="text-xs h-8 px-3">
                   Quote →
                 </Button>
               </Link>
             </div>
 
-            <div className="p-3 rounded-lg bg-slate-50/60 dark:bg-steel-950/60 border border-slate-200/80 dark:border-steel-800 shadow-2xs hover:border-slate-300 dark:hover:border-steel-700 transition-colors flex items-center justify-between gap-3">
+            <div className="p-3.5 rounded-lg bg-[#F9FAFB] dark:bg-[#18202A] border border-[#E4E7EC] dark:border-[#252B33] shadow-[0_1px_2px_rgba(16,24,40,0.04)] hover:border-[#D0D5DD] dark:hover:border-[#344054] transition-colors flex items-center justify-between gap-3">
               <div className="space-y-0.5 min-w-0">
-                <span className="font-semibold text-slate-900 dark:text-slate-200 flex items-center gap-1.5 truncate text-xs">
-                  <Wrench className="h-3.5 w-3.5 text-slate-600 dark:text-steel-400 shrink-0" />
+                <span className="font-semibold text-[#111827] dark:text-[#F2F4F7] flex items-center gap-1.5 truncate text-xs">
+                  <Wrench className="h-3.5 w-3.5 text-[#667085] dark:text-[#98A2B3] shrink-0" />
                   Press Brake 01 Tooling Changeover
                 </span>
-                <p className="text-[11px] text-slate-500 dark:text-steel-400">
+                <p className="text-[12px] text-[#667085] dark:text-[#98A2B3]">
                   Tooling setup required for Batch 150 titanium flanges before 02:00 PM shift.
                 </p>
               </div>
               <Link href="/machines" className="shrink-0">
-                <Button size="sm" variant="outline" className="text-[11px] h-7 px-2.5">
+                <Button size="sm" variant="outline" className="text-xs h-8 px-3">
                   Telemetry
                 </Button>
               </Link>
             </div>
 
-            <div className="p-3 rounded-lg bg-slate-50/60 dark:bg-steel-950/60 border border-slate-200/80 dark:border-steel-800 shadow-2xs hover:border-slate-300 dark:hover:border-steel-700 transition-colors flex items-center justify-between gap-3">
+            <div className="p-3.5 rounded-lg bg-[#F9FAFB] dark:bg-[#18202A] border border-[#E4E7EC] dark:border-[#252B33] shadow-[0_1px_2px_rgba(16,24,40,0.04)] hover:border-[#D0D5DD] dark:hover:border-[#344054] transition-colors flex items-center justify-between gap-3">
               <div className="space-y-0.5 min-w-0">
-                <span className="font-semibold text-slate-900 dark:text-slate-200 flex items-center gap-1.5 truncate text-xs">
-                  <Layers className="h-3.5 w-3.5 text-amber-600 dark:text-amber-400 shrink-0" />
+                <span className="font-semibold text-[#111827] dark:text-[#F2F4F7] flex items-center gap-1.5 truncate text-xs">
+                  <Layers className="h-3.5 w-3.5 text-[#B54708] shrink-0" />
                   {lowStockCount > 0 ? `Low Stock: ${lowStockCount} items below threshold` : 'Inventory Stock In-Spec'}
                 </span>
-                <p className="text-[11px] text-slate-500 dark:text-steel-400">
+                <p className="text-[12px] text-[#667085] dark:text-[#98A2B3]">
                   {lowStockCount > 0
                     ? 'Automated purchase orders recommended to prevent manufacturing delays.'
                     : 'All critical raw sheet materials and fasteners within target safety margins.'}
                 </p>
               </div>
               <Link href="/inventory" className="shrink-0">
-                <Button size="sm" variant="outline" className="text-[11px] h-7 px-2.5">
+                <Button size="sm" variant="outline" className="text-xs h-8 px-3">
                   Stock
                 </Button>
               </Link>
@@ -214,68 +214,68 @@ export default function DashboardPage() {
         </Card>
 
         {/* WHAT SHOULD I DO NEXT? */}
-        <Card className="border border-slate-200 dark:border-steel-800 bg-white dark:bg-steel-900/90 p-4.5 space-y-3 shadow-2xs">
+        <Card className="border border-[#E4E7EC] dark:border-[#252B33] bg-white dark:bg-[#11161D] p-5 space-y-3.5 shadow-[0_1px_2px_rgba(16,24,40,0.04)]">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <div className="p-1 rounded-md bg-brand-50 dark:bg-brand-950/40 text-brand-600 dark:text-brand-400 border border-brand-200 dark:border-brand-800/60">
-                <Cpu className="h-3.5 w-3.5" />
+            <div className="flex items-center gap-2.5">
+              <div className="p-1.5 rounded-lg bg-[#EFF8FF] dark:bg-[#175CD3]/20 text-[#175CD3] dark:text-[#84ADFF] border border-[#B2DDFF] dark:border-[#175CD3]/40">
+                <Cpu className="h-4 w-4" />
               </div>
-              <h3 className="font-semibold text-xs sm:text-sm text-slate-900 dark:text-slate-100 tracking-tight">
+              <h3 className="font-semibold text-xs sm:text-sm text-[#111827] dark:text-[#F2F4F7] tracking-tight">
                 PROPOSED OPERATIONAL ACTIONS
               </h3>
             </div>
-            <Badge variant="secondary" className="text-[10px]">
+            <Badge variant="info">
               AI Recommended
             </Badge>
           </div>
 
-          <div className="space-y-2 text-xs">
-            <div className="p-3 rounded-lg bg-slate-50/60 dark:bg-steel-950/60 border border-slate-200/80 dark:border-steel-800 shadow-2xs hover:border-slate-300 dark:hover:border-steel-700 transition-colors flex items-center justify-between gap-3">
+          <div className="space-y-2.5 text-xs">
+            <div className="p-3.5 rounded-lg bg-[#F9FAFB] dark:bg-[#18202A] border border-[#E4E7EC] dark:border-[#252B33] shadow-[0_1px_2px_rgba(16,24,40,0.04)] hover:border-[#D0D5DD] dark:hover:border-[#344054] transition-colors flex items-center justify-between gap-3">
               <div className="space-y-0.5 min-w-0">
-                <span className="font-semibold text-slate-900 dark:text-slate-200 flex items-center gap-1.5 truncate text-xs">
-                  <CheckCircle2 className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400 shrink-0" />
+                <span className="font-semibold text-[#111827] dark:text-[#F2F4F7] flex items-center gap-1.5 truncate text-xs">
+                  <CheckCircle2 className="h-3.5 w-3.5 text-[#067647] dark:text-[#32D583] shrink-0" />
                   Approve CMM Quality Pass on Job #FG-2042
                 </span>
-                <p className="text-[11px] text-slate-500 dark:text-steel-400">
+                <p className="text-[12px] text-[#667085] dark:text-[#98A2B3]">
                   Welding verified by Priya Sharma. Move to final Finishing & Dispatch stage.
                 </p>
               </div>
               <Link href="/production/planner" className="shrink-0">
-                <Button size="sm" variant="primary" className="text-[11px] h-7 px-2.5">
+                <Button size="sm" variant="primary" className="text-xs h-8 px-3">
                   Pass QC
                 </Button>
               </Link>
             </div>
 
-            <div className="p-3 rounded-lg bg-slate-50/60 dark:bg-steel-950/60 border border-slate-200/80 dark:border-steel-800 shadow-2xs hover:border-slate-300 dark:hover:border-steel-700 transition-colors flex items-center justify-between gap-3">
+            <div className="p-3.5 rounded-lg bg-[#F9FAFB] dark:bg-[#18202A] border border-[#E4E7EC] dark:border-[#252B33] shadow-[0_1px_2px_rgba(16,24,40,0.04)] hover:border-[#D0D5DD] dark:hover:border-[#344054] transition-colors flex items-center justify-between gap-3">
               <div className="space-y-0.5 min-w-0">
-                <span className="font-semibold text-slate-900 dark:text-slate-200 flex items-center gap-1.5 truncate text-xs">
-                  <Truck className="h-3.5 w-3.5 text-blue-600 dark:text-blue-400 shrink-0" />
+                <span className="font-semibold text-[#111827] dark:text-[#F2F4F7] flex items-center gap-1.5 truncate text-xs">
+                  <Truck className="h-3.5 w-3.5 text-[#155EEF] shrink-0" />
                   Dispatch Pallet #PLT-098 to Freight
                 </span>
-                <p className="text-[11px] text-slate-500 dark:text-steel-400">
+                <p className="text-[12px] text-[#667085] dark:text-[#98A2B3]">
                   Print shipping bill of lading & notify buyer with tracking telemetry.
                 </p>
               </div>
               <Link href="/orders" className="shrink-0">
-                <Button size="sm" variant="outline" className="text-[11px] h-7 px-2.5">
+                <Button size="sm" variant="outline" className="text-xs h-8 px-3">
                   Label
                 </Button>
               </Link>
             </div>
 
-            <div className="p-3 rounded-lg bg-slate-50/60 dark:bg-steel-950/60 border border-slate-200/80 dark:border-steel-800 shadow-2xs hover:border-slate-300 dark:hover:border-steel-700 transition-colors flex items-center justify-between gap-3">
+            <div className="p-3.5 rounded-lg bg-[#F9FAFB] dark:bg-[#18202A] border border-[#E4E7EC] dark:border-[#252B33] shadow-[0_1px_2px_rgba(16,24,40,0.04)] hover:border-[#D0D5DD] dark:hover:border-[#344054] transition-colors flex items-center justify-between gap-3">
               <div className="space-y-0.5 min-w-0">
-                <span className="font-semibold text-slate-900 dark:text-slate-200 flex items-center gap-1.5 truncate text-xs">
-                  <DollarSign className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400 shrink-0" />
+                <span className="font-semibold text-[#111827] dark:text-[#F2F4F7] flex items-center gap-1.5 truncate text-xs">
+                  <DollarSign className="h-3.5 w-3.5 text-[#067647] dark:text-[#32D583] shrink-0" />
                   Claim Escrow Milestone Payout (₹48,000)
                 </span>
-                <p className="text-[11px] text-slate-500 dark:text-steel-400">
+                <p className="text-[12px] text-[#667085] dark:text-[#98A2B3]">
                   Buyer confirmed dock delivery. Funds ready for automated bank disbursement.
                 </p>
               </div>
               <Link href="/invoices" className="shrink-0">
-                <Button size="sm" variant="primary" className="text-[11px] h-7 px-2.5">
+                <Button size="sm" variant="primary" className="text-xs h-8 px-3">
                   Payout
                 </Button>
               </Link>
@@ -396,44 +396,44 @@ export default function DashboardPage() {
                 No orders found. Click "Create Work Order" to create one in Neon DB.
               </div>
             ) : (
-              <div className="divide-y divide-slate-100 dark:divide-steel-800">
+              <div className="divide-y divide-[#E4E7EC] dark:divide-[#252B33]">
                 {orders.slice(0, 5).map((order) => (
                   <div
                     key={order.id}
-                    className="flex flex-col sm:flex-row sm:items-center justify-between p-4 gap-3 hover:bg-slate-50/50 dark:hover:bg-steel-800/40 transition-colors"
+                    className="flex flex-col sm:flex-row sm:items-center justify-between p-4 sm:p-5 gap-3 hover:bg-[#F9FAFB] dark:hover:bg-[#18202A]/50 transition-colors"
                   >
                     <div className="space-y-1">
                       <div className="flex items-center gap-2">
-                        <span className="font-bold text-slate-900 dark:text-slate-100 text-sm">
+                        <span className="font-bold text-[#111827] dark:text-[#F2F4F7] text-sm tracking-tight">
                           {order.orderNumber}
                         </span>
                         <Badge status={order.status} />
-                        <Badge variant="outline" className="text-[10px]">
+                        <Badge variant="outline" className="text-xs">
                           {order.priority}
                         </Badge>
                       </div>
-                      <p className="text-xs text-slate-600 dark:text-steel-300 font-semibold">
+                      <p className="text-xs text-[#344054] dark:text-[#D0D5DD] font-medium">
                         {order.title}
                       </p>
-                      <p className="text-[11px] text-slate-400">
+                      <p className="text-xs text-[#667085] dark:text-[#98A2B3]">
                         Customer: {order.customerName} • Due: {order.dueDate}
                       </p>
                     </div>
 
                     <div className="flex items-center gap-4">
-                      <div className="w-28 space-y-1">
-                        <div className="flex justify-between text-[10px] font-bold text-slate-500">
+                      <div className="w-32 space-y-1">
+                        <div className="flex justify-between text-xs font-medium text-[#667085] dark:text-[#98A2B3]">
                           <span>Progress</span>
                           <span>{order.progressPercent}%</span>
                         </div>
-                        <div className="h-1.5 w-full rounded-full bg-slate-200 dark:bg-steel-800 overflow-hidden">
+                        <div className="h-1.5 w-full rounded-full bg-[#E4E7EC] dark:bg-[#252B33] overflow-hidden">
                           <div
-                            className="h-full bg-brand-500 rounded-full transition-all duration-300"
+                            className="h-full bg-[#155EEF] rounded-full transition-all duration-300"
                             style={{ width: `${order.progressPercent}%` }}
                           />
                         </div>
                       </div>
-                      <span className="font-extrabold text-slate-900 dark:text-slate-100 text-sm">
+                      <span className="font-bold text-[#111827] dark:text-[#F2F4F7] text-sm tabular-nums min-w-[80px] text-right">
                         {formatCurrency(order.totalAmount)}
                       </span>
                     </div>
@@ -447,21 +447,19 @@ export default function DashboardPage() {
         <Card>
           <CardHeader>
             <CardTitle className="text-base flex items-center gap-2">
-              <Clock className="h-4 w-4 text-brand-500" /> Activity Timeline
+              <Clock className="h-4 w-4 text-[#155EEF]" /> Activity Timeline
             </CardTitle>
             <CardDescription>System events & telemetry</CardDescription>
           </CardHeader>
-          <CardContent className="p-4 space-y-4">
+          <CardContent className="p-5 space-y-4">
             {MOCK_ACTIVITIES.map((act) => (
               <div key={act.id} className="flex gap-3 items-start text-xs">
-                <div className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-brand-500/10 text-brand-500 font-bold">
-                  •
-                </div>
+                <div className="mt-1 flex h-2 w-2 shrink-0 rounded-full bg-[#155EEF]" />
                 <div className="flex-1 space-y-0.5">
-                  <p className="text-slate-800 dark:text-steel-200 font-medium leading-tight">
+                  <p className="text-[#111827] dark:text-[#F2F4F7] font-medium leading-tight">
                     {act.action}
                   </p>
-                  <div className="flex items-center justify-between text-[10px] text-slate-400">
+                  <div className="flex items-center justify-between text-xs text-[#667085] dark:text-[#98A2B3]">
                     <span>By {act.user}</span>
                     <span>{formatTimeAgo(act.timestamp)}</span>
                   </div>

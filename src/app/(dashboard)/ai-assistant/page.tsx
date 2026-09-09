@@ -12,7 +12,7 @@ export default function AiAssistantPage() {
   const preferences = copilotMemory.getPreferences();
 
   return (
-    <div className="space-y-6">
+    <div className="max-w-[1400px] mx-auto space-y-6 pb-12 font-sans">
       <PageHeader
         title="ForgeIQ Copilot - AI Operations Manager"
         description="Multi-agent conversational intelligence layer with live platform telemetry, live data citations, and 1-click execution cards."
@@ -27,57 +27,57 @@ export default function AiAssistantPage() {
 
         {/* Multi-Agent System Architecture & Operational Memory */}
         <div className="space-y-6">
-          <Card className="border-slate-200 dark:border-steel-800 bg-white dark:bg-steel-900 shadow-xs">
-            <CardHeader className="pb-3">
-              <CardTitle className="text-base flex items-center gap-2 text-slate-900 dark:text-slate-100 font-bold">
-                <Layers className="h-4 w-4 text-purple-600 dark:text-purple-400" /> Multi-Agent Domain Architecture
+          <Card className="border border-[#E4E7EC] dark:border-[#252B33] bg-white dark:bg-[#11161D] shadow-[0_1px_2px_rgba(16,24,40,0.04)]">
+            <CardHeader className="pb-3.5">
+              <CardTitle className="text-sm flex items-center gap-2 text-[#111827] dark:text-[#F2F4F7] font-semibold">
+                <Layers className="h-4 w-4 text-[#155EEF]" /> Multi-Agent Domain Architecture
               </CardTitle>
-              <CardDescription className="text-slate-500 dark:text-slate-400">7 specialized autonomous domain agents</CardDescription>
+              <CardDescription className="text-xs text-[#667085] dark:text-[#98A2B3]">7 specialized autonomous domain agents</CardDescription>
             </CardHeader>
             <CardContent className="space-y-2 text-xs">
-              <div className="p-2.5 rounded-xl border border-slate-200 dark:border-steel-800 bg-slate-50/70 dark:bg-steel-900/60 hover:bg-slate-100 dark:hover:bg-steel-800/80 transition-colors flex items-center justify-between shadow-2xs">
-                <span className="font-bold text-slate-900 dark:text-slate-100">Sales Agent</span>
-                <Badge variant="outline" className="text-[10px] bg-white dark:bg-steel-800 border-slate-200 dark:border-steel-700 text-slate-600 dark:text-steel-300">Client LTV & Accounts</Badge>
+              <div className="p-3 rounded-lg border border-[#E4E7EC] dark:border-[#252B33] bg-[#F9FAFB] dark:bg-[#18202A] hover:bg-white dark:hover:bg-[#11161D] transition-colors flex items-center justify-between shadow-[0_1px_2px_rgba(16,24,40,0.04)]">
+                <span className="font-semibold text-[#111827] dark:text-[#F2F4F7]">Sales Agent</span>
+                <Badge variant="outline" className="text-xs">Client LTV & Accounts</Badge>
               </div>
-              <div className="p-2.5 rounded-xl border border-slate-200 dark:border-steel-800 bg-slate-50/70 dark:bg-steel-900/60 hover:bg-slate-100 dark:hover:bg-steel-800/80 transition-colors flex items-center justify-between shadow-2xs">
-                <span className="font-bold text-slate-900 dark:text-slate-100">Quotation Agent</span>
-                <Badge variant="outline" className="text-[10px] bg-white dark:bg-steel-800 border-slate-200 dark:border-steel-700 text-slate-600 dark:text-steel-300">RFQ Pipeline & Margins</Badge>
+              <div className="p-3 rounded-lg border border-[#E4E7EC] dark:border-[#252B33] bg-[#F9FAFB] dark:bg-[#18202A] hover:bg-white dark:hover:bg-[#11161D] transition-colors flex items-center justify-between shadow-[0_1px_2px_rgba(16,24,40,0.04)]">
+                <span className="font-semibold text-[#111827] dark:text-[#F2F4F7]">Quotation Agent</span>
+                <Badge variant="outline" className="text-xs">RFQ Pipeline & Margins</Badge>
               </div>
-              <div className="p-2.5 rounded-xl border border-slate-200 dark:border-steel-800 bg-slate-50/70 dark:bg-steel-900/60 hover:bg-slate-100 dark:hover:bg-steel-800/80 transition-colors flex items-center justify-between shadow-2xs">
-                <span className="font-bold text-slate-900 dark:text-slate-100">Production Agent</span>
-                <Badge variant="outline" className="text-[10px] bg-white dark:bg-steel-800 border-slate-200 dark:border-steel-700 text-slate-600 dark:text-steel-300">Shop Floor & OEE Rates</Badge>
+              <div className="p-3 rounded-lg border border-[#E4E7EC] dark:border-[#252B33] bg-[#F9FAFB] dark:bg-[#18202A] hover:bg-white dark:hover:bg-[#11161D] transition-colors flex items-center justify-between shadow-[0_1px_2px_rgba(16,24,40,0.04)]">
+                <span className="font-semibold text-[#111827] dark:text-[#F2F4F7]">Production Agent</span>
+                <Badge variant="outline" className="text-xs">Shop Floor & OEE Rates</Badge>
               </div>
-              <div className="p-2.5 rounded-xl border border-slate-200 dark:border-steel-800 bg-slate-50/70 dark:bg-steel-900/60 hover:bg-slate-100 dark:hover:bg-steel-800/80 transition-colors flex items-center justify-between shadow-2xs">
-                <span className="font-bold text-slate-900 dark:text-slate-100">Inventory Agent</span>
-                <Badge variant="outline" className="text-[10px] bg-white dark:bg-steel-800 border-slate-200 dark:border-steel-700 text-slate-600 dark:text-steel-300">SKU Reorder Thresholds</Badge>
+              <div className="p-3 rounded-lg border border-[#E4E7EC] dark:border-[#252B33] bg-[#F9FAFB] dark:bg-[#18202A] hover:bg-white dark:hover:bg-[#11161D] transition-colors flex items-center justify-between shadow-[0_1px_2px_rgba(16,24,40,0.04)]">
+                <span className="font-semibold text-[#111827] dark:text-[#F2F4F7]">Inventory Agent</span>
+                <Badge variant="outline" className="text-xs">SKU Reorder Thresholds</Badge>
               </div>
-              <div className="p-2.5 rounded-xl border border-slate-200 dark:border-steel-800 bg-slate-50/70 dark:bg-steel-900/60 hover:bg-slate-100 dark:hover:bg-steel-800/80 transition-colors flex items-center justify-between shadow-2xs">
-                <span className="font-bold text-slate-900 dark:text-slate-100">Purchase Agent</span>
-                <Badge variant="outline" className="text-[10px] bg-white dark:bg-steel-800 border-slate-200 dark:border-steel-700 text-slate-600 dark:text-steel-300">POs & Vendor Lead Times</Badge>
+              <div className="p-3 rounded-lg border border-[#E4E7EC] dark:border-[#252B33] bg-[#F9FAFB] dark:bg-[#18202A] hover:bg-white dark:hover:bg-[#11161D] transition-colors flex items-center justify-between shadow-[0_1px_2px_rgba(16,24,40,0.04)]">
+                <span className="font-semibold text-[#111827] dark:text-[#F2F4F7]">Purchase Agent</span>
+                <Badge variant="outline" className="text-xs">POs & Vendor Lead Times</Badge>
               </div>
-              <div className="p-2.5 rounded-xl border border-slate-200 dark:border-steel-800 bg-slate-50/70 dark:bg-steel-900/60 hover:bg-slate-100 dark:hover:bg-steel-800/80 transition-colors flex items-center justify-between shadow-2xs">
-                <span className="font-bold text-slate-900 dark:text-slate-100">Finance Agent</span>
-                <Badge variant="outline" className="text-[10px] bg-white dark:bg-steel-800 border-slate-200 dark:border-steel-700 text-slate-600 dark:text-steel-300">Revenues & Overdue Invoices</Badge>
+              <div className="p-3 rounded-lg border border-[#E4E7EC] dark:border-[#252B33] bg-[#F9FAFB] dark:bg-[#18202A] hover:bg-white dark:hover:bg-[#11161D] transition-colors flex items-center justify-between shadow-[0_1px_2px_rgba(16,24,40,0.04)]">
+                <span className="font-semibold text-[#111827] dark:text-[#F2F4F7]">Finance Agent</span>
+                <Badge variant="outline" className="text-xs">Revenues & Overdue Invoices</Badge>
               </div>
-              <div className="p-2.5 rounded-xl border border-slate-200 dark:border-steel-800 bg-slate-50/70 dark:bg-steel-900/60 hover:bg-slate-100 dark:hover:bg-steel-800/80 transition-colors flex items-center justify-between shadow-2xs">
-                <span className="font-bold text-slate-900 dark:text-slate-100">Analytics Agent</span>
-                <Badge variant="outline" className="text-[10px] bg-white dark:bg-steel-800 border-slate-200 dark:border-steel-700 text-slate-600 dark:text-steel-300">Cross-Domain Synthesis</Badge>
+              <div className="p-3 rounded-lg border border-[#E4E7EC] dark:border-[#252B33] bg-[#F9FAFB] dark:bg-[#18202A] hover:bg-white dark:hover:bg-[#11161D] transition-colors flex items-center justify-between shadow-[0_1px_2px_rgba(16,24,40,0.04)]">
+                <span className="font-semibold text-[#111827] dark:text-[#F2F4F7]">Analytics Agent</span>
+                <Badge variant="outline" className="text-xs">Cross-Domain Synthesis</Badge>
               </div>
             </CardContent>
           </Card>
 
-          <Card className="border-slate-200 dark:border-steel-800 bg-white dark:bg-steel-900 shadow-xs">
-            <CardHeader className="pb-3">
-              <CardTitle className="text-base flex items-center gap-2 text-slate-900 dark:text-slate-100 font-bold">
-                <ShieldCheck className="h-4 w-4 text-emerald-500" /> Plant Operational Preferences Memory
+          <Card className="border border-[#E4E7EC] dark:border-[#252B33] bg-white dark:bg-[#11161D] shadow-[0_1px_2px_rgba(16,24,40,0.04)]">
+            <CardHeader className="pb-3.5">
+              <CardTitle className="text-sm flex items-center gap-2 text-[#111827] dark:text-[#F2F4F7] font-semibold">
+                <ShieldCheck className="h-4 w-4 text-[#067647]" /> Plant Operational Preferences Memory
               </CardTitle>
-              <CardDescription className="text-slate-500 dark:text-slate-400">Configured operational rules for Precision Fab Co.</CardDescription>
+              <CardDescription className="text-xs text-[#667085] dark:text-[#98A2B3]">Configured operational rules for Precision Fab Co.</CardDescription>
             </CardHeader>
             <CardContent className="space-y-2.5 text-xs">
               {preferences.map((pref) => (
-                <div key={pref.key} className="p-3 rounded-xl bg-slate-50/70 dark:bg-steel-900/60 border border-slate-200 dark:border-steel-800 space-y-1 shadow-2xs">
-                  <div className="font-bold text-slate-900 dark:text-slate-100">{pref.label}</div>
-                  <div className="text-slate-600 dark:text-steel-400 text-[11px] leading-relaxed">{pref.value}</div>
+                <div key={pref.key} className="p-3 rounded-lg bg-[#F9FAFB] dark:bg-[#18202A] border border-[#E4E7EC] dark:border-[#252B33] space-y-1 shadow-[0_1px_2px_rgba(16,24,40,0.04)]">
+                  <div className="font-semibold text-[#111827] dark:text-[#F2F4F7]">{pref.label}</div>
+                  <div className="text-[#667085] dark:text-[#98A2B3] text-xs leading-relaxed">{pref.value}</div>
                 </div>
               ))}
             </CardContent>

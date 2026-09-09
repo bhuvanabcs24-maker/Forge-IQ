@@ -73,14 +73,14 @@ export default function InventoryPage() {
       header: 'SKU & Category',
       cell: ({ row }) => (
         <div className="flex items-center gap-2.5">
-          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-amber-500/10 text-amber-600 font-bold text-xs">
+          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-[#F9FAFB] dark:bg-[#18202A] text-[#667085] dark:text-[#98A2B3] border border-[#E4E7EC] dark:border-[#252B33]">
             <Boxes className="h-4 w-4" />
           </div>
           <div>
-            <span className="font-mono font-bold text-slate-900 dark:text-slate-100 text-xs">
+            <span className="font-mono font-semibold text-[#111827] dark:text-[#F2F4F7] text-xs">
               {row.original.sku}
             </span>
-            <div className="text-[11px] text-slate-500 dark:text-steel-400">
+            <div className="text-[11px] text-[#667085] dark:text-[#98A2B3]">
               Category: {row.original.category}
             </div>
           </div>
@@ -92,10 +92,10 @@ export default function InventoryPage() {
       header: 'Material / Item Description',
       cell: ({ row }) => (
         <div>
-          <div className="font-semibold text-slate-800 dark:text-steel-200">
+          <div className="font-semibold text-[#111827] dark:text-[#F2F4F7]">
             {row.original.name}
           </div>
-          <div className="text-xs text-slate-500 dark:text-steel-400">
+          <div className="text-xs text-[#667085] dark:text-[#98A2B3]">
             Grade: {row.original.materialGrade}
           </div>
         </div>
@@ -109,15 +109,15 @@ export default function InventoryPage() {
         return (
           <div className="flex items-center gap-2">
             <span
-              className={`font-extrabold text-sm ${
-                isLow ? 'text-rose-500' : 'text-slate-900 dark:text-slate-100'
+              className={`font-bold text-sm tabular-nums ${
+                isLow ? 'text-[#B42318] dark:text-[#FDA29B]' : 'text-[#111827] dark:text-[#F2F4F7]'
               }`}
             >
               {row.original.quantity} {row.original.unit}
             </span>
             {isLow && (
-              <Badge variant="danger" className="text-[10px] gap-1">
-                <AlertTriangle className="h-3 w-3" /> Reorder Alert
+              <Badge variant="danger" className="text-xs">
+                Reorder
               </Badge>
             )}
           </div>
@@ -128,7 +128,7 @@ export default function InventoryPage() {
       accessorKey: 'location',
       header: 'Bay Location',
       cell: ({ row }) => (
-        <span className="text-xs font-mono bg-slate-100 dark:bg-steel-800 px-2 py-1 rounded">
+        <span className="text-xs font-mono bg-[#F9FAFB] dark:bg-[#18202A] text-[#344054] dark:text-[#D0D5DD] px-2 py-0.5 rounded-[6px] border border-[#E4E7EC] dark:border-[#252B33]">
           {row.original.location}
         </span>
       ),
@@ -137,7 +137,7 @@ export default function InventoryPage() {
       accessorKey: 'unitCost',
       header: 'Unit Cost',
       cell: ({ row }) => (
-        <span className="font-medium text-slate-800 dark:text-steel-200">
+        <span className="font-medium text-[#111827] dark:text-[#F2F4F7] tabular-nums text-xs">
           {formatCurrency(row.original.unitCost)}
         </span>
       ),
@@ -146,7 +146,7 @@ export default function InventoryPage() {
       id: 'actions',
       header: 'Adjust',
       cell: ({ row }) => (
-        <Button variant="outline" size="sm" onClick={() => setSelectedItem(row.original)}>
+        <Button variant="outline" size="sm" className="h-8 px-2.5 text-xs" onClick={() => setSelectedItem(row.original)}>
           Restock / Adjust
         </Button>
       ),
@@ -154,7 +154,7 @@ export default function InventoryPage() {
   ];
 
   return (
-    <div className="space-y-6">
+    <div className="max-w-[1400px] mx-auto space-y-6 pb-12 font-sans">
       <PageHeader
         title="Raw Material & Sheet Inventory"
         description="Live synchronization with Neon PostgreSQL stock levels, sheet metal gauges, tube stock, hardware fasteners, and automated stock alerts."

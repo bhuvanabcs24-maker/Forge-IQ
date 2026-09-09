@@ -24,49 +24,49 @@ export function AiCommandHero() {
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 8 }}
+      initial={{ opacity: 0, y: 4 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.25 }}
-      className="relative overflow-hidden rounded-xl border border-slate-200 dark:border-steel-800 bg-white dark:bg-steel-900/90 p-5 sm:p-6 text-slate-900 dark:text-white shadow-2xs space-y-4"
+      transition={{ duration: 0.2 }}
+      className="relative rounded-xl border border-[#E4E7EC] dark:border-[#252B33] bg-white dark:bg-[#11161D] p-6 text-[#111827] dark:text-[#F2F4F7] shadow-[0_1px_2px_rgba(16,24,40,0.04)] space-y-4"
     >
-      {/* Precision Telemetry Status Bar */}
-      <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 dark:border-steel-800/80 pb-3">
+      {/* Status Bar */}
+      <div className="flex flex-wrap items-center justify-between gap-2 border-b border-[#E4E7EC] dark:border-[#252B33] pb-3.5">
         <div className="flex items-center gap-2">
-          <span className="flex items-center gap-1.5 px-2 py-0.5 rounded bg-slate-100 dark:bg-steel-800 text-slate-700 dark:text-steel-300 font-mono text-[10px] font-semibold border border-slate-200 dark:border-steel-700">
-            <Terminal className="h-3 w-3 text-brand-600 dark:text-brand-400" /> FORGEIQ OS // INTELLIGENCE CONSOLE
+          <span className="flex items-center gap-1.5 px-2 py-0.5 rounded-[6px] bg-[#F9FAFB] dark:bg-[#18202A] text-[#344054] dark:text-[#D0D5DD] font-mono text-[11px] font-semibold border border-[#E4E7EC] dark:border-[#252B33]">
+            <Terminal className="h-3.5 w-3.5 text-[#155EEF]" /> FORGEIQ OS // INTELLIGENCE CONSOLE
           </span>
-          <span className="text-slate-400 dark:text-steel-500 text-xs">•</span>
-          <span className="text-slate-600 dark:text-steel-400 text-xs font-medium">Sheet Metal & Fabrication Works</span>
+          <span className="text-[#667085] dark:text-[#98A2B3] text-xs">•</span>
+          <span className="text-[#667085] dark:text-[#98A2B3] text-xs font-normal">Sheet Metal & Precision Fabrication</span>
         </div>
 
-        <div className="flex items-center gap-1.5 text-[10px] font-mono font-medium text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/40 px-2 py-0.5 rounded border border-emerald-200 dark:border-emerald-800/60">
-          <Activity className="h-3 w-3 animate-pulse" />
+        <div className="flex items-center gap-1.5 text-xs font-medium text-[#067647] dark:text-[#32D583] bg-[#ECFDF3] dark:bg-[#067647]/20 px-2.5 py-0.5 rounded-[6px] border border-[#ABEFC6] dark:border-[#067647]/40">
+          <Activity className="h-3.5 w-3.5" />
           <span>SHOP TELEMETRY: CONNECTED</span>
         </div>
       </div>
 
       <div className="space-y-1">
-        <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-slate-900 dark:text-white font-sans">
+        <h2 className="text-[20px] font-semibold tracking-tight text-[#111827] dark:text-[#F2F4F7] leading-[1.3] font-sans">
           Manufacturing Operations & AI Copilot
-        </h1>
-        <p className="text-xs sm:text-sm text-slate-600 dark:text-steel-400 max-w-2xl font-normal">
+        </h2>
+        <p className="text-sm text-[#667085] dark:text-[#98A2B3] max-w-2xl font-normal leading-[1.55]">
           Instant CAD feature extraction, dynamic laser & bending cost estimation, shop floor scheduling, and autonomous production tracking.
         </p>
       </div>
 
       {/* Interactive AI Command Prompt Input Box */}
       <form onSubmit={handlePromptSubmit} className="max-w-3xl pt-1">
-        <div className="flex items-center rounded-lg border border-slate-200 dark:border-steel-700 bg-slate-50 dark:bg-steel-950 p-1.5 shadow-2xs focus-within:border-brand-500/80 focus-within:ring-1 focus-within:ring-brand-500/20 transition-all">
-          <Terminal className="h-4 w-4 text-slate-400 dark:text-steel-400 ml-2.5 shrink-0" />
+        <div className="flex items-center rounded-lg border border-[#D0D5DD] dark:border-[#344054] bg-[#F9FAFB] dark:bg-[#18202A] p-1 shadow-[0_1px_2px_rgba(16,24,40,0.04)] focus-within:border-[#155EEF] focus-within:ring-2 focus-within:ring-[#155EEF]/15 transition-all">
+          <Terminal className="h-4 w-4 text-[#667085] dark:text-[#98A2B3] ml-2.5 shrink-0" />
           <input
             value={prompt}
             onChange={(e) => setPrompt(e.target.value)}
             placeholder="Ask ForgeIQ Copilot (e.g., 'Which orders are delayed?', 'Check TRUMPF TruLaser speed for SS304')..."
-            className="w-full bg-transparent px-3 py-1.5 text-xs sm:text-sm text-slate-900 dark:text-white outline-none placeholder:text-slate-400 dark:placeholder:text-steel-500 font-sans"
+            className="w-full bg-transparent px-3 py-2 text-sm text-[#111827] dark:text-[#F2F4F7] outline-none placeholder:text-[#667085] dark:placeholder:text-[#98A2B3] font-sans"
           />
           <button
             type="submit"
-            className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-md bg-slate-900 hover:bg-slate-800 dark:bg-brand-600 dark:hover:bg-brand-500 text-white font-medium text-xs shadow-2xs transition-all shrink-0 cursor-pointer"
+            className="flex items-center gap-1.5 h-9 px-4 rounded-lg bg-[#155EEF] hover:bg-[#124ec7] active:bg-[#0d3ea8] text-white font-semibold text-xs tracking-normal shadow-sm transition-all shrink-0 cursor-pointer"
           >
             Execute <ArrowRight className="h-3.5 w-3.5" />
           </button>
@@ -75,7 +75,7 @@ export function AiCommandHero() {
 
       {/* Quick Operational Action Shortcuts */}
       <div className="pt-1 flex flex-wrap items-center gap-2">
-        <span className="text-[11px] text-slate-400 dark:text-steel-500 font-medium mr-1 uppercase tracking-wider text-[10px]">
+        <span className="text-xs text-[#667085] dark:text-[#98A2B3] font-medium mr-1 uppercase tracking-wider text-[11px]">
           Operational Shortcuts:
         </span>
         {quickActionPills.map((pill) => {
@@ -84,9 +84,9 @@ export function AiCommandHero() {
             <button
               key={pill.label}
               onClick={() => router.push(pill.href)}
-              className="flex items-center gap-1.5 px-2.5 py-1 rounded-md border border-slate-200 dark:border-steel-700 bg-white dark:bg-steel-800 hover:bg-slate-50 dark:hover:bg-steel-700 text-xs font-medium text-slate-700 dark:text-steel-300 hover:text-slate-900 dark:hover:text-white shadow-2xs transition-colors cursor-pointer"
+              className="flex items-center gap-1.5 h-8 px-3 rounded-lg border border-[#D0D5DD] dark:border-[#344054] bg-white dark:bg-[#11161D] hover:bg-[#F9FAFB] dark:hover:bg-[#18202A] text-xs font-medium text-[#344054] dark:text-[#D0D5DD] hover:text-[#111827] dark:hover:text-[#F2F4F7] shadow-[0_1px_2px_rgba(16,24,40,0.04)] transition-colors cursor-pointer"
             >
-              <Icon className="h-3.5 w-3.5 text-slate-400 dark:text-steel-400" />
+              <Icon className="h-3.5 w-3.5 text-[#667085] dark:text-[#98A2B3]" />
               {pill.label}
             </button>
           );

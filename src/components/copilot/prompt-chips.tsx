@@ -14,16 +14,16 @@ export const OPERATIONAL_PROMPTS = [
 
 export function PromptChips({ onSelectPrompt }: { onSelectPrompt: (prompt: string) => void }) {
   return (
-    <div className="space-y-1.5">
-      <div className="flex items-center gap-1.5 text-[10px] font-mono font-semibold uppercase tracking-wider text-slate-400 dark:text-steel-500 px-0.5">
-        <Terminal className="h-3 w-3" /> Quick Query Shortcuts:
+    <div className="space-y-2">
+      <div className="flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-wider text-[#667085] dark:text-[#98A2B3] px-0.5">
+        <Terminal className="h-3.5 w-3.5 text-[#155EEF]" /> Quick Operational Shortcuts:
       </div>
-      <div className="flex flex-wrap gap-1.5">
+      <div className="flex flex-wrap gap-2">
         {OPERATIONAL_PROMPTS.map((prompt, idx) => (
           <button
             key={idx}
             onClick={() => onSelectPrompt(prompt)}
-            className="rounded-md border border-slate-200 dark:border-steel-800 bg-white dark:bg-steel-900 px-2.5 py-1 text-[11px] text-slate-700 dark:text-steel-300 hover:border-slate-300 dark:hover:border-steel-700 hover:text-slate-900 dark:hover:text-white transition-colors shadow-2xs font-medium cursor-pointer"
+            className="rounded-lg border border-[#D0D5DD] dark:border-[#344054] bg-white dark:bg-[#11161D] px-3 py-1.5 text-xs text-[#344054] dark:text-[#D0D5DD] hover:border-[#155EEF] hover:text-[#155EEF] dark:hover:text-[#528BFF] transition-colors shadow-[0_1px_2px_rgba(16,24,40,0.04)] font-medium cursor-pointer"
           >
             {prompt}
           </button>
