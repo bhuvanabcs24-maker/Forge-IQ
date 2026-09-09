@@ -10,7 +10,7 @@ import { useAuth } from '@/context/auth-context';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { UserRole } from '@/types';
-import { Zap, Lock, Mail, ArrowRight, ShieldCheck, Factory, Phone, KeyRound, CheckCircle2 } from 'lucide-react';
+import { Zap, Lock, Mail, ArrowRight, ShieldCheck, Factory, Phone, KeyRound, CheckCircle2, Eye, EyeOff } from 'lucide-react';
 
 const loginSchema = z.object({
   email: z.string().email('Please enter a valid business email address'),
@@ -25,6 +25,7 @@ export default function LoginPage() {
   const { login } = useAuth();
   const [authMode, setAuthMode] = useState<'email' | 'otp'>('email');
   const [authError, setAuthError] = useState<string | null>(null);
+  const [showPassword, setShowPassword] = useState(false);
 
   // SMS OTP State
   const [phone, setPhone] = useState('');
@@ -289,9 +290,24 @@ export default function LoginPage() {
                   </Link>
                 </div>
                 <Input
-                  type="password"
+                  type={showPassword ? 'text' : 'password'}
                   placeholder="Enter your account password"
                   icon={<Lock className="h-4 w-4" />}
+                  rightElement={
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword((prev) => !prev)}
+                      className="text-steel-400 hover:text-white transition-colors focus:outline-none p-1 rounded-md hover:bg-steel-800/80 cursor-pointer"
+                      title={showPassword ? 'Hide password' : 'Show password'}
+                      aria-label={showPassword ? 'Hide password' : 'Show password'}
+                    >
+                      {showPassword ? (
+                        <EyeOff className="h-4 w-4 text-brand-400" />
+                      ) : (
+                        <Eye className="h-4 w-4 text-steel-400 hover:text-steel-200" />
+                      )}
+                    </button>
+                  }
                   {...register('password')}
                 />
                 {errors.password && (

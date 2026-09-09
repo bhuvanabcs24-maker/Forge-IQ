@@ -24,6 +24,8 @@ import {
   AlertCircle,
   Loader2,
   MessageSquare,
+  Eye,
+  EyeOff,
 } from 'lucide-react';
 
 const registerSchema = z.object({
@@ -53,6 +55,7 @@ export default function RegisterPage() {
   const [verificationId, setVerificationId] = useState<string>('');
   const [resendCountdown, setResendCountdown] = useState<number>(60);
   const [canResend, setCanResend] = useState<boolean>(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   const {
     register,
@@ -315,9 +318,24 @@ export default function RegisterPage() {
                   Account Password
                 </label>
                 <Input
-                  type="password"
+                  type={showPassword ? 'text' : 'password'}
                   icon={<Lock className="h-4 w-4" />}
-                  placeholder="••••••••"
+                  placeholder="At least 8 characters"
+                  rightElement={
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword((prev) => !prev)}
+                      className="text-steel-400 hover:text-white transition-colors focus:outline-none p-1 rounded-md hover:bg-steel-800/80 cursor-pointer"
+                      title={showPassword ? 'Hide password' : 'Show password'}
+                      aria-label={showPassword ? 'Hide password' : 'Show password'}
+                    >
+                      {showPassword ? (
+                        <EyeOff className="h-4 w-4 text-brand-400" />
+                      ) : (
+                        <Eye className="h-4 w-4 text-steel-400 hover:text-steel-200" />
+                      )}
+                    </button>
+                  }
                   {...register('password')}
                 />
                 {errors.password && (
