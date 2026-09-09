@@ -6,6 +6,11 @@ import httpx
 from pydantic import BaseModel
 from app.config.settings import settings
 
+try:
+    from openai import AsyncOpenAI
+except ImportError:
+    AsyncOpenAI = None
+
 logger = logging.getLogger('forgeiq.llm')
 
 T = TypeVar('T', bound=BaseModel)
@@ -261,6 +266,13 @@ class OpenAIProvider(BaseLLMProvider):
             detected_base = 'https://api.experientiallabs.ai/v1'
         self.base_url = detected_base.rstrip('/')
         self.model = model or settings.OPENAI_MODEL or 'gpt-4o-mini'
+        
+        self.client = None
+        if self.api_key and AsyncOpenAI is not None:
+            try:
+                self.client = AsyncOpenAI(api_key=self.api_key, base_url=self.base_url)
+            except Exception as e:
+                logger.warning(f"Could not initialize AsyncOpenAI client: {e}")
 
     async def generate_text(
         self,
@@ -272,18 +284,33 @@ class OpenAIProvider(BaseLLMProvider):
         if not self.api_key:
             return await MockProvider().generate_text(prompt, system_prompt)
 
-        headers = {
-            'Authorization': f'Bearer {self.api_key}',
-            'Content-Type': 'application/json',
-        }
         messages = []
         if system_prompt:
             messages.append({'role': 'system', 'content': system_prompt})
         messages.append({'role': 'user', 'content': prompt})
 
+        # 1. Preferred path: Native AsyncOpenAI client
+        if self.client is not None:
+            try:
+                completion = await self.client.chat.completions.create(
+                    model=self.model,
+                    messages=messages,
+                    temperature=temperature,
+                    max_tokens=max_tokens,
+                )
+                if completion.choices and completion.choices[0].message.content:
+                    return completion.choices[0].message.content
+            except Exception as e:
+                logger.error(f"OpenAI SDK chat completion error: {e}. Falling back to HTTP.")
+
+        # 2. Resilient fallback path: Direct HTTP request via httpx
+        headers = {
+            'Authorization': f'Bearer {self.api_key}',
+            'Content-Type': 'application/json',
+        }
         try:
-            async with httpx.AsyncClient(timeout=35.0) as client:
-                resp = await client.post(
+            async with httpx.AsyncClient(timeout=35.0) as http_client:
+                resp = await http_client.post(
                     f"{self.base_url}/chat/completions",
                     headers=headers,
                     json={
@@ -296,7 +323,7 @@ class OpenAIProvider(BaseLLMProvider):
                 if resp.status_code == 200:
                     data = resp.json()
                     return data['choices'][0]['message']['content']
-                logger.error(f"OpenAI/Gateway error: HTTP {resp.status_code} - {resp.text}")
+                logger.error(f"OpenAI/Gateway HTTP error: HTTP {resp.status_code} - {resp.text}")
                 return await MockProvider().generate_text(prompt, system_prompt)
         except Exception as e:
             logger.error(f"OpenAI connection error: {e}. Falling back to domain estimate.")
@@ -309,12 +336,28 @@ class OpenAIProvider(BaseLLMProvider):
         system_prompt: Optional[str] = None,
         temperature: float = 0.1,
     ) -> T:
+        if not self.api_key:
+            return await MockProvider().generate_structured(prompt, response_model, system_prompt)
+
         schema_json = json.dumps(response_model.model_json_schema())
-        strict_prompt = f"{prompt}\nReturn JSON matching: {schema_json}"
+        strict_prompt = (
+            f"{prompt}\n\n"
+            f"CRITICAL: Output ONLY a valid JSON object matching this schema with NO markdown codeblocks and NO commentary:\n"
+            f"{schema_json}"
+        )
         raw = await self.generate_text(strict_prompt, system_prompt, temperature)
+        clean = raw.strip()
+        if clean.startswith('```json'):
+            clean = clean[7:]
+        if clean.startswith('```'):
+            clean = clean[3:]
+        if clean.endswith('```'):
+            clean = clean[:-3]
+        clean = clean.strip()
         try:
-            return response_model.model_validate_json(raw)
-        except Exception:
+            return response_model.model_validate_json(clean)
+        except Exception as err:
+            logger.warning(f"Failed to parse structured OpenAI response: {err}. Falling back to domain estimate.")
             return await MockProvider().generate_structured(prompt, response_model, system_prompt)
 
 class AnthropicProvider(BaseLLMProvider):
