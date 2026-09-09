@@ -104,3 +104,122 @@ class TelemetryRecord(BaseModel):
     success: bool = True
     error_message: Optional[str] = None
     created_at: str = Field(default_factory=lambda: datetime.utcnow().isoformat())
+
+# ==========================================================
+# PHASE 2: MANUFACTURING KNOWLEDGE, RAG & METADATA SCHEMAS
+# ==========================================================
+
+class KnowledgeSourceType(str):
+    FACTORY_DATABASE = "factory_database"
+    FACTORY_SOP = "factory_sop"
+    SUPPLIER_DATA = "supplier_data"
+    MANUFACTURER = "manufacturer"
+    ENGINEERING_STANDARD = "engineering_standard"
+    REFERENCE = "reference"
+    GENERAL_WEB = "general_web"
+    LLM_MEMORY = "llm_memory"
+
+SOURCE_PRIORITY_ORDER = [
+    "factory_database",
+    "factory_sop",
+    "supplier_data",
+    "manufacturer",
+    "engineering_standard",
+    "reference",
+    "general_web",
+    "llm_memory",
+]
+
+class ManufacturingKnowledgeRecord(BaseModel):
+    id: str
+    category: str = Field(..., description="MACHINE|MATERIAL|DFM|QUALITY|PRICING|SOP|INVENTORY|SAFETY|SCHEDULING")
+    title: str
+    content: str
+    source: str
+    source_url: str = ""
+    source_type: str = "factory_database"
+    verification_status: str = "verified"  # verified | unverified | reference
+    confidence: float = Field(default=1.0, ge=0.0, le=1.0)
+    effective_date: str = Field(default_factory=lambda: datetime.utcnow().strftime("%Y-%m-%d"))
+    expiry_date: Optional[str] = None
+    last_updated: str = Field(default_factory=lambda: datetime.utcnow().isoformat())
+    is_stale: bool = False
+
+class MachineRecord(BaseModel):
+    machine_id: str
+    manufacturer: str = "TO_BE_PROVIDED"
+    model: str = "TO_BE_PROVIDED"
+    process: str  # LASER_CUTTING | PRESS_BRAKE | CNC_MILLING | MIG_WELDING | TIG_WELDING
+    laser_power_kw: Optional[float] = None
+    bed_length_mm: Optional[float] = None
+    bed_width_mm: Optional[float] = None
+    max_workpiece_weight_kg: Optional[float] = None
+    tonnage: Optional[float] = None
+    bending_length_mm: Optional[float] = None
+    x_travel_mm: Optional[float] = None
+    y_travel_mm: Optional[float] = None
+    z_travel_mm: Optional[float] = None
+    max_rpm: Optional[int] = None
+    cutting_speed_mm_min: Optional[float] = None
+    assist_gases: List[str] = Field(default_factory=list)
+    gas_pressure_bar: Optional[float] = None
+    hourly_rate_inr: Optional[float] = None
+    setup_cost_inr: Optional[float] = None
+    status: str = "AVAILABLE"  # AVAILABLE | IN_USE | MAINTENANCE | OFFLINE
+    source: str = "FACTORY_DATABASE"
+    verification_status: str = "verified"
+    confidence: float = 1.0
+    updated_at: str = Field(default_factory=lambda: datetime.utcnow().isoformat())
+
+class MaterialRecord(BaseModel):
+    material_code: str
+    family: str  # STAINLESS_STEEL | ALUMINUM | MILD_STEEL | COPPER | ALLOY_STEEL
+    grade: str  # 304 | 316L | 6061-T6 | IS2062 | CRCA | HARDOX
+    density_kg_m3: float
+    thickness_mm: Optional[float] = None
+    dimensions_mm: Optional[str] = None
+    supplier: str = "TO_BE_PROVIDED"
+    current_price_inr_kg: Optional[float] = None
+    price_unit: str = "INR/kg"
+    minimum_order_quantity: int = 1
+    stock_quantity: int = 0
+    reserved_quantity: int = 0
+    available_quantity: int = 0
+    remnant_quantity: int = 0
+    supplier_lead_time_days: int = 3
+    effective_from: str = Field(default_factory=lambda: datetime.utcnow().strftime("%Y-%m-%d"))
+    valid_until: Optional[str] = None
+    is_stale: bool = False
+    source: str = "FACTORY_DATABASE"
+    confidence: float = 1.0
+    verification_status: str = "verified"
+    updated_at: str = Field(default_factory=lambda: datetime.utcnow().isoformat())
+
+class DFMIssue(BaseModel):
+    feature: str
+    risk: str
+    severity: str = "MEDIUM"  # INFO | LOW | MEDIUM | HIGH | CRITICAL
+    current_design: str
+    manufacturing_constraint: str
+    recommendation: str
+    confidence: float = 0.95
+    engineering_review_required: bool = False
+
+class DFMAnalysisResult(BaseModel):
+    status: str = "PASS"  # PASS | REVIEW | FAIL
+    issues: List[DFMIssue] = Field(default_factory=list)
+    warnings: List[str] = Field(default_factory=list)
+    recommendations: List[str] = Field(default_factory=list)
+    assumptions: List[str] = Field(default_factory=list)
+    confidence: float = 0.95
+    engineering_review_required: bool = False
+
+class ConflictResolutionResult(BaseModel):
+    resolved_value: Any
+    unit: Optional[str] = None
+    chosen_source: str
+    source_priority_rank: int
+    confidence: float
+    status: str  # verified | stale | conflicting | unknown
+    competing_sources: List[Dict[str, Any]] = Field(default_factory=list)
+
