@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { Sparkles } from 'lucide-react';
+import { Terminal } from 'lucide-react';
 
 export const OPERATIONAL_PROMPTS = [
   'Which orders are delayed?',
@@ -9,22 +9,21 @@ export const OPERATIONAL_PROMPTS = [
   "Show today's priorities.",
   'Which customers have overdue payments?',
   'Which machines are overloaded?',
-  'Why has profit decreased this month?',
   'What inventory should I reorder?',
 ];
 
 export function PromptChips({ onSelectPrompt }: { onSelectPrompt: (prompt: string) => void }) {
   return (
-    <div className="space-y-2">
-      <div className="flex items-center gap-1 text-[11px] font-semibold text-slate-500 dark:text-steel-400 px-1">
-        <Sparkles className="h-3 w-3 text-brand-500" /> Operational Insights Shortcuts:
+    <div className="space-y-1.5">
+      <div className="flex items-center gap-1.5 text-[10px] font-mono font-semibold uppercase tracking-wider text-slate-400 dark:text-steel-500 px-0.5">
+        <Terminal className="h-3 w-3" /> Quick Query Shortcuts:
       </div>
       <div className="flex flex-wrap gap-1.5">
         {OPERATIONAL_PROMPTS.map((prompt, idx) => (
           <button
             key={idx}
             onClick={() => onSelectPrompt(prompt)}
-            className="rounded-full border border-slate-200 dark:border-steel-700 bg-white dark:bg-steel-800/80 px-3 py-1 text-xs text-slate-700 dark:text-steel-200 hover:border-brand-500 hover:text-brand-500 transition-colors shadow-2xs font-medium"
+            className="rounded-md border border-slate-200 dark:border-steel-800 bg-white dark:bg-steel-900 px-2.5 py-1 text-[11px] text-slate-700 dark:text-steel-300 hover:border-slate-300 dark:hover:border-steel-700 hover:text-slate-900 dark:hover:text-white transition-colors shadow-2xs font-medium cursor-pointer"
           >
             {prompt}
           </button>

@@ -13,28 +13,35 @@ export interface ButtonProps
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
   ({ className, variant = 'primary', size = 'md', onClick, children, disabled, ...props }, ref) => {
     const baseStyles =
-      'inline-flex items-center justify-center font-semibold rounded-xl transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 disabled:pointer-events-none disabled:opacity-50 select-none cursor-pointer';
+      'inline-flex items-center justify-center font-medium rounded-lg transition-all focus-visible:outline-none focus-visible:ring-1.5 focus-visible:ring-brand-500 disabled:pointer-events-none disabled:opacity-40 select-none cursor-pointer tracking-tight';
 
     const variants = {
-      primary: 'bg-gradient-to-r from-brand-600 to-blue-600 text-white hover:from-brand-500 hover:to-blue-500 shadow-md shadow-brand-500/25 border border-brand-400/30',
-      secondary: 'bg-slate-200 text-slate-900 hover:bg-slate-300 dark:bg-steel-800 dark:text-steel-100 dark:hover:bg-steel-700 border border-slate-300 dark:border-steel-700',
-      outline: 'border border-slate-300 dark:border-steel-700 bg-white/50 dark:bg-steel-900/60 backdrop-blur-md hover:bg-slate-100 dark:hover:bg-steel-800 text-slate-800 dark:text-steel-200 shadow-2xs',
-      ghost: 'bg-transparent hover:bg-slate-100 dark:hover:bg-steel-800/80 text-slate-700 dark:text-steel-300',
-      danger: 'bg-gradient-to-r from-rose-600 to-red-600 text-white hover:from-rose-500 hover:to-red-500 shadow-md shadow-rose-500/20 border border-rose-400/30',
-      metal: 'bg-gradient-to-b from-slate-100 to-slate-200 dark:from-steel-800 dark:to-steel-900 border border-slate-300 dark:border-steel-700 text-slate-900 dark:text-slate-100 hover:border-brand-500 shadow-xs',
+      primary:
+        'bg-slate-900 text-white hover:bg-slate-800 dark:bg-brand-600 dark:text-white dark:hover:bg-brand-500 shadow-xs border border-slate-800 dark:border-brand-500 active:scale-[0.98]',
+      secondary:
+        'bg-slate-100 text-slate-800 hover:bg-slate-200/80 dark:bg-steel-800 dark:text-steel-100 dark:hover:bg-steel-700 border border-slate-200 dark:border-steel-700 shadow-2xs active:scale-[0.98]',
+      outline:
+        'border border-slate-200 dark:border-steel-700 bg-white dark:bg-steel-900 text-slate-700 dark:text-steel-200 hover:bg-slate-50 dark:hover:bg-steel-800 shadow-2xs active:scale-[0.98]',
+      ghost:
+        'bg-transparent hover:bg-slate-100 dark:hover:bg-steel-800 text-slate-600 dark:text-steel-300 hover:text-slate-900 dark:hover:text-slate-100',
+      danger:
+        'bg-rose-600 text-white hover:bg-rose-500 border border-rose-700 shadow-2xs active:scale-[0.98]',
+      metal:
+        'bg-slate-50 dark:bg-steel-800/90 border border-slate-300 dark:border-steel-700 text-slate-900 dark:text-slate-100 hover:border-slate-400 dark:hover:border-steel-600 shadow-2xs active:scale-[0.98]',
     };
 
     const sizes = {
-      sm: 'h-8 px-3 text-xs gap-1.5',
-      md: 'h-9.5 px-4 text-xs gap-2',
-      lg: 'h-11 px-6 text-sm gap-2.5',
-      icon: 'h-9 w-9 p-0 text-xs',
+      sm: 'h-8 px-2.5 text-xs gap-1.5',
+      md: 'h-9 px-3.5 text-xs gap-2',
+      lg: 'h-10 px-4 text-sm gap-2',
+      icon: 'h-8.5 w-8.5 p-0 text-xs',
     };
 
     return (
       <motion.button
-        whileHover={{ scale: 1.02 }}
-        whileTap={{ scale: 0.97 }}
+        whileHover={{ scale: 1.01 }}
+        whileTap={{ scale: 0.98 }}
+        transition={{ duration: 0.12 }}
         className={cn(baseStyles, variants[variant], sizes[size], className)}
         ref={ref}
         disabled={disabled}

@@ -58,17 +58,17 @@ export function DataTable<TData, TValue>({
   });
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-3 font-sans">
       {/* Search & Filter Toolbar */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-        <div className="flex flex-1 items-center gap-3">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2.5">
+        <div className="flex flex-1 items-center gap-2.5">
           {searchKey && (
             <div className="relative w-full max-w-sm">
               <Input
                 placeholder={searchPlaceholder}
                 value={globalFilter ?? ''}
                 onChange={(e) => setGlobalFilter(e.target.value)}
-                icon={<Search className="h-4 w-4" />}
+                icon={<Search className="h-3.5 w-3.5" />}
                 className="w-full"
               />
             </div>
@@ -79,19 +79,19 @@ export function DataTable<TData, TValue>({
       </div>
 
       {/* Table Container */}
-      <div className="rounded-xl border border-slate-200 dark:border-steel-800 bg-white dark:bg-steel-900/90 overflow-hidden shadow-sm">
+      <div className="rounded-xl border border-slate-200 dark:border-steel-800 bg-white dark:bg-steel-900/95 overflow-hidden shadow-2xs">
         <div className="overflow-x-auto">
-          <table className="w-full text-left text-sm border-collapse">
+          <table className="w-full text-left text-xs border-collapse">
             <thead>
               {table.getHeaderGroups().map((headerGroup) => (
                 <tr
                   key={headerGroup.id}
-                  className="border-b border-slate-200 dark:border-steel-800 bg-slate-50/80 dark:bg-steel-800/50"
+                  className="border-b border-slate-200 dark:border-steel-800 bg-slate-50/80 dark:bg-steel-950/70"
                 >
                   {headerGroup.headers.map((header) => (
                     <th
                       key={header.id}
-                      className="px-4 py-3 text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-steel-400 select-none"
+                      className="px-3.5 py-2.5 text-[11px] font-semibold uppercase tracking-wider text-slate-500 dark:text-steel-400 select-none"
                     >
                       {header.isPlaceholder ? null : (
                         <div
@@ -104,7 +104,7 @@ export function DataTable<TData, TValue>({
                         >
                           {flexRender(header.column.columnDef.header, header.getContext())}
                           {header.column.getCanSort() && (
-                            <ArrowUpDown className="h-3.5 w-3.5 opacity-60" />
+                            <ArrowUpDown className="h-3 w-3 opacity-60" />
                           )}
                         </div>
                       )}
@@ -113,7 +113,7 @@ export function DataTable<TData, TValue>({
                 </tr>
               ))}
             </thead>
-            <tbody className="divide-y divide-slate-100 dark:divide-steel-800/60">
+            <tbody className="divide-y divide-slate-100 dark:divide-steel-800/70">
               {table.getRowModel().rows?.length ? (
                 table.getRowModel().rows.map((row) => (
                   <tr
@@ -121,7 +121,7 @@ export function DataTable<TData, TValue>({
                     className="hover:bg-slate-50/60 dark:hover:bg-steel-800/40 transition-colors"
                   >
                     {row.getVisibleCells().map((cell) => (
-                      <td key={cell.id} className="px-4 py-3 text-slate-700 dark:text-steel-200">
+                      <td key={cell.id} className="px-3.5 py-2.5 text-slate-700 dark:text-steel-200">
                         {flexRender(cell.column.columnDef.cell, cell.getContext())}
                       </td>
                     ))}
@@ -129,7 +129,7 @@ export function DataTable<TData, TValue>({
                 ))
               ) : (
                 <tr>
-                  <td colSpan={columns.length} className="h-48 text-center">
+                  <td colSpan={columns.length} className="h-40 text-center">
                     <EmptyState
                       title="No matching records found"
                       description="Try adjusting your search query or clear active filters."
@@ -142,7 +142,7 @@ export function DataTable<TData, TValue>({
         </div>
 
         {/* Pagination Bar */}
-        <div className="flex items-center justify-between px-4 py-3 border-t border-slate-100 dark:border-steel-800/60 bg-slate-50/50 dark:bg-steel-900/40 text-xs text-slate-500 dark:text-steel-400">
+        <div className="flex items-center justify-between px-3.5 py-2.5 border-t border-slate-100 dark:border-steel-800/70 bg-slate-50/40 dark:bg-steel-950/40 text-[11px] text-slate-500 dark:text-steel-400">
           <div>
             Showing{' '}
             <span className="font-semibold text-slate-800 dark:text-slate-200">
@@ -163,27 +163,29 @@ export function DataTable<TData, TValue>({
             entries
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1.5">
             <Button
               variant="outline"
               size="sm"
+              className="h-7 px-2 text-[11px]"
               onClick={() => table.previousPage()}
               disabled={!table.getCanPreviousPage()}
             >
-              <ChevronLeft className="h-3.5 w-3.5 mr-1" />
+              <ChevronLeft className="h-3 w-3 mr-0.5" />
               Previous
             </Button>
-            <span className="px-2 font-medium text-slate-700 dark:text-steel-300">
-              Page {table.getState().pagination.pageIndex + 1} of {table.getPageCount() || 1}
+            <span className="px-2 font-mono text-[11px] text-slate-700 dark:text-steel-300">
+              {table.getState().pagination.pageIndex + 1} / {table.getPageCount() || 1}
             </span>
             <Button
               variant="outline"
               size="sm"
+              className="h-7 px-2 text-[11px]"
               onClick={() => table.nextPage()}
               disabled={!table.getCanNextPage()}
             >
               Next
-              <ChevronRight className="h-3.5 w-3.5 ml-1" />
+              <ChevronRight className="h-3 w-3 ml-0.5" />
             </Button>
           </div>
         </div>

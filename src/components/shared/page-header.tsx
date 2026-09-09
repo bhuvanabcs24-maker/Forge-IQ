@@ -23,20 +23,20 @@ export function PageHeader({
   actions,
 }: PageHeaderProps) {
   return (
-    <div className="flex flex-col gap-3 pb-6 border-b border-slate-200/80 dark:border-steel-800/80 mb-6">
+    <div className="flex flex-col gap-2.5 pb-4 border-b border-slate-200 dark:border-steel-800/80 mb-5">
       {/* Breadcrumb Navigation */}
       {breadcrumbs.length > 0 && (
-        <nav className="flex items-center gap-1.5 text-xs text-slate-500 dark:text-steel-400">
+        <nav className="flex items-center gap-1.5 text-[11px] text-slate-500 dark:text-steel-400">
           <Link
             href="/dashboard"
             className="flex items-center gap-1 hover:text-slate-900 dark:hover:text-slate-200 transition-colors"
           >
-            <Home className="h-3.5 w-3.5" />
+            <Home className="h-3 w-3" />
             <span>Home</span>
           </Link>
           {breadcrumbs.map((crumb, idx) => (
             <React.Fragment key={idx}>
-              <ChevronRight className="h-3.5 w-3.5 text-slate-400 dark:text-steel-600" />
+              <ChevronRight className="h-3 w-3 text-slate-400 dark:text-steel-600" />
               {crumb.href ? (
                 <Link
                   href={crumb.href}
@@ -55,18 +55,18 @@ export function PageHeader({
       )}
 
       {/* Header Core & Action Buttons */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-slate-100 font-sans">
+          <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-slate-900 dark:text-slate-100 font-sans">
             {title}
           </h1>
           {description && (
-            <p className="text-sm text-slate-500 dark:text-steel-400 mt-1">
+            <p className="text-xs sm:text-sm text-slate-500 dark:text-steel-400 mt-0.5">
               {description}
             </p>
           )}
         </div>
-        {actions && <div className="flex items-center gap-3">{actions}</div>}
+        {actions && <div className="flex items-center gap-2">{actions}</div>}
       </div>
     </div>
   );
