@@ -7,17 +7,17 @@
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.7-3178c6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.115-009688?style=for-the-badge&logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com/)
 [![Neon PostgreSQL](https://img.shields.io/badge/Neon-PostgreSQL%2018-00e599?style=for-the-badge&logo=postgresql&logoColor=black)](https://neon.tech/)
-[![OpenAI](https://img.shields.io/badge/AI%20Gateway-GPT--4o--mini-412991?style=for-the-badge&logo=openai&logoColor=white)](https://openai.com/)
-[![Tailwind CSS](https://img.shields.io/badge/Tailwind-3.4-38b2ac?style=for-the-badge&logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
+[![OpenAI](https://img.shields.io/badge/AI%20SDK-AsyncOpenAI%20Backend-412991?style=for-the-badge&logo=openai&logoColor=white)](https://openai.com/)
+[![Pytest](https://img.shields.io/badge/Pytest-33%20Passing-brightgreen?style=for-the-badge&logo=pytest&logoColor=white)](https://pytest.org/)
+[![AI Benchmark](https://img.shields.io/badge/AI%20Benchmark-10%2F10%20Passed-blueviolet?style=for-the-badge)](ai-service/scripts/evaluate_model.py)
 [![Razorpay](https://img.shields.io/badge/Razorpay-INR%20%E2%82%B9-0c2340?style=for-the-badge&logo=razorpay&logoColor=3395FF)](https://razorpay.com/)
-[![Pytest](https://img.shields.io/badge/Pytest-21%20Passing-brightgreen?style=for-the-badge&logo=pytest&logoColor=white)](https://pytest.org/)
 [![License](https://img.shields.io/badge/License-MIT-purple.svg?style=for-the-badge)](LICENSE)
 
 <br />
 
-**A full-stack, enterprise-grade Autonomous Manufacturing Intelligence Platform that powers the entire B2B fabrication lifecycle: multimodal RFQ intake, vector-retrieval RAG industrial reasoning, automated CAD geometry costing, shop floor machine scheduling, Swiggy-style customer order tracking, and Razorpay milestone escrow payments.**
+**A full-stack, enterprise-grade Autonomous Manufacturing Intelligence Platform that powers the entire B2B fabrication lifecycle: multimodal RFQ intake, vector-retrieval RAG industrial reasoning, deterministic CAD geometry and BOM costing, autonomous DFM risk analysis, shop-floor remnant inventory tracking, machine scheduling, and Razorpay milestone escrow payments.**
 
-[Explore Features](#-feature-showcase--screenshots) • [System Architecture](#-system-architecture) • [Industrial RAG Engine](#-industrial-rag--ai-reasoning) • [Engineering Highlights](#-engineering-highlights) • [Getting Started](#-getting-started) • [Automated Tests](#-testing--quality-assurance)
+[Feature Showcase](#-feature-showcase--compact-screenshots) • [System Architecture](#-system-architecture) • [Manufacturing AI Knowledge Spec](#-manufacturing-ai-knowledge-specification) • [Master AI Implementation](#-master-ai-implementation-phases-1--6) • [Database Architecture](#-real-world-database-integration) • [Getting Started](#-getting-started) • [Testing & Benchmarks](#-testing--quality-assurance)
 
 </div>
 
@@ -25,197 +25,233 @@
 
 ## 🌟 Executive Summary & Problem Space
 
-Precision contract manufacturing (sheet metal fabrication, CNC milling, additive printing) is a **$450B+ global industry** still burdened by manual friction:
+Precision contract manufacturing (sheet metal fabrication, CNC milling, additive printing) is a **$450B+ global industry** burdened by manual friction:
 - **Quotation Bottleneck**: Estimators spend hours to days manually calculating laser piercing times, bend deductions, scrap rates, and tooling allowances from engineering drawings.
 - **Unstructured RFQ Chaos**: Customer purchase requests arrive fragmented across WhatsApp chats, hand-drawn sketches, unstructured PDFs, and legacy CAD drawings.
 - **Shop Floor Blindspots**: Job shops manage million-dollar fiber lasers and press brakes using dry-erase whiteboards and disconnected Excel spreadsheets, leading to delayed milestones and idle machine capacity.
-- **Payment & Dispute Risk**: High-capital custom fabrications face payment delays due to lack of transparent delivery verification and escrow protection.
+- **AI Hallucination Risk**: Standard commercial LLMs hallucinate prices, invent tolerances, and fail basic engineering physics.
 
-**ForgeIQ solves this end-to-end.** Combining a Next.js 15 App Router frontend with a Python FastAPI AI microservice, vector-indexed industrial RAG knowledge base, and live serverless Neon PostgreSQL database, ForgeIQ transforms factory operations into an autonomous, transparent, and high-margin workflow.
+**ForgeIQ solves this end-to-end.** Combining a Next.js 15 App Router frontend with a Python FastAPI AI microservice, vector-indexed industrial RAG knowledge base, deterministic calculation engines, and live serverless Neon PostgreSQL database, ForgeIQ transforms factory operations into an autonomous, transparent, and high-margin workflow.
 
 ---
 
-## 📸 Feature Showcase & Screenshots
+## 📸 Feature Showcase & Compact Screenshots
 
-### 1. Executive Cockpit & 7-Stage Factory Lifecycle
+### 1. Executive Cockpit & 7-Stage Factory Telemetry
 > **Real-time factory telemetry, active revenue metrics, priority attention alerts, and 7-stage operational dispatching (`Receive` ➔ `Quote` ➔ `Plan` ➔ `Manufacture` ➔ `QC` ➔ `Dispatch` ➔ `Get Paid`).**
 
 <p align="center">
-  <img src="docs/screenshots/dashboard.png" alt="ForgeIQ Executive Dashboard" width="100%" />
+  <img src="docs/screenshots/dashboard.png" alt="ForgeIQ Executive Dashboard" width="70%" style="max-width: 650px; border-radius: 8px; border: 1px solid #334155; box-shadow: 0 4px 16px rgba(0,0,0,0.2);" />
 </p>
 
-- **Dual-Mode Industrial Theme**: Ultra-clean Light theme and high-contrast Dark theme engineered for shop floor tablet use and executive desktop displays.
-- **Agentic Dispatching**: Proactive AI recommendation cards highlight critical-path actions (e.g. *"Inbound RFQ #RFQ-2026-0891 from Apex Aerospace requires pricing quote turnaround within 4 hours"* or *"Approve CMM Quality Pass on Job #FG-2042"*).
+- **Dual-Mode Industrial Theme**: Ultra-clean Light theme and high-contrast Dark theme engineered for shop-floor tablet use and executive desktop displays.
+- **Agentic Dispatching**: Proactive AI recommendation cards highlight critical-path actions (e.g. *"Inbound RFQ from Apex Aerospace requires pricing turnaround within 4 hours"* or *"Approve CMM Quality Pass on Job #JOB-1082"*).
 - **Universal Command Palette (`⌘K`)**: Instant keyboard navigation across orders, CAD analyses, customers, machines, and quotations.
 
 ---
 
-### 2. Multimodal AI Order Intake & Document Understanding
+### 2. Shop Floor Production Kanban & Stage Synchronization
+> **Real-time dispatch board linking parent orders to assigned equipment (`Laser Cutting` ➔ `Bending` ➔ `Welding` ➔ `Finishing` ➔ `QC Inspection` ➔ `Dispatch`).**
+
+<p align="center">
+  <img src="docs/screenshots/production-kanban.png" alt="Production Kanban Board" width="70%" style="max-width: 650px; border-radius: 8px; border: 1px solid #334155; box-shadow: 0 4px 16px rgba(0,0,0,0.2);" />
+</p>
+
+- **Order-to-Job Synchronization**: Moving jobs between manufacturing stages automatically updates completion percentage on parent orders in Neon PostgreSQL.
+- **Machine Fleet Allocation**: Real-time assignment to Bystronic Fiber Lasers, Amada Press Brakes, and Haas VMC milling centers.
+
+---
+
+### 3. Algorithmic Fabrication Pricing Rules (INR ₹)
+> **Configure factory overheads, laser cutting hourly rates, CNC press brake rates, and material margins with deterministic recalculation.**
+
+<p align="center">
+  <img src="docs/screenshots/pricing-rules.png" alt="Fabrication Pricing Rules" width="70%" style="max-width: 650px; border-radius: 8px; border: 1px solid #334155; box-shadow: 0 4px 16px rgba(0,0,0,0.2);" />
+</p>
+
+- **Machine Hourly Rates**: Independent machine rate matrices (e.g., Fiber Laser at ₹1,850/hr, CNC Press Brake at ₹950/hr, Haas VMC at ₹1,200/hr).
+- **Logistics & Tax Handling**: Configurable packaging, weight-based logistics, scrap rate compensation, and Indian GST (18%).
+
+---
+
+### 4. Deterministic Quote Builder & Explainable Cost Breakdown
+> **Generate auditable, itemized quotations with 16-point mathematical traceability, plain-English AI justifications, and explicit `ASSUMPTION` tagging.**
+
+<p align="center">
+  <img src="docs/screenshots/quote-builder.png" alt="Quotation Builder and Cost Breakdown" width="70%" style="max-width: 650px; border-radius: 8px; border: 1px solid #334155; box-shadow: 0 4px 16px rgba(0,0,0,0.2);" />
+</p>
+
+- **Zero-Hallucination Math**: Material, laser cycle time, bending strokes, CAM programming, and margins are computed deterministically.
+- **Assumption Tracking**: If secondary finishing rates (e.g. powder coating) are unverified, the quote is labeled with `ASSUMPTION` and marked as `LOW` confidence until confirmed.
+
+---
+
+### 5. Multimodal AI Order Intake & Extraction Pipeline
 > **Zero manual data entry. Drag & drop incoming customer WhatsApp messages, scanned purchase orders, or technical drawings.**
 
 <p align="center">
-  <img src="docs/screenshots/ai-order-intake.png" alt="AI Order Intake Uploader" width="100%" />
+  <img src="docs/screenshots/ai-order-intake.png" alt="AI Order Intake Uploader" width="70%" style="max-width: 650px; border-radius: 8px; border: 1px solid #334155; box-shadow: 0 4px 16px rgba(0,0,0,0.2);" />
 </p>
 
-- **Universal File Ingestion**: Accepts `.pdf`, `.png`, `.jpg`, `.dwg`, and `.dxf` formats with drag-and-drop or native file picker.
-- **Realistic Industry Presets**: Instant one-click test fixtures for aerospace brackets, heavy equipment frames, and solar mounting clamps.
+- **Universal Document Intake**: Accepts `.pdf`, `.png`, `.jpg`, `.dwg`, and text messages.
+- **Field Confidence Scoring**: Visual confidence chips across material grade, sheet thickness, tolerances, and batch quantities with automated clarification questioning.
 
 ---
 
-### 3. Automated OCR & Multi-Agent Extraction Pipeline
-> **Automated OCR parsing and entity extraction with statistical confidence scoring and instant customer profile auto-generation.**
+### 6. Factory AI Copilot & Live Shop Floor Inquiries
+> **An intelligent manufacturing assistant that queries live database facts and RAG procedures instead of guessing.**
 
 <p align="center">
-  <img src="docs/screenshots/ai-extraction-pipeline.png" alt="AI Extraction Pipeline" width="100%" />
+  <img src="docs/screenshots/factory-copilot.png" alt="Factory AI Copilot" width="70%" style="max-width: 650px; border-radius: 8px; border: 1px solid #334155; box-shadow: 0 4px 16px rgba(0,0,0,0.2);" />
 </p>
 
-- **4-Stage Extraction Pipeline**: `Document Upload` ➔ `OCR Parsing` ➔ `AI Feature Extraction` ➔ `Order Created`.
-- **Field Confidence Validation**: Visual confidence chips (e.g. `96% Confidence`) across material grade, sheet thickness, tolerances, and batch quantities.
-- **Raw OCR Audit Trail**: Full transparency with side-by-side raw text verification for quality control.
+- **Live Operational Q&A**: Answers *"Which machines are available?"*, *"Do we have enough SS304 sheets?"*, *"Can we bend this 12mm flange?"*, and *"Why is this quote ₹23,028?"*.
+- **Tool-Driven Grounding**: Dynamically invokes material calculators, remnant finders, and DFM validators.
 
 ---
 
-### 4. Work Orders & Production Execution
-> **High-throughput fabrication job management with priority scheduling, dynamic progress tracking, and Rupee (₹) valuations.**
+### 7. Secure Authentication & Password Management
+> **Robust authentication powered by Neon PostgreSQL with instant password show/hide eye toggle and OTP SMS verification.**
 
 <p align="center">
-  <img src="docs/screenshots/work-orders.png" alt="Work Orders and Sales Orders" width="100%" />
+  <img src="docs/screenshots/auth-login.png" alt="Secure Authentication" width="70%" style="max-width: 650px; border-radius: 8px; border: 1px solid #334155; box-shadow: 0 4px 16px rgba(0,0,0,0.2);" />
 </p>
 
-- **Live Stage Status**: Instant filtering by `In Production`, `Quality Check`, `Pending`, and `Dispatched`.
-- **Priority Tiering**: Color-coded badges for `Rush`, `High`, and `Normal` jobs linked directly to machine capacity.
-- **Interactive Progression**: Real-time progress bars computed from sub-assembly milestone completions.
-
----
-
-### 5. B2B Customer Directory & WhatsApp CRM
-> **Direct customer relationship management with lifetime spending analytics, order history, and instant WhatsApp communication.**
-
-<p align="center">
-  <img src="docs/screenshots/customer-directory.png" alt="Customer Directory and WhatsApp CRM" width="100%" />
-</p>
-
-- **Instant WhatsApp Communication**: Integrated chat drawer with Meta WhatsApp Cloud API template dispatching and RFQ PDF attachments.
-- **Financial Telemetry**: Track client lifetime spending (LTV), credit terms (e.g., `Net 30`), and active work orders.
-
----
-
-### 6. Algorithmic Fabrication Pricing Engine (INR ₹)
-> **Configure factory overheads, laser cutting hourly rates, CNC press brake rates, and material margins with live recalculation.**
-
-<p align="center">
-  <img src="docs/screenshots/pricing-rules.png" alt="Fabrication Pricing Rules" width="100%" />
-</p>
-
-- **Machine Hourly Rates**: Independent machine rate matrices (e.g., Fiber Laser at ₹2,500/hr, CNC Press Brake at ₹1,800/hr).
-- **Logistics & Tax Handling**: Configurable base packaging, weight-based logistics (₹12/kg), scrap rate compensation, and Indian GST (18%).
-
----
-
-### 7. Quote Builder & Explainable Cost Breakdown
-> **Generate auditable, itemized quotations with natural-language AI price explanations and instant PDF export.**
-
-<p align="center">
-  <img src="docs/screenshots/quote-builder.png" alt="Quotation Builder and Cost Breakdown" width="100%" />
-</p>
-
-- **Natural-Language AI Justification**: Translates complex machine feeds, speeds, and scrap formulas into plain English for client transparency.
-- **Version Control & Revision History**: Create immutable snapshots (`v1.0`, `v1.1`) preserving pricing rules at time of quotation.
+- **Interactive Eye Symbol**: Seamless show/hide toggle for password fields.
+- **Dual Authentication**: Email + password login alongside mobile phone SMS OTP verification.
 
 ---
 
 ## 🏗️ System Architecture
 
-ForgeIQ utilizes a distributed microservices and serverless architecture designed for sub-second latency, fault tolerance, and horizontal scalability:
+ForgeIQ utilizes a distributed microservices and serverless architecture designed for sub-second latency, deterministic precision, and zero-hallucination safety:
+
+<p align="center">
+  <img src="docs/screenshots/system-architecture.png" alt="System Architecture" width="70%" style="max-width: 650px; border-radius: 8px; border: 1px solid #334155; box-shadow: 0 4px 16px rgba(0,0,0,0.2);" />
+</p>
 
 ```mermaid
 flowchart TD
-    subgraph ClientLayer["🖥️ Frontend & Client Applications"]
+    subgraph ClientLayer["🖥️ Frontend & Client Layer"]
         Browser["Next.js 15 App Router\n(React 19 + Tailwind CSS 3.4)"]
-        CustomerPortal["Buyer Customer Portal\n(/portal/dashboard)"]
+        Dashboard["Executive Cockpit & Kanban\n(/dashboard, /production)"]
         CommandPalette["Global Command Palette\n(⌘K Quick Dispatch)"]
     end
 
-    subgraph AppServer["⚡ Next.js Full-Stack Application"]
-        Middleware["Role-Based Middleware\n(RBAC: Owner | Manager | Operator | QA | Customer)"]
-        ServerActions["Server Actions & Route Handlers\n(/api/quotations, /api/auth, /api/razorpay)"]
-        PricingEngine["Deterministic Pricing Engine\n(FabricationPlugin, BOM Calculator)"]
+    subgraph AppServer["⚡ Next.js Backend & API Routes"]
+        Middleware["Role-Based Middleware\n(Owner | Manager | Operator | QA | Customer)"]
+        ServerActions["Server Actions & Route Handlers\n(/api/orders, /api/inventory, /api/machines)"]
+        PythonBridge["Strongly-Typed AI Bridge\n(python-client.ts with Tenant Isolation)"]
     end
 
     subgraph AIService["🤖 Python AI Microservice (FastAPI :8000)"]
-        FastAPIApp["FastAPI REST Application"]
-        CADParser["DXF / DWG Geometry Engine\n(Perimeter, Holes, Bends, Cut Time)"]
-        DocExtractor["Multimodal Vision & OCR\n(Document Parsing & Feature Extraction)"]
-        RAGEngine["Industrial RAG Knowledge Base\n(82 Industrial Chunks + Vector Cosine Search)"]
-        OpenAIGateway["Experiential Labs OpenAI Gateway\n(gpt-4o-mini Reasoning)"]
+        AsyncOpenAI["Native AsyncOpenAI Client\n(gpt-4o-mini Backend Only)"]
+        DFMAgent["Autonomous DFM Agent\n(Tolerances, Flanges, Hardox Validation)"]
+        Calculators["Deterministic Calculation Engines\n(Material, Laser Speed, Bending V~8T, Quotes)"]
+        KnowledgeResolver["Source Priority Resolver\n(Hierarchy & Staleness Tracking)"]
+        VectorStore["Industrial RAG Knowledge Base\n(pgvector / In-Memory Vector Store)"]
     end
 
     subgraph DatabaseLayer["🗄️ Persistence & Cloud Infrastructure"]
-        NeonDB[("Neon Serverless PostgreSQL\n(PostgreSQL 18.6 Connection Pool)")]
+        NeonDB[("Neon Serverless PostgreSQL\n(Orders, Inventory, Machines, Customers, Jobs)")]
         Razorpay["Razorpay Payment Gateway\n(INR ₹ Escrow Orders & Webhooks)"]
-        WhatsAppAPI["WhatsApp Business Cloud API\n(Meta Webhooks & Notification Dispatch)"]
     end
 
     Browser --> Middleware
-    CustomerPortal --> Middleware
+    Dashboard --> Middleware
     CommandPalette --> Middleware
     Middleware --> ServerActions
 
     ServerActions <--> NeonDB
-    ServerActions --> PricingEngine
-    ServerActions <-->|"HTTP / JSON (Bearer Auth)"| FastAPIApp
+    ServerActions --> PythonBridge
+    PythonBridge <-->|"Internal HTTP / JSON"| AIService
 
-    FastAPIApp --> CADParser
-    FastAPIApp --> DocExtractor
-    FastAPIApp --> RAGEngine
-    RAGEngine <--> OpenAIGateway
+    AIService --> AsyncOpenAI
+    AIService --> DFMAgent
+    AIService --> Calculators
+    AIService --> KnowledgeResolver
+    AIService --> VectorStore
 
     ServerActions <--> Razorpay
-    ServerActions <--> WhatsAppAPI
 ```
 
 ---
 
-## 🧠 Industrial RAG & AI Reasoning
+## 📐 Manufacturing AI Knowledge Specification
 
-Unlike generic conversational chatbots, ForgeIQ features a **domain-specialized Retrieval-Augmented Generation (RAG) system** engineered specifically for industrial fabrication:
+ForgeIQ strictly implements the **71-Section Manufacturing AI Knowledge Specification**:
 
-- **Curated Knowledge Chunks (82 Verified Records)**:
-  - **Laser Cutting Parameters**: Feed rates, assist gas specifications (N2, O2, Compressed Air), lens focal lengths, and piercing allowances for SS304, MS, Aluminum 6061-T6, Titanium Grade 5.
-  - **Press Brake Bending Physics**: K-factors, bend deductions, V-die opening ratios, and minimum flange widths across thicknesses from 0.8mm to 20mm.
-  - **Industrial Quality Standards**: ISO 2768-m tolerances, ASME Y14.5 GD&T geometric tolerancing, AWS D1.1 structural welding certifications, and CMM inspection protocols.
-  - **B2B Escrow & Commercial Contracts**: Incoterms 2020 (Ex-Works, FOB, CIF, DDP), milestone payment schedules (40% advance, 40% QC pass, 20% dock delivery), and Indian GST compliance.
-- **OpenAI Gateway Integration**:
-  - Direct integration via Experiential Labs Gateway (`gpt-4o-mini`) using model-driven contextual embeddings and cosine similarity scoring.
-  - Fallback deterministic indexing ensures 100% platform availability even during external network disruptions.
-- **21 Automated Pytest Suites**:
-  - Full automated coverage verifying vector retrieval precision, boundary math, CAD geometry parsing, and edge-case tolerance extraction.
+### 1. The Core RAG vs. Fine-Tuning Principle
+- **RAG & Live Database**: Used strictly for dynamic factory facts (material prices, current inventory stock, machine availability, active jobs, customer orders). The LLM **NEVER** memorizes volatile prices.
+- **Fine-Tuning**: Used primarily for behavior, engineering terminology, reasoning patterns, DFM decision-making, and uncertainty handling.
+- **Deterministic Math**: The LLM determines *what* calculation is needed; deterministic Python code computes the exact numbers.
+
+### 2. Strict 8-Tier Source Priority Hierarchy
+When conflicting information exists, ForgeIQ resolves values in this exact priority:
+1. **Approved Factory Database** (`rank 1`)
+2. **Approved Factory SOP** (`rank 2`)
+3. **Approved Supplier Data** (`rank 3`)
+4. **Machine Manufacturer Documentation** (`rank 4`)
+5. **Applicable Engineering Standard** (ISO 2768, ISO 286, ISO 9013) (`rank 5`)
+6. **Approved Engineering Reference** (`rank 6`)
+7. **General Web Information** (`rank 7`)
+8. **LLM Learned Knowledge / Memory** (`rank 8`)
+
+### 3. Zero-Hallucination & Missing Data Policy
+If any factory rate or machine parameter is missing:
+- Defaults strictly to `TO_BE_PROVIDED` or `UNKNOWN`.
+- If an expiry date has passed, the record transitions to `is_stale = True`.
+- Quotations with missing data are flagged as `LOW` confidence with explicit `ASSUMPTION` labels.
 
 ---
 
-## 💡 Key Engineering Highlights
+## 🚀 Master AI Implementation (Phases 1 – 6)
 
-### 1. High-Performance Concurrency & Serverless Backend
-- **Next.js 15 App Router with React 19**: Leverages Server Components for zero-bundle-size database operations alongside optimized Client Components for high-interactivity features (CAD canvas, drag-and-drop uploader, interactive Gantt timelines).
-- **Neon Serverless PostgreSQL 18.6**: Integrated via `@neondatabase/serverless` connection pooling. Live health telemetry available at `/api/database/neon/status` providing real-time ping and database version verification.
+### Phase 1: Backend OpenAI & Environment Hardening
+- **Native AsyncOpenAI SDK**: Installed official `openai>=1.30.0` library.
+- **Environment Compliance**: Hardened `ai-service/.env.example` to strictly contain only `OPENAI_API_KEY=`.
+- **Backend-Only Execution**: Zero frontend exposure. All API keys reside strictly on the server side.
 
-### 2. Dual-Engine Architecture (TypeScript + Python)
-- **FastAPI Microservice**: Dedicated Python backend (`ai-service/`) executing compute-heavy geometric computations, DXF entity parsing, and vector embeddings.
-- **Microservice Resiliency**: Non-blocking asynchronous I/O with automatic fallback handling across OpenAI Gateway, Gemini, Anthropic, and local deterministic heuristic models.
+### Phase 2: Knowledge Base Schemas & Conflict Resolution
+- Implemented `ManufacturingKnowledgeRecord`, `MachineRecord`, `MaterialRecord`, and `ConflictResolutionResult` in `app/models/schemas.py`.
+- Created `KnowledgeConflictResolver` in `app/rag/knowledge_loader.py` enforcing the 8-tier hierarchy and staleness tracking (`valid_until`).
 
-### 3. Enterprise Role-Based Access Control (RBAC)
-Granular permissions enforced through Next.js middleware across 5 distinct personas:
-| Role | Capabilities | Primary Route |
-| :--- | :--- | :--- |
-| **Owner** | Full administrative control, billing, pricing rules, factory settings | `/dashboard`, `/settings` |
-| **Plant Manager** | Machine scheduling, production oversight, order dispatch | `/production`, `/machines` |
-| **Operator** | Shift tasks, step-by-step digital traveler, scrap recording | `/production`, `/workers` |
-| **QA Inspector** | CMM dimensional reports, quality approval, rework routing | `/orders`, `/reports` |
-| **Customer** | Self-service tracking, drawing vault, quote approval, payment | `/portal/dashboard` |
+### Phase 3: Deterministic Tools & Calculators
+- **Material Calculator**: Part weight, sheet weight, nesting efficiency, and scrap ($W = V \times \rho$).
+- **Inventory Tools**: Checks exact stock and queries shop-floor remnants before suggesting procurement (Section 32).
+- **Laser Cutting Engine**: Bystronic 6kW speed lookup, cutting/piercing time, gas consumption, and machine runtime costing.
+- **Bending Engine**: Air bending V-die opening ($V \approx 8T$), bend allowance, bend deduction, and minimum flange checks.
+- **Quotation Calculator**: 16-point deterministic breakdown with lead-time calculation (Section 28).
 
-### 4. Production Payment & Escrow Workflow (INR ₹)
-- Native Indian Rupee (₹) denomination tailored for major manufacturing hubs (Peenya, Pune, Coimbatore, Sanand).
-- **Razorpay Integration**: End-to-end checkout with automated order creation, cryptographic HMAC-SHA256 signature verification, and escrow disbursal calculation.
+### Phase 4: Autonomous DFM Agent
+- **Critical Tolerance Detection**: Flags tolerances $\le \pm 0.05$ mm (such as $\pm 0.02$ mm) as exceeding thermal laser cutting capability and recommends secondary CNC milling and CMM inspection.
+- **Short-Flange Condition**: Flags flanges $< 0.7 \times V$ with tooling verification warnings.
+- **Hardox Wear Plate Validation**: Refuses mild steel bending parameters; enforces OEM SSAB charts and high-tonnage checks.
+- **Hole-to-Bend Proximity**: Validates hole distance $D \ge 2.5T + R$.
+
+### Phase 5 & 6: Data Ingestion, Training Builder & 10-Point Evaluator
+- **Standardized Ingestion Pipeline** (`app/ingestion/pipeline.py`): 9-stage pipeline (Fetch ➔ Parse ➔ Validate ➔ Normalize ➔ Deduplicate ➔ Assign Metadata ➔ Store ➔ Index).
+- **Continuous Training Dataset Builder** (`scripts/build_training_dataset.py`): Compiles 54 verified decision pairs into `forgeiq_llm_finetune.jsonl` while rejecting hardcoded dynamic prices.
+- **10-Point Benchmark Evaluator** (`scripts/evaluate_model.py`): Benchmarks the 10 core dimensions from Section 28 (**10/10 Passed**).
+
+---
+
+## 🗄️ Real-World Database Integration
+
+All platform inputs are connected to live **Neon PostgreSQL** with real-world relationships and zero dummy duplicate data:
+
+```mermaid
+erDiagram
+    CUSTOMERS ||--o{ ORDERS : "places order"
+    ORDERS ||--|| PRODUCTION_JOBS : "spawns shop floor job"
+    INVENTORY_ITEMS ||--o{ PRODUCTION_JOBS : "reserves raw material"
+    MACHINES ||--o{ PRODUCTION_JOBS : "processes operation"
+```
+
+1. **Order ➔ Customer**: Every order links to a verified customer, updating lifetime value (LTV) and order counts.
+2. **Order ➔ Goods / Inventory**: Every order specifies required material (e.g., `RAW-SS304-18G`) and deducts stock in `inventory_items`.
+3. **Order ➔ Machine ➔ Production Job**: Automatically provisions a linked production dispatch card on assigned machines (`TRUMPF Laser`, `Bystronic Press Brake`, `Haas VMC`).
+4. **Kanban Stage Synchronization**: Stage movements persist to Neon PostgreSQL and synchronize parent order status.
 
 ---
 
@@ -228,12 +264,11 @@ Granular permissions enforced through Next.js middleware across 5 distinct perso
 | **Language** | **TypeScript 5.7** | Strict type safety across all frontend and API layers |
 | **Styling** | **Tailwind CSS 3.4** | Dual Light/Dark design system with Slate and Steel tokens |
 | **AI Microservice** | **Python 3.11 + FastAPI** | Asynchronous CAD geometry analysis and OCR parsing |
-| **AI Gateway** | **OpenAI GPT-4o-mini** | Multi-agent reasoning via Experiential Labs Gateway |
+| **AI SDK** | **AsyncOpenAI Native** | Official asynchronous OpenAI Python SDK (backend only) |
 | **Database** | **Neon PostgreSQL 18.6** | Serverless SQL with connection pooling and SSL encryption |
-| **Data Tables** | **@tanstack/react-table** | Virtualized sorting, pagination, and multi-column filtering |
-| **Charts & Data Viz** | **Recharts** | Theme-adaptive manufacturing KPIs and capacity graphs |
 | **Payment Gateway** | **Razorpay** | Secure ₹ (INR) online transactions and webhook callbacks |
-| **Testing** | **Pytest + Next.js E2E** | 21 automated microservice unit tests and scenario suites |
+| **Testing** | **Pytest (33 Tests)** | 33 automated unit tests, journey suites, and DFM validations |
+| **Benchmarking** | **10-Point Model Evaluator** | Automated evaluation scorecard (**10/10 Passed**) |
 
 ---
 
@@ -276,29 +311,51 @@ Granular permissions enforced through Next.js middleware across 5 distinct perso
 
 5. **Start the Next.js Web Application (Terminal 2):**
    ```bash
-   npm run dev
+   npm run dev -p 3001
    ```
-   *The platform is now live at [http://localhost:3000](http://localhost:3000)*
+   *The platform is now live at [http://localhost:3001](http://localhost:3001)*
 
 ---
 
 ## 🧪 Testing & Quality Assurance
 
-ForgeIQ includes automated test suites covering both the frontend compilation and the Python AI microservice:
+ForgeIQ includes automated test suites covering the frontend compilation, the Python AI microservice, and model evaluation benchmarks:
 
 ```bash
-# 1. Run Python AI microservice test suite (FastAPI endpoints, CAD parsing, RAG knowledge)
+# 1. Run all 33 automated Pytest suites (endpoints, journeys, DFM, tools, knowledge)
 PYTHONPATH=ai-service ai-service/.venv/bin/pytest ai-service/tests/ -v
-# Output: 21 passed in 0.45s
+# Output: 33 passed in 1.04s (100% PASS)
 
-# 2. Test live Neon PostgreSQL database connectivity
-curl http://localhost:3000/api/database/neon/status
+# 2. Run the 10-point Manufacturing AI Benchmark Evaluator
+PYTHONPATH=ai-service ai-service/.venv/bin/python ai-service/scripts/evaluate_model.py
+# Output: Overall Benchmark Status: ✅ PASSED (10/10)
 
-# 3. Trigger end-to-end 7-stage manufacturing lifecycle simulation
-curl http://localhost:3000/api/testing/e2e-journey
+# 3. Build & validate clean fine-tuning dataset
+PYTHONPATH=ai-service ai-service/.venv/bin/python ai-service/scripts/build_training_dataset.py
+# Output: 54 verified training pairs built
 
-# 4. Run Next.js TypeScript validation & production build
-npm run build
+# 4. Run Next.js TypeScript validation
+npx tsc --noEmit
+```
+
+### Benchmark Scorecard
+```
+==================================================
+FORGEIQ MASTER AI BENCHMARK EVALUATION SCORECARD
+==================================================
+Material Cost Accuracy             : ✅ PASS
+Quotation Accuracy                 : ✅ PASS
+Dfm Accuracy                       : ✅ PASS
+Machine Selection                  : ✅ PASS
+Inventory Reasoning                : ✅ PASS
+Lead Time Estimation               : ✅ PASS
+Tool Selection                     : ✅ PASS
+Hallucination Rate Zero            : ✅ PASS
+Missing Data Handling              : ✅ PASS
+Source Attribution                 : ✅ PASS
+==================================================
+Overall Benchmark Status: ✅ PASSED (10/10)
+==================================================
 ```
 
 ---
@@ -307,15 +364,14 @@ npm run build
 
 | Experience | Route | Key Functionality |
 | :--- | :--- | :--- |
-| **Platform Gateway** | `/` | Role switcher, capability showcase, unified landing |
-| **Executive Dashboard** | `/dashboard` | Machine utilization, revenue charts, agentic alerts |
-| **AI Order Intake** | `/ai-order-intake` | Drag-and-drop multimodal document extraction |
-| **CAD Analysis** | `/cad-analysis` | 2D/3D geometry viewer, bend detection, cut time estimator |
-| **Quotation Builder** | `/quotations/builder` | Live BOM calculation, margin sliders, PDF generation |
-| **Pricing Rules** | `/settings/pricing-rules` | Custom administrative hourly rates and INR parameters |
-| **Production Planner** | `/production/planner` | Interactive Gantt schedule, machine queue management |
-| **Customer Portal** | `/portal/dashboard` | Client order status, milestone photos, quote approval |
-| **Live Database Status**| `/settings` (Neon Tab) | Real-time PostgreSQL pooler latency & version check |
+| **Executive Dashboard** | `/dashboard` | Machine utilization, live revenue, priority attention alerts |
+| **Orders Directory** | `/orders` | Live Neon DB orders, material reservations, stage progress |
+| **Production Kanban** | `/production` | Live shop floor dispatch board linked to machines |
+| **Goods & Inventory** | `/inventory` | Raw material sheets, stock levels, remnant registers |
+| **Equipment Fleet** | `/machines` | CNC lasers, press brakes, VMC, maintenance toggle |
+| **Customer Directory** | `/customers` | Client accounts, lifetime value (LTV), contact drawer |
+| **Pricing Rules** | `/settings` | Machine hourly rates, logistics, and GST parameters |
+| **Authentication** | `/auth/login` | Email/password with eye toggle & mobile SMS OTP verification |
 
 ---
 
