@@ -52,7 +52,7 @@ export const NAV_ITEMS: NavItem[] = [
   { label: 'Purchase Orders', href: '/purchase-orders', icon: <ShoppingCart className="h-4 w-4" /> },
   { label: 'Invoices', href: '/invoices', icon: <Receipt className="h-4 w-4" /> },
   { label: 'Reports', href: '/reports', icon: <BarChart3 className="h-4 w-4" /> },
-  { label: 'AI Order Intake', href: '/ai-order-intake', icon: <Sparkles className="h-4 w-4" />, badge: 'AI Intake', isAi: true },
+  { label: 'AI Order Intake', href: '/ai-order-intake', icon: <Sparkles className="h-4 w-4" />, badge: 'AI', isAi: true },
   { label: 'AI Assistant', href: '/ai-assistant', icon: <Bot className="h-4 w-4" />, isAi: true },
   { label: 'Settings', href: '/settings', icon: <Settings className="h-4 w-4" /> },
 ];

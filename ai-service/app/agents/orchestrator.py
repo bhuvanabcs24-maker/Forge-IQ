@@ -62,7 +62,7 @@ class AgentOrchestrator:
         citations = rag_retriever.retrieve_context(
             query=query,
             tenant=tenant,
-            top_k=4
+            top_k=5
         )
 
         # 2. Multi-Agent Routing

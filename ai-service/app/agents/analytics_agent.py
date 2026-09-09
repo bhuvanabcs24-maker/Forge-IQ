@@ -21,19 +21,42 @@ class AnalyticsAgent(BaseAgent):
         context_str = rag_retriever.format_context_prompt(citations)
 
         system_prompt = (
-            "You are ForgeIQ's Business & Financial Analytics Agent. "
-            "Analyze profit trends, scrap variances, overtime labor, and operational costs. "
-            "Reason specifically over retrieved company financial ledgers and production records."
+            "You are ForgeIQ's Business & Financial Analytics Agent, an expert in factory financial ledgers, "
+            "job gross margins, machine OEE uptime, scrap cost variance, and hourly operating economics (in ₹ INR). "
+            "Analyze financial and operational questions strictly utilizing the retrieved company ledgers, "
+            "machine rate benchmarks (₹2,500/hr TRUMPF laser, ₹1,800/hr Amada brake), raw material index costs, "
+            "and scrap recovery credit data in context. Always cite specific figures, currency values (₹ INR), and ledger sources."
         )
 
-        user_prompt = f"{context_str}\n\nFinancial/Operational Inquiry: {query}"
+        user_prompt = (
+            f"{context_str}\n\n"
+            f"Financial/Operational Inquiry: {query}\n\n"
+            f"Provide a structured financial and operational breakdown based on the business records above."
+        )
         text = await provider.generate_text(user_prompt, system_prompt=system_prompt)
+        is_mock = (provider.provider_name == 'mock') or not text
 
-        evidence = [
-            AgentEvidence(metric_name="Monthly Gross Revenue", value="₹12.4 Lakhs (+8% MoM)", confidence=0.99, source="Invoicing Ledger"),
-            AgentEvidence(metric_name="Material Cost Ratio", value="54.2% of Revenue (+4.1% variance due to SS alloy price surge)", confidence=0.96, source="Procurement ERP"),
-            AgentEvidence(metric_name="Overtime Labor Hours", value="42 hours (Machine Line #2 Maintenance)", confidence=0.95, source="Shift Attendance Ledger"),
-        ]
+        if is_mock:
+            evidence = [
+                AgentEvidence(metric_name="Monthly Gross Revenue", value="₹12.4 Lakhs (+8% MoM)", confidence=0.99, source="Invoicing Ledger"),
+                AgentEvidence(metric_name="Material Cost Ratio", value="54.2% of Revenue (+4.1% variance due to SS alloy price surge)", confidence=0.96, source="Procurement ERP"),
+                AgentEvidence(metric_name="Overtime Labor Hours", value="42 hours (Machine Line #2 Maintenance)", confidence=0.95, source="Shift Attendance Ledger"),
+            ]
+        else:
+            evidence = []
+            for c in citations[:3]:
+                evidence.append(
+                    AgentEvidence(
+                        metric_name=c.source_title[:32],
+                        value=f"Relevance {c.relevance_score:.2f} ({c.source_type.replace('_', ' ').title()})",
+                        confidence=min(1.0, max(0.88, round(c.relevance_score / 2.0, 2))),
+                        source=c.source_id
+                    )
+                )
+            if not evidence:
+                evidence = [
+                    AgentEvidence(metric_name="Financial Ledger", value="Live accounting & margin metrics", confidence=0.95, source="Invoicing Ledger")
+                ]
 
         return CopilotResponse(
             answer=text,
@@ -45,5 +68,5 @@ class AnalyticsAgent(BaseAgent):
             suggested_action="Export Financial Cost Variance Report",
             requires_approval=False,
             provider_used=provider.provider_name,
-            is_mock=(provider.provider_name == 'mock')
+            is_mock=is_mock
         )

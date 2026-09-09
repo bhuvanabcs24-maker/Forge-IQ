@@ -78,6 +78,14 @@ class IngestionPipeline:
 
         vector_store.add_records(records)
 
+        # Persist newly ingested records to disk knowledge base
+        try:
+            from pathlib import Path
+            kb_path = Path(__file__).resolve().parent.parent.parent / "data" / "trained_knowledge_records.json"
+            vector_store.save_to_disk(str(kb_path))
+        except Exception:
+            pass
+
         return IngestionResponse(
             document_id=doc_id,
             chunks_created=len(chunks),

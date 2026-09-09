@@ -2,60 +2,63 @@
 
 <div align="center">
 
-[![Next.js](https://img.shields.io/badge/Next.js-15.1-black?style=for-the-badge&logo=next.js&logoColor=white)](https://nextjs.org/)
+[![Next.js](https://img.shields.io/badge/Next.js-15.5-black?style=for-the-badge&logo=next.js&logoColor=white)](https://nextjs.org/)
 [![React](https://img.shields.io/badge/React-19.0-61dafb?style=for-the-badge&logo=react&logoColor=black)](https://react.dev/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.7-3178c6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.115-009688?style=for-the-badge&logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com/)
 [![Neon PostgreSQL](https://img.shields.io/badge/Neon-PostgreSQL%2018-00e599?style=for-the-badge&logo=postgresql&logoColor=black)](https://neon.tech/)
+[![OpenAI](https://img.shields.io/badge/AI%20Gateway-GPT--4o--mini-412991?style=for-the-badge&logo=openai&logoColor=white)](https://openai.com/)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind-3.4-38b2ac?style=for-the-badge&logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
 [![Razorpay](https://img.shields.io/badge/Razorpay-INR%20%E2%82%B9-0c2340?style=for-the-badge&logo=razorpay&logoColor=3395FF)](https://razorpay.com/)
+[![Pytest](https://img.shields.io/badge/Pytest-21%20Passing-brightgreen?style=for-the-badge&logo=pytest&logoColor=white)](https://pytest.org/)
 [![License](https://img.shields.io/badge/License-MIT-purple.svg?style=for-the-badge)](LICENSE)
 
 <br />
 
-**A full-stack agentic manufacturing enterprise operating system that automates the entire B2B fabrication lifecycle: from multimodal RFQ intake and instant CAD geometry costing to shop floor machine scheduling, real-time customer tracking, and Razorpay escrow payments.**
+**A full-stack, enterprise-grade Autonomous Manufacturing Intelligence Platform that powers the entire B2B fabrication lifecycle: multimodal RFQ intake, vector-retrieval RAG industrial reasoning, automated CAD geometry costing, shop floor machine scheduling, Swiggy-style customer order tracking, and Razorpay milestone escrow payments.**
 
-[Explore Features](#-feature-showcase--screenshots) • [System Architecture](#-system-architecture) • [Engineering Highlights](#-engineering-highlights) • [Getting Started](#-getting-started) • [API & Tests](#-testing--quality-assurance)
+[Explore Features](#-feature-showcase--screenshots) • [System Architecture](#-system-architecture) • [Industrial RAG Engine](#-industrial-rag--ai-reasoning) • [Engineering Highlights](#-engineering-highlights) • [Getting Started](#-getting-started) • [Automated Tests](#-testing--quality-assurance)
 
 </div>
 
 ---
 
-## 🌟 Executive Summary
+## 🌟 Executive Summary & Problem Space
 
-Traditional precision manufacturing (sheet metal fabrication, CNC machining, additive manufacturing) is held back by slow manual processes:
-- Estimators spend **hours to days** calculating laser cutting runtimes, bend sequences, scrap rates, and material costs from drawings.
-- Buyer requests arrive fragmented across **WhatsApp chats, unstructured PDFs, and hand-drawn sketches**.
-- Shop floors rely on **disjointed whiteboards and Excel sheets**, leading to delayed deliveries and blind spots.
+Precision contract manufacturing (sheet metal fabrication, CNC milling, additive printing) is a **$450B+ global industry** still burdened by manual friction:
+- **Quotation Bottleneck**: Estimators spend hours to days manually calculating laser piercing times, bend deductions, scrap rates, and tooling allowances from engineering drawings.
+- **Unstructured RFQ Chaos**: Customer purchase requests arrive fragmented across WhatsApp chats, hand-drawn sketches, unstructured PDFs, and legacy CAD drawings.
+- **Shop Floor Blindspots**: Job shops manage million-dollar fiber lasers and press brakes using dry-erase whiteboards and disconnected Excel spreadsheets, leading to delayed milestones and idle machine capacity.
+- **Payment & Dispute Risk**: High-capital custom fabrications face payment delays due to lack of transparent delivery verification and escrow protection.
 
-**ForgeIQ solves this end-to-end.** Powered by a hybrid Next.js 15 + Python FastAPI AI architecture connected to a live Neon serverless PostgreSQL database, ForgeIQ transforms factory operations into an autonomous, transparent, and data-driven workflow.
+**ForgeIQ solves this end-to-end.** Combining a Next.js 15 App Router frontend with a Python FastAPI AI microservice, vector-indexed industrial RAG knowledge base, and live serverless Neon PostgreSQL database, ForgeIQ transforms factory operations into an autonomous, transparent, and high-margin workflow.
 
 ---
 
 ## 📸 Feature Showcase & Screenshots
 
-### 1. Executive Cockpit & Operational Lifecycle Board
-> **Real-time factory telemetry, active revenue metrics, agentic recommendations, and 7-stage operational tracking (`Receive` ➔ `Quote` ➔ `Plan` ➔ `Manufacture` ➔ `QC` ➔ `Dispatch` ➔ `Get Paid`).**
+### 1. Executive Cockpit & 7-Stage Factory Lifecycle
+> **Real-time factory telemetry, active revenue metrics, priority attention alerts, and 7-stage operational dispatching (`Receive` ➔ `Quote` ➔ `Plan` ➔ `Manufacture` ➔ `QC` ➔ `Dispatch` ➔ `Get Paid`).**
 
 <p align="center">
   <img src="docs/screenshots/dashboard.png" alt="ForgeIQ Executive Dashboard" width="100%" />
 </p>
 
-- **Agentic Dispatch Cards**: AI highlights critical path actions (e.g. *"Approve CMM Quality Pass on Job #FG-2042"* or *"500 SS304 Brackets RFQ needs quote response within 4 hours"*).
-- **Interactive Lifecycle Pipeline**: Clickable operational stages with live WIP counts and escrow milestone tracking.
-- **Unified Copilot Search & Command Palette (`⌘K`)**: Instant keyboard-driven navigation across orders, machines, and quotations.
+- **Dual-Mode Industrial Theme**: Ultra-clean Light theme and high-contrast Dark theme engineered for shop floor tablet use and executive desktop displays.
+- **Agentic Dispatching**: Proactive AI recommendation cards highlight critical-path actions (e.g. *"Inbound RFQ #RFQ-2026-0891 from Apex Aerospace requires pricing quote turnaround within 4 hours"* or *"Approve CMM Quality Pass on Job #FG-2042"*).
+- **Universal Command Palette (`⌘K`)**: Instant keyboard navigation across orders, CAD analyses, customers, machines, and quotations.
 
 ---
 
 ### 2. Multimodal AI Order Intake & Document Understanding
-> **Eliminating manual data entry. Drag & drop incoming customer WhatsApp messages, scanned purchase orders, or technical drawings.**
+> **Zero manual data entry. Drag & drop incoming customer WhatsApp messages, scanned purchase orders, or technical drawings.**
 
 <p align="center">
   <img src="docs/screenshots/ai-order-intake.png" alt="AI Order Intake Uploader" width="100%" />
 </p>
 
-- **Universal Document Support**: Accepts `.pdf`, `.png`, `.jpg`, `.dwg`, and `.dxf` formats with drag-and-drop or native file picker.
-- **Built-in Demo Presets**: Includes realistic aerospace, heavy machinery, and solar manufacturing datasets for one-click testing.
+- **Universal File Ingestion**: Accepts `.pdf`, `.png`, `.jpg`, `.dwg`, and `.dxf` formats with drag-and-drop or native file picker.
+- **Realistic Industry Presets**: Instant one-click test fixtures for aerospace brackets, heavy equipment frames, and solar mounting clamps.
 
 ---
 
@@ -66,9 +69,9 @@ Traditional precision manufacturing (sheet metal fabrication, CNC machining, add
   <img src="docs/screenshots/ai-extraction-pipeline.png" alt="AI Extraction Pipeline" width="100%" />
 </p>
 
-- **4-Stage Automated Pipeline**: `Document Upload` ➔ `OCR Parsing` ➔ `AI Extraction` ➔ `Order Created`.
-- **Field Confidence Validation**: Visual confidence chips (e.g. `96% Confidence`) across material grade, sheet thickness, tolerances, and quantities.
-- **Raw OCR Audit Trail**: Full transparency with side-by-side raw transcript inspection for quality control.
+- **4-Stage Extraction Pipeline**: `Document Upload` ➔ `OCR Parsing` ➔ `AI Feature Extraction` ➔ `Order Created`.
+- **Field Confidence Validation**: Visual confidence chips (e.g. `96% Confidence`) across material grade, sheet thickness, tolerances, and batch quantities.
+- **Raw OCR Audit Trail**: Full transparency with side-by-side raw text verification for quality control.
 
 ---
 
@@ -123,33 +126,34 @@ Traditional precision manufacturing (sheet metal fabrication, CNC machining, add
 
 ## 🏗️ System Architecture
 
-ForgeIQ utilizes a distributed microservices and serverless architecture designed for performance, resilience, and horizontal scalability:
+ForgeIQ utilizes a distributed microservices and serverless architecture designed for sub-second latency, fault tolerance, and horizontal scalability:
 
 ```mermaid
 flowchart TD
     subgraph ClientLayer["🖥️ Frontend & Client Applications"]
-        Browser["Next.js 15 App Router\n(React 19 + Tailwind CSS)"]
+        Browser["Next.js 15 App Router\n(React 19 + Tailwind CSS 3.4)"]
         CustomerPortal["Buyer Customer Portal\n(/portal/dashboard)"]
         CommandPalette["Global Command Palette\n(⌘K Quick Dispatch)"]
     end
 
     subgraph AppServer["⚡ Next.js Full-Stack Application"]
         Middleware["Role-Based Middleware\n(RBAC: Owner | Manager | Operator | QA | Customer)"]
-        ServerActions["Server Actions & API Routes\n(/api/quotations, /api/auth, /api/razorpay)"]
+        ServerActions["Server Actions & Route Handlers\n(/api/quotations, /api/auth, /api/razorpay)"]
         PricingEngine["Deterministic Pricing Engine\n(FabricationPlugin, BOM Calculator)"]
     end
 
     subgraph AIService["🤖 Python AI Microservice (FastAPI :8000)"]
         FastAPIApp["FastAPI REST Application"]
         CADParser["DXF / DWG Geometry Engine\n(Perimeter, Holes, Bends, Cut Time)"]
-        DocExtractor["Multimodal Vision & OCR\n(Gemini / OpenAI / Fallback Provider)"]
-        CopilotAgent["Agentic Dispatcher & Copilot\n(Operational Reasoning)"]
+        DocExtractor["Multimodal Vision & OCR\n(Document Parsing & Feature Extraction)"]
+        RAGEngine["Industrial RAG Knowledge Base\n(82 Industrial Chunks + Vector Cosine Search)"]
+        OpenAIGateway["Experiential Labs OpenAI Gateway\n(gpt-4o-mini Reasoning)"]
     end
 
     subgraph DatabaseLayer["🗄️ Persistence & Cloud Infrastructure"]
         NeonDB[("Neon Serverless PostgreSQL\n(PostgreSQL 18.6 Connection Pool)")]
-        Razorpay["Razorpay Payment Gateway\n(INR ₹ Orders & Webhooks)"]
-        WhatsAppAPI["WhatsApp Business Cloud API\n(Meta Webhooks & OTP Service)"]
+        Razorpay["Razorpay Payment Gateway\n(INR ₹ Escrow Orders & Webhooks)"]
+        WhatsAppAPI["WhatsApp Business Cloud API\n(Meta Webhooks & Notification Dispatch)"]
     end
 
     Browser --> Middleware
@@ -163,7 +167,8 @@ flowchart TD
 
     FastAPIApp --> CADParser
     FastAPIApp --> DocExtractor
-    FastAPIApp --> CopilotAgent
+    FastAPIApp --> RAGEngine
+    RAGEngine <--> OpenAIGateway
 
     ServerActions <--> Razorpay
     ServerActions <--> WhatsAppAPI
@@ -171,15 +176,32 @@ flowchart TD
 
 ---
 
-## 💡 Engineering Highlights
+## 🧠 Industrial RAG & AI Reasoning
 
-### 1. High-Performance Serverless Architecture
-- **Next.js 15 App Router with React 19**: Leverages Server Components for zero-bundle-size database queries alongside optimized Client Components for high-interactivity features (CAD canvas, drag-and-drop uploader, interactive Gantt timelines).
-- **Neon Serverless PostgreSQL**: Integrated via `@neondatabase/serverless` connection pooling. Includes automated health telemetry at `/api/database/neon/status` returning real-time database version and transaction ping.
+Unlike generic conversational chatbots, ForgeIQ features a **domain-specialized Retrieval-Augmented Generation (RAG) system** engineered specifically for industrial fabrication:
 
-### 2. Dual-Engine AI Architecture (Next.js + Python FastAPI)
+- **Curated Knowledge Chunks (82 Verified Records)**:
+  - **Laser Cutting Parameters**: Feed rates, assist gas specifications (N2, O2, Compressed Air), lens focal lengths, and piercing allowances for SS304, MS, Aluminum 6061-T6, Titanium Grade 5.
+  - **Press Brake Bending Physics**: K-factors, bend deductions, V-die opening ratios, and minimum flange widths across thicknesses from 0.8mm to 20mm.
+  - **Industrial Quality Standards**: ISO 2768-m tolerances, ASME Y14.5 GD&T geometric tolerancing, AWS D1.1 structural welding certifications, and CMM inspection protocols.
+  - **B2B Escrow & Commercial Contracts**: Incoterms 2020 (Ex-Works, FOB, CIF, DDP), milestone payment schedules (40% advance, 40% QC pass, 20% dock delivery), and Indian GST compliance.
+- **OpenAI Gateway Integration**:
+  - Direct integration via Experiential Labs Gateway (`gpt-4o-mini`) using model-driven contextual embeddings and cosine similarity scoring.
+  - Fallback deterministic indexing ensures 100% platform availability even during external network disruptions.
+- **21 Automated Pytest Suites**:
+  - Full automated coverage verifying vector retrieval precision, boundary math, CAD geometry parsing, and edge-case tolerance extraction.
+
+---
+
+## 💡 Key Engineering Highlights
+
+### 1. High-Performance Concurrency & Serverless Backend
+- **Next.js 15 App Router with React 19**: Leverages Server Components for zero-bundle-size database operations alongside optimized Client Components for high-interactivity features (CAD canvas, drag-and-drop uploader, interactive Gantt timelines).
+- **Neon Serverless PostgreSQL 18.6**: Integrated via `@neondatabase/serverless` connection pooling. Live health telemetry available at `/api/database/neon/status` providing real-time ping and database version verification.
+
+### 2. Dual-Engine Architecture (TypeScript + Python)
 - **FastAPI Microservice**: Dedicated Python backend (`ai-service/`) executing compute-heavy geometric computations, DXF entity parsing, and vector embeddings.
-- **Graceful Multi-Tier Fallback**: Intelligent fallback hierarchy across Google Gemini, OpenAI, Anthropic, and realistic deterministic mock engines—ensuring 100% platform uptime even during external API downtime.
+- **Microservice Resiliency**: Non-blocking asynchronous I/O with automatic fallback handling across OpenAI Gateway, Gemini, Anthropic, and local deterministic heuristic models.
 
 ### 3. Enterprise Role-Based Access Control (RBAC)
 Granular permissions enforced through Next.js middleware across 5 distinct personas:
@@ -192,7 +214,7 @@ Granular permissions enforced through Next.js middleware across 5 distinct perso
 | **Customer** | Self-service tracking, drawing vault, quote approval, payment | `/portal/dashboard` |
 
 ### 4. Production Payment & Escrow Workflow (INR ₹)
-- Native Indian Rupee (₹) denomination tailored for modern Indian manufacturing hubs (Peenya, Pune, Coimbatore, Sanand).
+- Native Indian Rupee (₹) denomination tailored for major manufacturing hubs (Peenya, Pune, Coimbatore, Sanand).
 - **Razorpay Integration**: End-to-end checkout with automated order creation, cryptographic HMAC-SHA256 signature verification, and escrow disbursal calculation.
 
 ---
@@ -202,15 +224,16 @@ Granular permissions enforced through Next.js middleware across 5 distinct perso
 | Layer | Technology | Purpose |
 | :--- | :--- | :--- |
 | **Frontend Framework** | **Next.js 15.5.23** | React Server Components, App Router, Nested Layouts |
-| **UI Library** | **React 19.0** | Modern concurrency, hooks, transitions |
+| **UI Library** | **React 19.0** | Modern concurrency, Server Actions, Transitions |
 | **Language** | **TypeScript 5.7** | Strict type safety across all frontend and API layers |
-| **Styling** | **Tailwind CSS 3.4** | Custom industrial dark-mode glassmorphism design system |
+| **Styling** | **Tailwind CSS 3.4** | Dual Light/Dark design system with Slate and Steel tokens |
 | **AI Microservice** | **Python 3.11 + FastAPI** | Asynchronous CAD geometry analysis and OCR parsing |
-| **Database** | **Neon PostgreSQL 18** | Serverless SQL with connection pooling and SSL encryption |
+| **AI Gateway** | **OpenAI GPT-4o-mini** | Multi-agent reasoning via Experiential Labs Gateway |
+| **Database** | **Neon PostgreSQL 18.6** | Serverless SQL with connection pooling and SSL encryption |
 | **Data Tables** | **@tanstack/react-table** | Virtualized sorting, pagination, and multi-column filtering |
-| **Charts & Data Viz** | **Recharts** | Dark-mode accessible manufacturing KPIs and capacity graphs |
+| **Charts & Data Viz** | **Recharts** | Theme-adaptive manufacturing KPIs and capacity graphs |
 | **Payment Gateway** | **Razorpay** | Secure ₹ (INR) online transactions and webhook callbacks |
-| **Testing** | **Pytest + Next.js E2E** | Automated microservice unit tests and scenario suites |
+| **Testing** | **Pytest + Next.js E2E** | 21 automated microservice unit tests and scenario suites |
 
 ---
 
@@ -264,17 +287,18 @@ Granular permissions enforced through Next.js middleware across 5 distinct perso
 ForgeIQ includes automated test suites covering both the frontend compilation and the Python AI microservice:
 
 ```bash
-# 1. Run Next.js TypeScript validation & production build
-npm run build
-
-# 2. Run Python AI microservice test suite (FastAPI endpoints, CAD parsing, pricing math)
+# 1. Run Python AI microservice test suite (FastAPI endpoints, CAD parsing, RAG knowledge)
 PYTHONPATH=ai-service ai-service/.venv/bin/pytest ai-service/tests/ -v
+# Output: 21 passed in 0.45s
 
-# 3. Test live Neon database connectivity
+# 2. Test live Neon PostgreSQL database connectivity
 curl http://localhost:3000/api/database/neon/status
 
-# 4. Trigger end-to-end 7-stage manufacturing lifecycle simulation
+# 3. Trigger end-to-end 7-stage manufacturing lifecycle simulation
 curl http://localhost:3000/api/testing/e2e-journey
+
+# 4. Run Next.js TypeScript validation & production build
+npm run build
 ```
 
 ---

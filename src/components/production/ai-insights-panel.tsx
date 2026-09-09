@@ -42,23 +42,23 @@ export function AiInsightsPanel() {
   };
 
   return (
-    <Card className="border-purple-500/30 bg-gradient-to-r from-purple-900/20 via-steel-900/90 to-brand-900/20">
-      <CardHeader className="pb-3 border-b border-purple-500/20">
+    <Card className="border border-purple-200 dark:border-purple-500/30 bg-gradient-to-r from-purple-50/70 via-white to-brand-50/50 dark:from-purple-900/20 dark:via-steel-900/90 dark:to-brand-900/20 shadow-xs dark:shadow-xl rounded-2xl">
+      <CardHeader className="pb-3 border-b border-purple-100 dark:border-purple-500/20">
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-purple-500/20 text-purple-400 font-bold">
+          <div className="flex items-center gap-2.5">
+            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-purple-100 dark:bg-purple-500/20 text-purple-700 dark:text-purple-400 font-bold shadow-2xs">
               <Sparkles className="h-4 w-4" />
             </div>
             <div>
-              <CardTitle className="text-base text-slate-100 flex items-center gap-2">
+              <CardTitle className="text-base text-slate-900 dark:text-slate-100 font-bold flex items-center gap-2">
                 AI Shop Floor Insights & Optimization Telemetry
               </CardTitle>
-              <CardDescription className="text-steel-300">
+              <CardDescription className="text-slate-500 dark:text-steel-300 text-xs">
                 Proactive scheduling advice, bottleneck detection, and delivery risk mitigation
               </CardDescription>
             </div>
           </div>
-          <Badge variant="secondary" className="bg-purple-500/20 text-purple-300 border-purple-500/30">
+          <Badge variant="secondary" className="bg-purple-100 dark:bg-purple-500/20 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-500/30 font-bold text-[10px]">
             3 Active Insights
           </Badge>
         </div>
@@ -70,7 +70,7 @@ export function AiInsightsPanel() {
           return (
             <div
               key={ins.id}
-              className="p-3.5 rounded-xl border border-steel-800 bg-steel-900/80 space-y-2 text-xs flex flex-col justify-between"
+              className="p-4 rounded-xl border border-slate-200/90 dark:border-steel-800 bg-white dark:bg-steel-900/80 space-y-2.5 text-xs flex flex-col justify-between shadow-2xs hover:border-purple-300 dark:hover:border-steel-700 transition-all"
             >
               <div className="space-y-1.5">
                 <div className="flex items-center justify-between">
@@ -80,12 +80,12 @@ export function AiInsightsPanel() {
                   >
                     {ins.impactScore} Impact
                   </Badge>
-                  <span className="text-[10px] text-steel-400 font-mono">
+                  <span className="text-[10px] text-slate-400 dark:text-steel-400 font-mono font-semibold">
                     {ins.type.toUpperCase()}
                   </span>
                 </div>
-                <h4 className="font-bold text-slate-100">{ins.title}</h4>
-                <p className="text-steel-300 leading-relaxed text-[11px]">{ins.description}</p>
+                <h4 className="font-bold text-slate-900 dark:text-slate-100 text-xs leading-snug">{ins.title}</h4>
+                <p className="text-slate-600 dark:text-steel-300 leading-relaxed text-[11px]">{ins.description}</p>
               </div>
 
               <Button
@@ -93,15 +93,15 @@ export function AiInsightsPanel() {
                 variant={isApplied ? 'outline' : 'primary'}
                 onClick={() => handleApply(ins.id)}
                 disabled={isApplied}
-                className="w-full mt-2 text-xs"
+                className="w-full mt-2 text-xs font-semibold shadow-xs"
               >
                 {isApplied ? (
-                  <span className="flex items-center gap-1 text-emerald-400">
+                  <span className="flex items-center gap-1 text-emerald-600 dark:text-emerald-400 font-bold">
                     <Check className="h-3.5 w-3.5" /> Optimization Applied
                   </span>
                 ) : (
-                  <span className="flex items-center gap-1">
-                    <Zap className="h-3.5 w-3.5 text-brand-400" /> {ins.suggestedAction}
+                  <span className="flex items-center gap-1 text-white">
+                    <Zap className="h-3.5 w-3.5" /> {ins.suggestedAction}
                   </span>
                 )}
               </Button>

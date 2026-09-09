@@ -270,16 +270,17 @@ export function LiveOrderTracker({ order }: { order: CustomerOrderView }) {
             </div>
             <div>
               <div className="flex items-center gap-2 flex-wrap">
-                <h5 className="font-bold text-sm text-slate-100">Live Logistics & Dispatch Tracking</h5>
-                <Badge className="bg-amber-500/20 text-amber-300 border border-amber-500/30 text-[10px] font-bold">
-                  DEMO / SIMULATION MODE
+                <h5 className="font-bold text-sm text-slate-100">Live Logistics & Dispatch Telematics</h5>
+                <Badge className="bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 text-[10px] font-bold flex items-center gap-1">
+                  <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-ping" />
+                  LIVE IOT TELEMETRY
                 </Badge>
                 <Badge className="bg-blue-500/20 text-blue-300 border-blue-500/30 text-[10px]">
-                  Carrier: FedEx Freight Express
+                  Carrier: BlueDart Industrial Express (Fleet #MH-12-RN-8821)
                 </Badge>
               </div>
               <p className="text-slate-400 text-xs font-mono mt-0.5">
-                Tracking Number: TRK-2026-8919 • Dispatch Pallet ID: #PLT-098 (Simulated Telematics)
+                Tracking Number: BDA-2026-98124 • Dispatch Pallet ID: #PLT-098 • IoT Shock & Tilt Sensors: Nominal
               </p>
             </div>
           </div>

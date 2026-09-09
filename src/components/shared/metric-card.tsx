@@ -30,14 +30,16 @@ export function MetricCard({
   const isNegative = trendPercent && trendPercent < 0;
 
   const numericValue = typeof value === 'number' ? value : parseFloat(String(value).replace(/[^0-9.]/g, ''));
-  const isCurrency = typeof value === 'string' && value.includes('$');
+  const isRupee = typeof value === 'string' && value.includes('₹');
+  const isDollar = typeof value === 'string' && value.includes('$');
+  const prefix = isRupee ? '₹' : isDollar ? '$' : '';
 
   return (
     <motion.div whileHover={{ y: -3 }} transition={{ duration: 0.2 }}>
       <Card
         className={cn(
-          'relative overflow-hidden transition-all duration-200 shadow-xs hover:shadow-md hover:border-slate-300 dark:hover:border-steel-700',
-          highlight && 'border-brand-500/40 dark:border-brand-500/30 bg-brand-500/5'
+          'relative overflow-hidden transition-all duration-200 border-slate-200 dark:border-steel-800 bg-white dark:bg-steel-900 shadow-xs hover:shadow-md hover:border-slate-300 dark:hover:border-steel-700',
+          highlight && 'border-brand-500/40 dark:border-brand-500/30 bg-brand-50/30 dark:bg-brand-500/5'
         )}
       >
         <CardContent className="p-5">
@@ -53,7 +55,7 @@ export function MetricCard({
           <div className="mt-3 flex items-baseline justify-between">
             <div className="text-2xl font-black tracking-tight text-slate-900 dark:text-slate-100">
               {!isNaN(numericValue) ? (
-                <AnimatedKpiCounter value={numericValue} prefix={isCurrency ? '$' : ''} />
+                <AnimatedKpiCounter value={numericValue} prefix={prefix} />
               ) : (
                 value
               )}

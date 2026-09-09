@@ -30,15 +30,15 @@ class RAGRetriever:
         return citations
 
     def format_context_prompt(self, citations: List[RAGCitation]) -> str:
-        """Formats citations into a clean context prompt for the LLM."""
+        """Formats citations into a clean, rich industrial context prompt for the LLM."""
         if not citations:
             return ""
 
-        lines = ["=== RELEVANT FORGEIQ BUSINESS CONTEXT ==="]
-        for c in citations:
-            lines.append(f"[{c.source_type.upper()}] {c.source_title} (Relevance: {c.relevance_score:.2f}):")
+        lines = ["=== VERIFIED INDUSTRIAL MANUFACTURING KNOWLEDGE BASE (RAG CONTEXT) ==="]
+        for idx, c in enumerate(citations, 1):
+            lines.append(f"--- Document #{idx}: [{c.source_type.upper()}] \"{c.source_title}\" (Source ID: {c.source_id}, Relevance: {c.relevance_score:.2f}) ---")
             lines.append(f"{c.snippet}\n")
-        lines.append("=========================================")
+        lines.append("=== END OF VERIFIED INDUSTRIAL MANUFACTURING CONTEXT ===")
         return "\n".join(lines)
 
 rag_retriever = RAGRetriever()

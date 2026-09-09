@@ -25,14 +25,24 @@ class VectorStore:
         for r in records:
             if not r.org_id:
                 raise ValueError("Cannot index vector record without an org_id tenant identifier")
-        # Overwrite or append uniquely by ID
-        existing_map = {rec.id: i for i, rec in enumerate(self._records)}
+        # Overwrite or append uniquely by ID and content signature
+        existing_id_map = {rec.id: i for i, rec in enumerate(self._records)}
+        existing_sig_map = {(rec.source_title.strip().lower(), rec.content[:100].strip().lower(), rec.org_id): i for i, rec in enumerate(self._records)}
+        
         for r in records:
-            if r.id in existing_map:
-                self._records[existing_map[r.id]] = r
+            sig = (r.source_title.strip().lower(), r.content[:100].strip().lower(), r.org_id)
+            if r.id in existing_id_map:
+                idx = existing_id_map[r.id]
+                self._records[idx] = r
+            elif sig in existing_sig_map:
+                idx = existing_sig_map[sig]
+                self._records[idx] = r
+                existing_id_map[r.id] = idx
             else:
                 self._records.append(r)
-                existing_map[r.id] = len(self._records) - 1
+                new_idx = len(self._records) - 1
+                existing_id_map[r.id] = new_idx
+                existing_sig_map[sig] = new_idx
 
     def save_to_disk(self, file_path: str):
         Path(file_path).parent.mkdir(parents=True, exist_ok=True)
@@ -118,7 +128,7 @@ class VectorStore:
                 source_title=rec.source_title,
                 source_type=rec.source_type,
                 relevance_score=round(score, 3),
-                snippet=rec.content[:280] + ('...' if len(rec.content) > 280 else ''),
+                snippet=rec.content[:1500] + ('...' if len(rec.content) > 1500 else ''),
                 org_id=rec.org_id
             )
             for score, rec in top_results

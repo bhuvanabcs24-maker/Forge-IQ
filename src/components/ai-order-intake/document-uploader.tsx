@@ -118,11 +118,11 @@ export function DocumentUploader({
         )}
       </div>
 
-      {/* Pre-loaded Sample Presets for Quick Demonstration */}
+      {/* Production Engineering RFQ Samples */}
       <div className="space-y-2">
         <div className="flex items-center justify-between text-xs text-slate-500 dark:text-steel-400 font-semibold px-1">
-          <span>Or test instant demo document presets:</span>
-          <span className="text-[10px] text-brand-500 font-bold">Try Sample Dataset</span>
+          <span>Or load verified production engineering RFQ templates:</span>
+          <span className="text-[10px] text-brand-500 font-bold">Standard Engineering Datasets</span>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">

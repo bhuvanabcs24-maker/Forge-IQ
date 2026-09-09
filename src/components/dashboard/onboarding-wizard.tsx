@@ -40,13 +40,13 @@ export function OnboardingWizard() {
   ];
 
   return (
-    <Card className="border-purple-500/20 bg-gradient-to-r from-white via-slate-50 to-purple-50/20 dark:from-steel-900 dark:via-steel-900/90 dark:to-purple-950/20">
+    <Card className="border border-slate-200 dark:border-steel-800 bg-white dark:bg-steel-900 shadow-xs">
       <CardHeader className="pb-3">
         <CardTitle className="text-base flex items-center justify-between">
-          <span>Workspace Activation & Setup Guide</span>
-          <span className="text-xs text-brand-500 font-mono font-bold">2 of 3 Completed (66%)</span>
+          <span className="text-slate-900 dark:text-slate-100 font-bold">Workspace Activation & Setup Guide</span>
+          <span className="text-xs text-brand-600 dark:text-brand-400 font-mono font-bold">2 of 3 Completed (66%)</span>
         </CardTitle>
-        <CardDescription>Complete initial onboarding steps to activate full AI automation</CardDescription>
+        <CardDescription className="text-slate-500 dark:text-slate-400">Complete initial onboarding steps to activate full AI automation</CardDescription>
       </CardHeader>
       <CardContent className="space-y-3 text-xs">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
@@ -55,10 +55,10 @@ export function OnboardingWizard() {
             return (
               <div
                 key={step.id}
-                className={`p-3.5 rounded-xl border transition-all space-y-2 flex flex-col justify-between ${
+                className={`p-4 rounded-xl border transition-all space-y-2 flex flex-col justify-between ${
                   step.completed
-                    ? 'border-emerald-500/30 bg-emerald-500/5 dark:bg-emerald-500/10'
-                    : 'border-brand-500/40 bg-brand-500/5 dark:bg-brand-500/15'
+                    ? 'border-emerald-200 dark:border-emerald-500/30 bg-emerald-50/40 dark:bg-emerald-500/10'
+                    : 'border-brand-200 dark:border-brand-500/40 bg-brand-50/40 dark:bg-brand-500/15 ring-1 ring-brand-500/20'
                 }`}
               >
                 <div className="space-y-1.5">

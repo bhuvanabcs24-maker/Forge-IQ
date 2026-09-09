@@ -110,48 +110,48 @@ export default function SettingsPage() {
       />
 
       <Tabs defaultValue="pricing" className="w-full">
-        <TabsList className="grid grid-cols-3 md:grid-cols-6 w-full h-auto p-1.5 gap-1 bg-slate-900 border border-steel-800">
-          <TabsTrigger value="pricing" className="flex items-center gap-1.5 py-2.5 data-[state=active]:bg-purple-600 data-[state=active]:text-white">
+        <TabsList className="grid grid-cols-3 md:grid-cols-6 w-full h-auto p-1.5 gap-1 bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-steel-800 rounded-2xl shadow-xs">
+          <TabsTrigger value="pricing" className="flex items-center justify-center gap-1.5 py-2.5 rounded-xl text-xs font-semibold text-slate-600 dark:text-steel-400 hover:text-slate-900 dark:hover:text-slate-100 data-[state=active]:bg-white dark:data-[state=active]:bg-purple-600 data-[state=active]:text-purple-700 dark:data-[state=active]:text-white data-[state=active]:shadow-sm transition-all">
             <Calculator className="h-4 w-4" /> Pricing Rules
           </TabsTrigger>
-          <TabsTrigger value="neon" className="flex items-center gap-1.5 py-2.5 data-[state=active]:bg-emerald-600 data-[state=active]:text-white">
+          <TabsTrigger value="neon" className="flex items-center justify-center gap-1.5 py-2.5 rounded-xl text-xs font-semibold text-slate-600 dark:text-steel-400 hover:text-slate-900 dark:hover:text-slate-100 data-[state=active]:bg-white dark:data-[state=active]:bg-emerald-600 data-[state=active]:text-emerald-700 dark:data-[state=active]:text-white data-[state=active]:shadow-sm transition-all">
             <Server className="h-4 w-4" /> Neon PostgreSQL
           </TabsTrigger>
-          <TabsTrigger value="company" className="flex items-center gap-1.5 py-2.5">
+          <TabsTrigger value="company" className="flex items-center justify-center gap-1.5 py-2.5 rounded-xl text-xs font-semibold text-slate-600 dark:text-steel-400 hover:text-slate-900 dark:hover:text-slate-100 data-[state=active]:bg-white dark:data-[state=active]:bg-slate-800 data-[state=active]:text-slate-900 dark:data-[state=active]:text-white data-[state=active]:shadow-sm transition-all">
             <Building2 className="h-4 w-4" /> Facility Profile
           </TabsTrigger>
-          <TabsTrigger value="rbac" className="flex items-center gap-1.5 py-2.5">
+          <TabsTrigger value="rbac" className="flex items-center justify-center gap-1.5 py-2.5 rounded-xl text-xs font-semibold text-slate-600 dark:text-steel-400 hover:text-slate-900 dark:hover:text-slate-100 data-[state=active]:bg-white dark:data-[state=active]:bg-slate-800 data-[state=active]:text-slate-900 dark:data-[state=active]:text-white data-[state=active]:shadow-sm transition-all">
             <ShieldCheck className="h-4 w-4" /> RBAC Matrix
           </TabsTrigger>
-          <TabsTrigger value="supabase" className="flex items-center gap-1.5 py-2.5">
+          <TabsTrigger value="supabase" className="flex items-center justify-center gap-1.5 py-2.5 rounded-xl text-xs font-semibold text-slate-600 dark:text-steel-400 hover:text-slate-900 dark:hover:text-slate-100 data-[state=active]:bg-white dark:data-[state=active]:bg-slate-800 data-[state=active]:text-slate-900 dark:data-[state=active]:text-white data-[state=active]:shadow-sm transition-all">
             <Database className="h-4 w-4" /> Supabase
           </TabsTrigger>
-          <TabsTrigger value="notifications" className="flex items-center gap-1.5 py-2.5">
+          <TabsTrigger value="notifications" className="flex items-center justify-center gap-1.5 py-2.5 rounded-xl text-xs font-semibold text-slate-600 dark:text-steel-400 hover:text-slate-900 dark:hover:text-slate-100 data-[state=active]:bg-white dark:data-[state=active]:bg-slate-800 data-[state=active]:text-slate-900 dark:data-[state=active]:text-white data-[state=active]:shadow-sm transition-all">
             <Bell className="h-4 w-4" /> Alerts & UI
           </TabsTrigger>
         </TabsList>
 
         {/* 1. PRICING RULES TAB */}
         <TabsContent value="pricing" className="space-y-4">
-          <Card className="border-purple-500/20 bg-steel-950/80">
-            <CardHeader className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-steel-800">
+          <Card className="border border-slate-200 dark:border-purple-500/20 bg-white dark:bg-steel-950/80 shadow-xs rounded-2xl">
+            <CardHeader className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-100 dark:border-steel-800">
               <div>
                 <div className="flex items-center gap-2">
-                  <CardTitle className="text-lg text-white font-extrabold flex items-center gap-2">
-                    <Calculator className="h-5 w-5 text-purple-400" />
+                  <CardTitle className="text-lg text-slate-900 dark:text-white font-extrabold flex items-center gap-2">
+                    <Calculator className="h-5 w-5 text-purple-600 dark:text-purple-400" />
                     Factory Owner Pricing & Cost Estimation Rules
                   </CardTitle>
-                  <Badge className="bg-purple-500/20 text-purple-300 border border-purple-500/30 text-[10px] font-bold">
+                  <Badge className="bg-purple-100 dark:bg-purple-500/20 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-500/30 text-[10px] font-bold">
                     Indian Rupee (₹) Architecture
                   </Badge>
                 </div>
-                <CardDescription className="text-slate-400 text-xs mt-1">
+                <CardDescription className="text-slate-500 dark:text-slate-400 text-xs mt-1">
                   Configure machine fleet rates (₹/hr), operator labor, raw metal stock (₹/kg), and tax margins. Used by the AI quotation engine.
                 </CardDescription>
               </div>
 
               <Link href="/settings/pricing-rules">
-                <Button className="bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white font-bold text-xs shadow-lg">
+                <Button className="bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white font-bold text-xs shadow-md">
                   <span>Open Dedicated Pricing Rules Manager</span>
                   <ArrowUpRight className="h-4 w-4 ml-1.5" />
                 </Button>
@@ -161,77 +161,77 @@ export default function SettingsPage() {
             <CardContent className="space-y-6 pt-6">
               {/* Quick Preview Grid */}
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div className="p-4 rounded-xl border border-steel-800 bg-steel-900/60 space-y-3">
-                  <div className="flex items-center gap-2 text-purple-400 font-bold text-xs uppercase tracking-wider">
+                <div className="p-4 rounded-xl border border-slate-200 dark:border-steel-800 bg-slate-50/70 dark:bg-steel-900/60 space-y-3 shadow-2xs">
+                  <div className="flex items-center gap-2 text-purple-600 dark:text-purple-400 font-bold text-xs uppercase tracking-wider">
                     <Cpu className="h-4 w-4" /> Machine Fleet Rates
                   </div>
                   <div className="space-y-2 text-xs">
-                    <div className="flex justify-between items-center py-1 border-b border-steel-800/60">
-                      <span className="text-slate-400">TRUMPF Fiber Laser 6kW</span>
-                      <span className="font-bold text-white font-mono">₹3,200 / hr</span>
+                    <div className="flex justify-between items-center py-1 border-b border-slate-200/80 dark:border-steel-800/60">
+                      <span className="text-slate-600 dark:text-slate-400">TRUMPF Fiber Laser 6kW</span>
+                      <span className="font-bold text-slate-900 dark:text-white font-mono">₹3,200 / hr</span>
                     </div>
-                    <div className="flex justify-between items-center py-1 border-b border-steel-800/60">
-                      <span className="text-slate-400">Bystronic CNC Press Brake</span>
-                      <span className="font-bold text-white font-mono">₹2,400 / hr</span>
+                    <div className="flex justify-between items-center py-1 border-b border-slate-200/80 dark:border-steel-800/60">
+                      <span className="text-slate-600 dark:text-slate-400">Bystronic CNC Press Brake</span>
+                      <span className="font-bold text-slate-900 dark:text-white font-mono">₹2,400 / hr</span>
                     </div>
                     <div className="flex justify-between items-center py-1">
-                      <span className="text-slate-400">Robotic TIG/MIG Welder</span>
-                      <span className="font-bold text-white font-mono">₹2,800 / hr</span>
+                      <span className="text-slate-600 dark:text-slate-400">Robotic TIG/MIG Welder</span>
+                      <span className="font-bold text-slate-900 dark:text-white font-mono">₹2,800 / hr</span>
                     </div>
                   </div>
                 </div>
 
-                <div className="p-4 rounded-xl border border-steel-800 bg-steel-900/60 space-y-3">
-                  <div className="flex items-center gap-2 text-indigo-400 font-bold text-xs uppercase tracking-wider">
+                <div className="p-4 rounded-xl border border-slate-200 dark:border-steel-800 bg-slate-50/70 dark:bg-steel-900/60 space-y-3 shadow-2xs">
+                  <div className="flex items-center gap-2 text-indigo-600 dark:text-indigo-400 font-bold text-xs uppercase tracking-wider">
                     <Layers className="h-4 w-4" /> Raw Material Base
                   </div>
                   <div className="space-y-2 text-xs">
-                    <div className="flex justify-between items-center py-1 border-b border-steel-800/60">
-                      <span className="text-slate-400">Stainless Steel 304 Sheet</span>
-                      <span className="font-bold text-white font-mono">₹380 / kg</span>
+                    <div className="flex justify-between items-center py-1 border-b border-slate-200/80 dark:border-steel-800/60">
+                      <span className="text-slate-600 dark:text-slate-400">Stainless Steel 304 Sheet</span>
+                      <span className="font-bold text-slate-900 dark:text-white font-mono">₹380 / kg</span>
                     </div>
-                    <div className="flex justify-between items-center py-1 border-b border-steel-800/60">
-                      <span className="text-slate-400">Stainless Steel 316 Sheet</span>
-                      <span className="font-bold text-white font-mono">₹520 / kg</span>
+                    <div className="flex justify-between items-center py-1 border-b border-slate-200/80 dark:border-steel-800/60">
+                      <span className="text-slate-600 dark:text-slate-400">Stainless Steel 316 Sheet</span>
+                      <span className="font-bold text-slate-900 dark:text-white font-mono">₹520 / kg</span>
                     </div>
                     <div className="flex justify-between items-center py-1">
-                      <span className="text-slate-400">6061-T6 Aluminum</span>
-                      <span className="font-bold text-white font-mono">₹310 / kg</span>
+                      <span className="text-slate-600 dark:text-slate-400">6061-T6 Aluminum</span>
+                      <span className="font-bold text-slate-900 dark:text-white font-mono">₹310 / kg</span>
                     </div>
                   </div>
                 </div>
 
-                <div className="p-4 rounded-xl border border-steel-800 bg-steel-900/60 space-y-3">
-                  <div className="flex items-center gap-2 text-emerald-400 font-bold text-xs uppercase tracking-wider">
+                <div className="p-4 rounded-xl border border-slate-200 dark:border-steel-800 bg-slate-50/70 dark:bg-steel-900/60 space-y-3 shadow-2xs">
+                  <div className="flex items-center gap-2 text-emerald-600 dark:text-emerald-400 font-bold text-xs uppercase tracking-wider">
                     <Coins className="h-4 w-4" /> Markup & Taxation
                   </div>
                   <div className="space-y-2 text-xs">
-                    <div className="flex justify-between items-center py-1 border-b border-steel-800/60">
-                      <span className="text-slate-400">Shop Overhead Markup</span>
-                      <span className="font-bold text-emerald-400 font-mono">12.0%</span>
+                    <div className="flex justify-between items-center py-1 border-b border-slate-200/80 dark:border-steel-800/60">
+                      <span className="text-slate-600 dark:text-slate-400">Shop Overhead Markup</span>
+                      <span className="font-bold text-emerald-600 dark:text-emerald-400 font-mono">12.0%</span>
                     </div>
-                    <div className="flex justify-between items-center py-1 border-b border-steel-800/60">
-                      <span className="text-slate-400">Factory Profit Margin</span>
-                      <span className="font-bold text-emerald-400 font-mono">18.0%</span>
+                    <div className="flex justify-between items-center py-1 border-b border-slate-200/80 dark:border-steel-800/60">
+                      <span className="text-slate-600 dark:text-slate-400">Factory Profit Margin</span>
+                      <span className="font-bold text-emerald-600 dark:text-emerald-400 font-mono">18.0%</span>
                     </div>
                     <div className="flex justify-between items-center py-1">
-                      <span className="text-slate-400">Indian GST (CGST + SGST)</span>
-                      <span className="font-bold text-amber-400 font-mono">18.0%</span>
+                      <span className="text-slate-600 dark:text-slate-400">Indian GST (CGST + SGST)</span>
+                      <span className="font-bold text-amber-600 dark:text-amber-400 font-mono">18.0%</span>
                     </div>
                   </div>
                 </div>
               </div>
 
               {/* Direct Link Banner */}
-              <div className="p-4 rounded-xl bg-purple-950/20 border border-purple-500/30 flex flex-col sm:flex-row items-center justify-between gap-4">
+              <div className="p-4 rounded-xl bg-purple-50/70 dark:bg-purple-950/20 border border-purple-200 dark:border-purple-500/30 flex flex-col sm:flex-row items-center justify-between gap-4 shadow-2xs">
                 <div>
-                  <h4 className="font-bold text-white text-sm">Need to update specific machine rates or add new metal grades?</h4>
-                  <p className="text-slate-400 text-xs mt-0.5">
+                  <h4 className="font-bold text-slate-900 dark:text-white text-sm">Need to update specific machine rates or add new metal grades?</h4>
+                  <p className="text-slate-600 dark:text-slate-400 text-xs mt-0.5">
                     Open the dedicated interactive Pricing Rules editor to modify parameters and instantly test AI quotation simulations.
                   </p>
                 </div>
                 <Link href="/settings/pricing-rules">
-                  <Button variant="outline" className="border-purple-500/40 text-purple-300 hover:bg-purple-500/10 font-bold text-xs shrink-0">
+                  <Button variant="outline" className="border-purple-300 dark:border-purple-500/40 text-purple-700 dark:text-purple-300 bg-white dark:bg-transparent hover:bg-purple-100/50 dark:hover:bg-purple-500/10 font-bold text-xs shrink-0 shadow-2xs">
                     <Calculator className="h-4 w-4 mr-1.5" /> Edit Full Pricing Rules
                   </Button>
                 </Link>
@@ -242,19 +242,19 @@ export default function SettingsPage() {
 
         {/* 2. NEON POSTGRESQL DATABASE TAB */}
         <TabsContent value="neon" className="space-y-4">
-          <Card className="border-emerald-500/20 bg-steel-950/80">
-            <CardHeader className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-steel-800">
+          <Card className="border border-slate-200 dark:border-emerald-500/20 bg-white dark:bg-steel-950/80 shadow-xs rounded-2xl">
+            <CardHeader className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-100 dark:border-steel-800">
               <div>
                 <div className="flex items-center gap-2">
-                  <CardTitle className="text-lg text-white font-extrabold flex items-center gap-2">
-                    <Server className="h-5 w-5 text-emerald-400" />
+                  <CardTitle className="text-lg text-slate-900 dark:text-white font-extrabold flex items-center gap-2">
+                    <Server className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
                     Neon PostgreSQL Database Architecture
                   </CardTitle>
-                  <Badge className={neonStatus.connected ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30' : 'bg-amber-500/20 text-amber-300 border-amber-500/30'}>
+                  <Badge className={neonStatus.connected ? 'bg-emerald-100 dark:bg-emerald-500/20 text-emerald-800 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-500/30 font-bold' : 'bg-amber-100 dark:bg-amber-500/20 text-amber-800 dark:text-amber-300 border border-amber-200 dark:border-amber-500/30 font-bold'}>
                     {neonStatus.connected ? 'Connected' : 'Configured / Pooler Ready'}
                   </Badge>
                 </div>
-                <CardDescription className="text-slate-400 text-xs mt-1">
+                <CardDescription className="text-slate-500 dark:text-slate-400 text-xs mt-1">
                   Serverless PostgreSQL connection with connection pooling, SSL enforcement, and zero-cold-start queries.
                 </CardDescription>
               </div>
@@ -264,7 +264,7 @@ export default function SettingsPage() {
                 size="sm"
                 onClick={checkNeonDbConnection}
                 disabled={neonStatus.loading}
-                className="border-emerald-500/30 text-emerald-300 hover:bg-emerald-500/10 text-xs font-semibold"
+                className="border-emerald-300 dark:border-emerald-500/30 text-emerald-700 dark:text-emerald-300 bg-white dark:bg-steel-800 hover:bg-emerald-50 dark:hover:bg-emerald-500/10 text-xs font-semibold shadow-2xs"
               >
                 <RefreshCw className={`h-3.5 w-3.5 mr-1.5 ${neonStatus.loading ? 'animate-spin' : ''}`} />
                 {neonStatus.loading ? 'Testing...' : 'Test Connection'}
@@ -273,19 +273,19 @@ export default function SettingsPage() {
 
             <CardContent className="space-y-6 pt-6">
               {/* Status Alert Banner */}
-              <div className={`p-4 rounded-xl border flex items-start gap-3 text-xs ${neonStatus.connected ? 'bg-emerald-950/20 border-emerald-500/30 text-emerald-300' : 'bg-steel-900/60 border-steel-800 text-slate-300'}`}>
+              <div className={`p-4 rounded-xl border flex items-start gap-3 text-xs shadow-2xs ${neonStatus.connected ? 'bg-emerald-50/70 dark:bg-emerald-950/20 border-emerald-200 dark:border-emerald-500/30 text-emerald-900 dark:text-emerald-300' : 'bg-slate-50 dark:bg-steel-900/60 border-slate-200 dark:border-steel-800 text-slate-800 dark:text-slate-300'}`}>
                 {neonStatus.connected ? (
-                  <CheckCircle2 className="h-5 w-5 text-emerald-400 shrink-0 mt-0.5" />
+                  <CheckCircle2 className="h-5 w-5 text-emerald-600 dark:text-emerald-400 shrink-0 mt-0.5" />
                 ) : (
-                  <AlertCircle className="h-5 w-5 text-amber-400 shrink-0 mt-0.5" />
+                  <AlertCircle className="h-5 w-5 text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" />
                 )}
                 <div>
-                  <h5 className="font-bold text-sm text-white">
+                  <h5 className="font-bold text-sm text-slate-900 dark:text-white">
                     {neonStatus.connected ? 'Active Neon Database Connection Established' : 'Neon PostgreSQL Environment Configured'}
                   </h5>
-                  <p className="text-slate-400 mt-1 leading-relaxed">
-                    Connection string and pooling parameters have been loaded into <code className="text-purple-300 font-mono">.env.local</code>.
-                    {neonStatus.error && <span className="block text-amber-400 mt-1">Note: {neonStatus.error}</span>}
+                  <p className="text-slate-600 dark:text-slate-400 mt-1 leading-relaxed">
+                    Connection string and pooling parameters have been loaded into <code className="text-purple-600 dark:text-purple-300 font-mono font-semibold">.env.local</code>.
+                    {neonStatus.error && <span className="block text-amber-600 dark:text-amber-400 mt-1">Note: {neonStatus.error}</span>}
                   </p>
                 </div>
               </div>
@@ -293,20 +293,20 @@ export default function SettingsPage() {
               {/* Configuration Details */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-1.5">
-                  <label className="block text-xs font-semibold text-slate-300">Direct Connection String (DATABASE_URL)</label>
+                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300">Direct Connection String (DATABASE_URL)</label>
                   <Input
                     readOnly
-                    className="font-mono text-xs bg-steel-900 border-steel-800 text-slate-300"
+                    className="font-mono text-xs bg-slate-50 dark:bg-steel-900 border-slate-200 dark:border-steel-800 text-slate-800 dark:text-slate-300 shadow-2xs"
                     value="postgresql://neondb_owner:****@ep-lingering-smoke-a57hl9i9-pooler.us-east-2.aws.neon.tech/neondb?sslmode=require&channel_binding=require"
                   />
                   <span className="text-[10px] text-slate-500 block">Direct serverless query endpoint with SSL & channel binding enforcement.</span>
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="block text-xs font-semibold text-slate-300">Connection Pooler Endpoint (POSTGRES_PRISMA_URL)</label>
+                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300">Connection Pooler Endpoint (POSTGRES_PRISMA_URL)</label>
                   <Input
                     readOnly
-                    className="font-mono text-xs bg-steel-900 border-steel-800 text-slate-300"
+                    className="font-mono text-xs bg-slate-50 dark:bg-steel-900 border-slate-200 dark:border-steel-800 text-slate-800 dark:text-slate-300 shadow-2xs"
                     value="postgresql://neondb_owner:****@ep-lingering-smoke-a57hl9i9-pooler.us-east-2.aws.neon.tech/neondb?sslmode=require&channel_binding=require&pgbouncer=true"
                   />
                   <span className="text-[10px] text-slate-500 block">PgBouncer transaction-mode pooler for high concurrency.</span>
@@ -314,24 +314,24 @@ export default function SettingsPage() {
               </div>
 
               {/* Environment Variables Reference Table */}
-              <div className="p-4 rounded-xl border border-steel-800 bg-steel-900/40 space-y-3">
-                <h5 className="font-bold text-white text-xs uppercase tracking-wider">Neon Environment Variables in .env.local</h5>
+              <div className="p-4 rounded-xl border border-slate-200 dark:border-steel-800 bg-slate-50/70 dark:bg-steel-900/40 space-y-3 shadow-2xs">
+                <h5 className="font-bold text-slate-900 dark:text-white text-xs uppercase tracking-wider">Neon Environment Variables in .env.local</h5>
                 <div className="space-y-1.5 font-mono text-[11px]">
-                  <div className="flex justify-between py-1 border-b border-steel-800 text-slate-400">
+                  <div className="flex justify-between py-1 border-b border-slate-200 dark:border-steel-800 text-slate-600 dark:text-slate-400">
                     <span>DATABASE_URL</span>
-                    <span className="text-emerald-400">Connected to neondb ✓</span>
+                    <span className="text-emerald-600 dark:text-emerald-400 font-semibold">Connected to neondb ✓</span>
                   </div>
-                  <div className="flex justify-between py-1 border-b border-steel-800 text-slate-400">
+                  <div className="flex justify-between py-1 border-b border-slate-200 dark:border-steel-800 text-slate-600 dark:text-slate-400">
                     <span>POSTGRES_HOST</span>
-                    <span className="text-slate-200 font-bold">ep-lingering-smoke-a57hl9i9-pooler.us-east-2.aws.neon.tech</span>
+                    <span className="text-slate-800 dark:text-slate-200 font-bold">ep-lingering-smoke-a57hl9i9-pooler.us-east-2.aws.neon.tech</span>
                   </div>
-                  <div className="flex justify-between py-1 border-b border-steel-800 text-slate-400">
+                  <div className="flex justify-between py-1 border-b border-slate-200 dark:border-steel-800 text-slate-600 dark:text-slate-400">
                     <span>POSTGRES_DATABASE</span>
-                    <span className="text-purple-400 font-bold">neondb (PostgreSQL 18.6)</span>
+                    <span className="text-purple-600 dark:text-purple-400 font-bold">neondb (PostgreSQL 18.6)</span>
                   </div>
-                  <div className="flex justify-between py-1 text-slate-400">
+                  <div className="flex justify-between py-1 text-slate-600 dark:text-slate-400">
                     <span>PGSSLMODE</span>
-                    <span className="text-emerald-400">require (channel_binding=require)</span>
+                    <span className="text-emerald-600 dark:text-emerald-400 font-semibold">require (channel_binding=require)</span>
                   </div>
                 </div>
               </div>
@@ -390,15 +390,15 @@ export default function SettingsPage() {
               </div>
 
               {/* Account Actions Box with Direct Sign Out */}
-              <div className="pt-4 border-t border-steel-800 flex items-center justify-between">
+              <div className="pt-4 border-t border-slate-200 dark:border-steel-800 flex items-center justify-between">
                 <div>
-                  <span className="font-bold text-white text-xs block">Active User Session</span>
-                  <span className="text-slate-400 text-[11px]">{user?.email || 'owner@forgeiq.com'} ({role})</span>
+                  <span className="font-bold text-slate-900 dark:text-white text-xs block">Active User Session</span>
+                  <span className="text-slate-500 dark:text-slate-400 text-[11px]">{user?.email || 'owner@forgeiq.com'} ({role})</span>
                 </div>
                 <Button
                   variant="outline"
                   onClick={logout}
-                  className="border-rose-500/30 text-rose-400 hover:bg-rose-500/10 hover:border-rose-500 text-xs font-bold"
+                  className="border-rose-500/30 text-rose-600 dark:text-rose-400 hover:bg-rose-500/10 hover:border-rose-500 text-xs font-bold"
                 >
                   <LogOut className="h-3.5 w-3.5 mr-1.5" /> Sign Out of Account
                 </Button>

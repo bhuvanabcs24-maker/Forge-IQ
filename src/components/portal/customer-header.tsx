@@ -22,9 +22,9 @@ export function CustomerHeader() {
           <span className="text-sm">ForgeIQ Customer Portal</span>
         </Link>
 
-        {/* Customer Account Switcher for Demo Scope Testing */}
+        {/* Active Enterprise Buyer Organization Scope */}
         <div className="hidden md:flex items-center gap-2 pl-4 border-l border-slate-200 dark:border-steel-800 text-xs">
-          <span className="text-slate-500">Client Scope:</span>
+          <span className="text-slate-500 font-medium">Enterprise Account:</span>
           <Select
             options={MOCK_CUSTOMERS.map((c) => ({ label: c.companyName, value: c.id }))}
             value={currentCustomer.customerId}
@@ -50,8 +50,8 @@ export function CustomerHeader() {
           </div>
 
           <Link href="/dashboard">
-            <Button variant="outline" size="sm" title="Exit to Internal Admin Dashboard">
-              <ArrowLeft className="h-3.5 w-3.5 mr-1" /> Admin Dashboard
+            <Button variant="outline" size="sm" title="Switch to Factory Management Suite">
+              <ArrowLeft className="h-3.5 w-3.5 mr-1" /> Factory OS
             </Button>
           </Link>
         </div>

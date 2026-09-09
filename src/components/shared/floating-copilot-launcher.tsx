@@ -22,7 +22,7 @@ export function FloatingCopilotLauncher() {
             <div className="relative">
               <button
                 onClick={() => setIsOpen(false)}
-                className="absolute top-3 right-3 z-50 text-steel-400 hover:text-white p-1 rounded-full bg-steel-900/80"
+                className="absolute top-3 right-3 z-50 text-slate-600 dark:text-steel-400 hover:text-slate-900 dark:hover:text-white p-1 rounded-full bg-slate-100 dark:bg-steel-900/80 border border-slate-200 dark:border-steel-700"
               >
                 <X className="h-4 w-4" />
               </button>
