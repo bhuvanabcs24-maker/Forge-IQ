@@ -11,6 +11,8 @@ export interface UserProfile {
   createdAt: string;
 }
 
+export type CustomerStatus = 'Active' | 'Lead' | 'Inactive';
+
 export interface Customer {
   id: string;
   companyName: string;
@@ -19,7 +21,7 @@ export interface Customer {
   phone: string;
   industry: string;
   address: string;
-  status: 'Active' | 'Lead' | 'Inactive';
+  status: CustomerStatus;
   totalOrders: number;
   lifetimeValue: number;
   createdAt: string;
@@ -66,26 +68,32 @@ export interface Order {
   createdAt: string;
 }
 
+export type InventoryCategory = 'Sheet Metal' | 'Tube & Pipe' | 'Hardware & Fasteners' | 'Consumable' | 'Finished Part';
+export type InventoryUnit = 'Sheets' | 'Pcs' | 'Kg' | 'Meters' | 'Boxes';
+
 export interface InventoryItem {
   id: string;
   sku: string;
   name: string;
-  category: 'Sheet Metal' | 'Tube & Pipe' | 'Hardware & Fasteners' | 'Consumable' | 'Finished Part';
+  category: InventoryCategory;
   materialGrade: string; // e.g. 304 Stainless, 6061 Aluminum, A36 Steel
   quantity: number;
-  unit: 'Sheets' | 'Pcs' | 'Kg' | 'Meters' | 'Boxes';
+  unit: InventoryUnit;
   reorderPoint: number;
   unitCost: number;
   location: string;
   lastRestocked: string;
 }
 
+export type MachineType = 'Laser Cutter' | 'CNC Press Brake' | 'Robotic Welder' | 'Powder Coat Line' | 'Deburring Machine';
+export type MachineStatus = 'Operational' | 'In Use' | 'Maintenance' | 'Offline';
+
 export interface Machine {
   id: string;
   code: string;
   name: string;
-  type: 'Laser Cutter' | 'CNC Press Brake' | 'Robotic Welder' | 'Powder Coat Line' | 'Deburring Machine';
-  status: 'Operational' | 'In Use' | 'Maintenance' | 'Offline';
+  type: MachineType;
+  status: MachineStatus;
   efficiencyRate: number; // percentage e.g. 94.5
   hoursLoggedThisMonth: number;
   lastMaintenance: string;

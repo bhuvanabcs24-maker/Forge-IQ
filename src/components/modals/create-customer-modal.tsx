@@ -7,7 +7,6 @@ import * as z from 'zod';
 import { Dialog } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Select } from '@/components/ui/select';
 import { Customer } from '@/types';
 
 const customerSchema = z.object({
@@ -47,22 +46,24 @@ export function CreateCustomerModal({
     },
   });
 
-  const onSubmit = (data: CustomerFormValues) => {
-    onAddCustomer({
-      id: `cust-${Date.now()}`,
-      companyName: data.companyName,
-      contactName: data.contactName,
-      email: data.email,
-      phone: data.phone,
-      industry: data.industry,
-      address: data.address,
-      status: 'Active',
-      totalOrders: 0,
-      lifetimeValue: 0,
-      createdAt: new Date().toISOString().split('T')[0],
-    });
-    reset();
-    onClose();
+  const onSubmit = async (data: CustomerFormValues) => {
+    try {
+      const res = await fetch('/api/customers', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+      });
+      const json = await res.json();
+      if (json.success && json.customer) {
+        onAddCustomer(json.customer);
+        reset();
+        onClose();
+      } else {
+        alert(json.message || 'Failed to register customer');
+      }
+    } catch (err: any) {
+      alert('Error saving customer: ' + err?.message);
+    }
   };
 
   return (
@@ -105,43 +106,39 @@ export function CreateCustomerModal({
             <label className="block text-xs font-semibold text-slate-700 dark:text-steel-300 mb-1">
               Phone Number
             </label>
-            <Input placeholder="+1 (555) 000-0000" {...register('phone')} />
+            <Input placeholder="+91 80 2345 6789" {...register('phone')} />
+            {errors.phone && (
+              <span className="text-[11px] text-rose-500 mt-1 block">{errors.phone.message}</span>
+            )}
           </div>
 
           <div>
             <label className="block text-xs font-semibold text-slate-700 dark:text-steel-300 mb-1">
               Industry Sector
             </label>
-            <Select
-              options={[
-                { label: 'Aerospace & Defense', value: 'Aerospace & Defense' },
-                { label: 'Heavy Equipment', value: 'Heavy Equipment' },
-                { label: 'Electronics Enclosures', value: 'Electronics Enclosures' },
-                { label: 'HVAC Fabrication', value: 'HVAC Fabrication' },
-                { label: 'Solar & CleanTech', value: 'Solar & CleanTech' },
-                { label: 'Architectural Sheet Metal', value: 'Architectural Sheet Metal' },
-              ]}
-              {...register('industry')}
-            />
+            <Input placeholder="e.g. Aerospace & Defense" {...register('industry')} />
+            {errors.industry && (
+              <span className="text-[11px] text-rose-500 mt-1 block">{errors.industry.message}</span>
+            )}
           </div>
         </div>
 
         <div>
           <label className="block text-xs font-semibold text-slate-700 dark:text-steel-300 mb-1">
-            Facility / Billing Address
+            Plant / Delivery Address
           </label>
-          <Input placeholder="Street Address, City, State, Zip" {...register('address')} />
+          <Input placeholder="e.g. Plot 42, Aerospace SEZ, Devanahalli, Bengaluru" {...register('address')} />
           {errors.address && (
             <span className="text-[11px] text-rose-500 mt-1 block">{errors.address.message}</span>
           )}
         </div>
 
-        <div className="flex items-center justify-end gap-3 pt-4 border-t border-slate-100 dark:border-steel-800">
+        <div className="flex justify-end gap-2 pt-4 border-t border-slate-100 dark:border-steel-800">
           <Button type="button" variant="outline" onClick={onClose}>
             Cancel
           </Button>
           <Button type="submit" disabled={isSubmitting}>
-            Save Customer Record
+            {isSubmitting ? 'Saving to Database...' : 'Register Customer'}
           </Button>
         </div>
       </form>

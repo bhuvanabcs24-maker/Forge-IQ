@@ -17,25 +17,40 @@ export function formatNumber(num: number): string {
   return new Intl.NumberFormat('en-US').format(num);
 }
 
-export function formatDate(dateString: string): string {
+export function formatDate(dateString: any): string {
   if (!dateString) return '';
-  const date = new Date(dateString);
-  return new Intl.DateTimeFormat('en-US', {
-    month: 'short',
-    day: 'numeric',
-    year: 'numeric',
-  }).format(date);
+  try {
+    const date = dateString instanceof Date ? dateString : new Date(dateString);
+    if (isNaN(date.getTime()) || !isFinite(date.getTime())) {
+      return typeof dateString === 'string' ? dateString : '';
+    }
+    return new Intl.DateTimeFormat('en-US', {
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric',
+    }).format(date);
+  } catch {
+    return typeof dateString === 'string' ? dateString : '';
+  }
 }
 
-export function formatTimeAgo(dateString: string): string {
-  const date = new Date(dateString);
-  const now = new Date();
-  const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000);
+export function formatTimeAgo(dateString: any): string {
+  if (!dateString) return '';
+  try {
+    const date = dateString instanceof Date ? dateString : new Date(dateString);
+    if (isNaN(date.getTime()) || !isFinite(date.getTime())) {
+      return typeof dateString === 'string' ? dateString : '';
+    }
+    const now = new Date();
+    const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000);
 
-  if (diffInSeconds < 60) return 'just now';
-  if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)}m ago`;
-  if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)}h ago`;
-  return `${Math.floor(diffInSeconds / 86400)}d ago`;
+    if (diffInSeconds < 60) return 'just now';
+    if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)}m ago`;
+    if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)}h ago`;
+    return `${Math.floor(diffInSeconds / 86400)}d ago`;
+  } catch {
+    return '';
+  }
 }
 
 export function getStatusBadgeVariant(status: string): string {

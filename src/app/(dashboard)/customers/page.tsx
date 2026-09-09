@@ -1,9 +1,8 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ColumnDef } from '@tanstack/react-table';
 import { Customer } from '@/types';
-import { MOCK_CUSTOMERS } from '@/lib/mock-data/manufacturing';
 import { PageHeader } from '@/components/shared/page-header';
 import { DataTable } from '@/components/data-table/data-table';
 import { Badge } from '@/components/ui/badge';
@@ -11,12 +10,30 @@ import { Button } from '@/components/ui/button';
 import { formatCurrency, formatDate } from '@/lib/utils';
 import { CreateCustomerModal } from '@/components/modals/create-customer-modal';
 import { WhatsAppChatDrawer } from '@/components/messaging/whatsapp-chat-drawer';
-import { Plus, Mail, Phone, Building2, MessageSquare } from 'lucide-react';
+import { Plus, Mail, Building2, MessageSquare, RefreshCw } from 'lucide-react';
 
 export default function CustomersPage() {
-  const [customers, setCustomers] = useState<Customer[]>(MOCK_CUSTOMERS);
+  const [customers, setCustomers] = useState<Customer[]>([]);
+  const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedChatCustomer, setSelectedChatCustomer] = useState<Customer | null>(null);
+
+  const fetchCustomers = () => {
+    setLoading(true);
+    fetch('/api/customers')
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.customers) {
+          setCustomers(data.customers);
+        }
+      })
+      .catch((err) => console.error('Failed to fetch customers from database:', err))
+      .finally(() => setLoading(false));
+  };
+
+  useEffect(() => {
+    fetchCustomers();
+  }, []);
 
   const columns: ColumnDef<Customer>[] = [
     {
@@ -106,26 +123,40 @@ export default function CustomersPage() {
     <div className="space-y-6">
       <PageHeader
         title="Customer Directory"
-        description="Manage B2B client accounts, contact profiles, order history, and lifetime spending."
+        description="Live synchronization with Neon PostgreSQL client directory, contact profiles, order history, and lifetime spending."
         breadcrumbs={[{ label: 'Customers' }]}
         actions={
-          <Button onClick={() => setIsModalOpen(true)}>
-            <Plus className="h-4 w-4 mr-1" /> Add Customer
-          </Button>
+          <div className="flex items-center gap-2">
+            <Button variant="outline" size="sm" onClick={fetchCustomers} disabled={loading} className="text-xs">
+              <RefreshCw className={`h-3.5 w-3.5 mr-1 ${loading ? 'animate-spin' : ''}`} /> Sync DB
+            </Button>
+            <Button onClick={() => setIsModalOpen(true)}>
+              <Plus className="h-4 w-4 mr-1" /> Add Customer
+            </Button>
+          </div>
         }
       />
 
-      <DataTable
-        columns={columns}
-        data={customers}
-        searchKey="companyName"
-        searchPlaceholder="Search company, contact name, or industry..."
-      />
+      {loading ? (
+        <div className="p-12 text-center text-slate-500 dark:text-steel-400">
+          <RefreshCw className="h-6 w-6 animate-spin mx-auto mb-2 text-brand-500" />
+          <p className="text-sm">Fetching client directory from Neon database...</p>
+        </div>
+      ) : (
+        <DataTable
+          columns={columns}
+          data={customers}
+          searchKey="companyName"
+          searchPlaceholder="Search company, contact name, or industry..."
+        />
+      )}
 
       <CreateCustomerModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
-        onAddCustomer={(newCust) => setCustomers([newCust, ...customers])}
+        onAddCustomer={(newCust) => {
+          setCustomers((prev) => [newCust, ...prev.filter((c) => c.companyName !== newCust.companyName && c.id !== newCust.id)]);
+        }}
       />
 
       {selectedChatCustomer && (

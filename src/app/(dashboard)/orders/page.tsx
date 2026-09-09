@@ -1,9 +1,8 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ColumnDef } from '@tanstack/react-table';
 import { Order } from '@/types';
-import { MOCK_ORDERS } from '@/lib/mock-data/manufacturing';
 import { PageHeader } from '@/components/shared/page-header';
 import { DataTable } from '@/components/data-table/data-table';
 import { Badge } from '@/components/ui/badge';
@@ -11,11 +10,29 @@ import { Button } from '@/components/ui/button';
 import { formatCurrency, formatDate } from '@/lib/utils';
 import { CreateOrderModal } from '@/components/modals/create-order-modal';
 import Link from 'next/link';
-import { Plus, ShoppingBag, Sparkles } from 'lucide-react';
+import { Plus, ShoppingBag, Sparkles, Database, RefreshCw } from 'lucide-react';
 
 export default function OrdersPage() {
-  const [orders, setOrders] = useState<Order[]>(MOCK_ORDERS);
+  const [orders, setOrders] = useState<Order[]>([]);
+  const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const fetchOrders = () => {
+    setLoading(true);
+    fetch('/api/orders')
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.orders) {
+          setOrders(data.orders);
+        }
+      })
+      .catch((err) => console.error('Failed to fetch orders from database:', err))
+      .finally(() => setLoading(false));
+  };
+
+  useEffect(() => {
+    fetchOrders();
+  }, []);
 
   const columns: ColumnDef<Order>[] = [
     {
@@ -112,10 +129,13 @@ export default function OrdersPage() {
     <div className="space-y-6">
       <PageHeader
         title="Work Orders & Sales Orders"
-        description="Track fabrication work orders, priority schedules, stage completions, and delivery deadlines."
+        description="Live synchronization with Neon PostgreSQL fabrication records, priority schedules, stage completions, and delivery deadlines."
         breadcrumbs={[{ label: 'Orders' }]}
         actions={
           <div className="flex items-center gap-2">
+            <Button variant="outline" size="sm" onClick={fetchOrders} disabled={loading} className="text-xs">
+              <RefreshCw className={`h-3.5 w-3.5 mr-1 ${loading ? 'animate-spin' : ''}`} /> Sync DB
+            </Button>
             <Link href="/ai-order-intake">
               <Button variant="outline">
                 <Sparkles className="h-4 w-4 mr-1 text-purple-500" /> AI Document Import
@@ -128,17 +148,26 @@ export default function OrdersPage() {
         }
       />
 
-      <DataTable
-        columns={columns}
-        data={orders}
-        searchKey="orderNumber"
-        searchPlaceholder="Search order number, part title, or customer..."
-      />
+      {loading ? (
+        <div className="p-12 text-center text-slate-500 dark:text-steel-400">
+          <RefreshCw className="h-6 w-6 animate-spin mx-auto mb-2 text-brand-500" />
+          <p className="text-sm">Fetching work orders from Neon database...</p>
+        </div>
+      ) : (
+        <DataTable
+          columns={columns}
+          data={orders}
+          searchKey="orderNumber"
+          searchPlaceholder="Search order number, part title, or customer..."
+        />
+      )}
 
       <CreateOrderModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
-        onAddOrder={(newOrder) => setOrders([newOrder as Order, ...orders])}
+        onAddOrder={(newOrder) => {
+          setOrders((prev) => [newOrder, ...prev.filter((o) => o.id !== newOrder.id && o.orderNumber !== newOrder.orderNumber)]);
+        }}
       />
     </div>
   );

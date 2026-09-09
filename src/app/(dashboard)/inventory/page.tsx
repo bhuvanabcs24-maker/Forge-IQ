@@ -1,22 +1,71 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ColumnDef } from '@tanstack/react-table';
 import { InventoryItem } from '@/types';
-import { MOCK_INVENTORY } from '@/lib/mock-data/manufacturing';
 import { PageHeader } from '@/components/shared/page-header';
 import { DataTable } from '@/components/data-table/data-table';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { formatCurrency, formatDate } from '@/lib/utils';
-import { Boxes, Plus, AlertTriangle, Layers } from 'lucide-react';
+import { formatCurrency } from '@/lib/utils';
+import { Boxes, Plus, AlertTriangle, RefreshCw } from 'lucide-react';
 import { Dialog } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
+import { CreateStockModal } from '@/components/modals/create-stock-modal';
 
 export default function InventoryPage() {
-  const [inventory, setInventory] = useState<InventoryItem[]>(MOCK_INVENTORY);
+  const [inventory, setInventory] = useState<InventoryItem[]>([]);
+  const [loading, setLoading] = useState(true);
   const [selectedItem, setSelectedItem] = useState<InventoryItem | null>(null);
   const [addQty, setAddQty] = useState(10);
+  const [isAdjusting, setIsAdjusting] = useState(false);
+  const [isAddStockOpen, setIsAddStockOpen] = useState(false);
+
+  const fetchInventory = () => {
+    setLoading(true);
+    fetch('/api/inventory')
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.inventory) {
+          setInventory(data.inventory);
+        }
+      })
+      .catch((err) => console.error('Failed to fetch inventory from database:', err))
+      .finally(() => setLoading(false));
+  };
+
+  useEffect(() => {
+    fetchInventory();
+  }, []);
+
+  const handleAdjustStock = async () => {
+    if (!selectedItem) return;
+    setIsAdjusting(true);
+    try {
+      const res = await fetch('/api/inventory', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          id: selectedItem.id,
+          sku: selectedItem.sku,
+          adjustQty: Number(addQty),
+        }),
+      });
+      const data = await res.json();
+      if (data.success && data.item) {
+        setInventory((prev) =>
+          prev.map((i) => (i.id === selectedItem.id ? data.item : i))
+        );
+        setSelectedItem(null);
+      } else {
+        alert(data.message || 'Failed to adjust stock');
+      }
+    } catch (err: any) {
+      alert('Error adjusting stock: ' + err?.message);
+    } finally {
+      setIsAdjusting(false);
+    }
+  };
 
   const columns: ColumnDef<InventoryItem>[] = [
     {
@@ -108,20 +157,41 @@ export default function InventoryPage() {
     <div className="space-y-6">
       <PageHeader
         title="Raw Material & Sheet Inventory"
-        description="Track sheet metal gauges, tube stock, PEM hardware fasteners, and automated stock alerts."
+        description="Live synchronization with Neon PostgreSQL stock levels, sheet metal gauges, tube stock, hardware fasteners, and automated stock alerts."
         breadcrumbs={[{ label: 'Inventory' }]}
         actions={
-          <Button>
-            <Plus className="h-4 w-4 mr-1" /> Add Stock SKU
-          </Button>
+          <div className="flex items-center gap-2">
+            <Button variant="outline" size="sm" onClick={fetchInventory} disabled={loading} className="text-xs">
+              <RefreshCw className={`h-3.5 w-3.5 mr-1 ${loading ? 'animate-spin' : ''}`} /> Sync DB
+            </Button>
+            <Button onClick={() => setIsAddStockOpen(true)}>
+              <Plus className="h-4 w-4 mr-1" /> Add Stock SKU
+            </Button>
+          </div>
         }
       />
 
-      <DataTable
-        columns={columns}
-        data={inventory}
-        searchKey="sku"
-        searchPlaceholder="Search SKU, material grade, or location..."
+      {loading ? (
+        <div className="p-12 text-center text-slate-500 dark:text-steel-400">
+          <RefreshCw className="h-6 w-6 animate-spin mx-auto mb-2 text-brand-500" />
+          <p className="text-sm">Fetching stock inventory from Neon database...</p>
+        </div>
+      ) : (
+        <DataTable
+          columns={columns}
+          data={inventory}
+          searchKey="sku"
+          searchPlaceholder="Search SKU, material grade, or location..."
+        />
+      )}
+
+      {/* Add Stock SKU Modal */}
+      <CreateStockModal
+        isOpen={isAddStockOpen}
+        onClose={() => setIsAddStockOpen(false)}
+        onAddStock={(newItem) => {
+          setInventory((prev) => [newItem, ...prev.filter((i) => i.sku !== newItem.sku && i.id !== newItem.id)]);
+        }}
       />
 
       {/* Adjust Stock Modal */}
@@ -134,12 +204,12 @@ export default function InventoryPage() {
         >
           <div className="space-y-4">
             <p className="text-xs text-slate-600 dark:text-steel-300">
-              Current stock for <strong>{selectedItem.name}</strong> is{' '}
+              Current stock in Neon DB for <strong>{selectedItem.name}</strong> is{' '}
               <strong className="text-brand-500">{selectedItem.quantity} {selectedItem.unit}</strong>.
             </p>
 
             <div>
-              <label className="block text-xs font-semibold mb-1">Quantity to Add</label>
+              <label className="block text-xs font-semibold mb-1">Quantity to Add / Restock</label>
               <Input
                 type="number"
                 value={addQty}
@@ -151,19 +221,8 @@ export default function InventoryPage() {
               <Button variant="outline" onClick={() => setSelectedItem(null)}>
                 Cancel
               </Button>
-              <Button
-                onClick={() => {
-                  setInventory((prev) =>
-                    prev.map((i) =>
-                      i.id === selectedItem.id
-                        ? { ...i, quantity: i.quantity + addQty, lastRestocked: new Date().toISOString().split('T')[0] }
-                        : i
-                    )
-                  );
-                  setSelectedItem(null);
-                }}
-              >
-                Save Adjustment
+              <Button onClick={handleAdjustStock} disabled={isAdjusting}>
+                {isAdjusting ? 'Updating Database...' : 'Save to Database'}
               </Button>
             </div>
           </div>
