@@ -51,10 +51,25 @@ Ask me any natural-language operational query about delayed work orders, machine
     setIsTyping(true);
 
     try {
+      const res = await fetch('/api/copilot/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ query }),
+      });
+      if (res.ok) {
+        const data = await res.json();
+        if (data.message) {
+          setMessages((prev) => [...prev, data.message]);
+          return;
+        }
+      }
+      // Fallback if API returned non-ok
       const responseMsg = await globalCopilotOrchestrator.processQuery(query);
       setMessages((prev) => [...prev, responseMsg]);
-    } catch {
-      // Error handling
+    } catch (err) {
+      console.warn('Backend copilot chat API failed, falling back to local orchestrator:', err);
+      const responseMsg = await globalCopilotOrchestrator.processQuery(query);
+      setMessages((prev) => [...prev, responseMsg]);
     } finally {
       setIsTyping(false);
     }

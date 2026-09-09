@@ -82,7 +82,7 @@ export class PythonAIClient {
         method: 'POST',
         headers: this.getHeaders(options),
         body: JSON.stringify({ query, context: context || {} }),
-        signal: AbortSignal.timeout(12000),
+        signal: AbortSignal.timeout(30000),
       });
 
       if (!res.ok) {
