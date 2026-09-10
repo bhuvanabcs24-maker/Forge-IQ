@@ -13,46 +13,57 @@ function toIsoDate(val: any, fallback = '2026-08-10'): string {
   }
 }
 
+import { cachedDbQuery, invalidateDbCache } from '@/lib/db/neon-cache';
+
 export async function GET() {
   try {
-    const sql = getSql();
-    const rows = await sql`
-      SELECT 
-        id, 
-        code, 
-        name, 
-        type, 
-        status, 
-        efficiency_rate as "efficiencyRate", 
-        hours_logged_this_month as "hoursLoggedThisMonth", 
-        last_maintenance as "lastMaintenance", 
-        next_scheduled_maintenance as "nextScheduledMaintenance"
-      FROM machines
-      ORDER BY code;
-    `;
+    const machines = await cachedDbQuery(
+      'api:machines:list',
+      async () => {
+        const sql = getSql();
+        const rows = await sql`
+          SELECT 
+            id, 
+            code, 
+            name, 
+            type, 
+            status, 
+            efficiency_rate as "efficiencyRate", 
+            hours_logged_this_month as "hoursLoggedThisMonth", 
+            last_maintenance as "lastMaintenance", 
+            next_scheduled_maintenance as "nextScheduledMaintenance"
+          FROM machines
+          ORDER BY code;
+        `;
 
-    if (rows && rows.length > 0) {
-      const machines: Machine[] = rows.map((r: any) => ({
-        id: String(r.id),
-        code: String(r.code),
-        name: String(r.name),
-        type: r.type as MachineType,
-        status: r.status as MachineStatus,
-        efficiencyRate: Number(r.efficiencyRate),
-        hoursLoggedThisMonth: Number(r.hoursLoggedThisMonth),
-        lastMaintenance: toIsoDate(r.lastMaintenance, '2026-08-10'),
-        nextScheduledMaintenance: toIsoDate(r.nextScheduledMaintenance, '2026-09-20'),
-      }));
+        if (!rows || rows.length === 0) return [];
 
-      return NextResponse.json({ success: true, source: 'neon_postgresql', machines });
-    }
+        return rows.map((r: any) => ({
+          id: String(r.id),
+          code: String(r.code),
+          name: String(r.name),
+          type: r.type as MachineType,
+          status: r.status as MachineStatus,
+          efficiencyRate: Number(r.efficiencyRate),
+          hoursLoggedThisMonth: Number(r.hoursLoggedThisMonth),
+          lastMaintenance: toIsoDate(r.lastMaintenance, '2026-08-10'),
+          nextScheduledMaintenance: toIsoDate(r.nextScheduledMaintenance, '2026-09-20'),
+        }));
+      },
+      { ttlMs: 5000, tag: 'machines' }
+    );
 
-    return NextResponse.json({ success: true, source: 'empty', machines: [] });
+    return NextResponse.json({ 
+      success: true, 
+      source: machines.length > 0 ? 'neon_postgresql' : 'empty', 
+      machines 
+    });
   } catch (err: any) {
     console.error('Machines Neon DB query error:', err?.message);
     return NextResponse.json({ success: false, message: err?.message, machines: [] }, { status: 500 });
   }
 }
+
 
 export async function POST(req: NextRequest) {
   try {
@@ -148,6 +159,8 @@ export async function POST(req: NextRequest) {
     `;
 
     const m = inserted[0];
+    invalidateDbCache('machines');
+
     return NextResponse.json({ 
       success: true, 
       source: 'neon_postgresql', 

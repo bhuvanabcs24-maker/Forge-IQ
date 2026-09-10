@@ -13,50 +13,61 @@ function toIsoDate(val: any, fallback = '2026-09-01'): string {
   }
 }
 
+import { cachedDbQuery, invalidateDbCache } from '@/lib/db/neon-cache';
+
 export async function GET() {
   try {
-    const sql = getSql();
-    const rows = await sql`
-      SELECT 
-        id, 
-        company_name as "companyName", 
-        contact_name as "contactName", 
-        email, 
-        phone, 
-        industry, 
-        address, 
-        status, 
-        total_orders as "totalOrders", 
-        lifetime_value as "lifetimeValue", 
-        created_at as "createdAt"
-      FROM customers
-      ORDER BY total_orders DESC, created_at DESC;
-    `;
+    const customers = await cachedDbQuery(
+      'api:customers:list',
+      async () => {
+        const sql = getSql();
+        const rows = await sql`
+          SELECT 
+            id, 
+            company_name as "companyName", 
+            contact_name as "contactName", 
+            email, 
+            phone, 
+            industry, 
+            address, 
+            status, 
+            total_orders as "totalOrders", 
+            lifetime_value as "lifetimeValue", 
+            created_at as "createdAt"
+          FROM customers
+          ORDER BY total_orders DESC, created_at DESC;
+        `;
 
-    if (rows && rows.length > 0) {
-      const customers: Customer[] = rows.map((r: any) => ({
-        id: String(r.id),
-        companyName: String(r.companyName),
-        contactName: String(r.contactName),
-        email: String(r.email),
-        phone: String(r.phone),
-        industry: String(r.industry || 'Metal Fabrication'),
-        address: String(r.address || ''),
-        status: r.status as CustomerStatus,
-        totalOrders: Number(r.totalOrders || 0),
-        lifetimeValue: Number(r.lifetimeValue || 0),
-        createdAt: toIsoDate(r.createdAt),
-      }));
+        if (!rows || rows.length === 0) return [];
 
-      return NextResponse.json({ success: true, source: 'neon_postgresql', customers });
-    }
+        return rows.map((r: any) => ({
+          id: String(r.id),
+          companyName: String(r.companyName),
+          contactName: String(r.contactName),
+          email: String(r.email),
+          phone: String(r.phone),
+          industry: String(r.industry || 'Metal Fabrication'),
+          address: String(r.address || ''),
+          status: r.status as CustomerStatus,
+          totalOrders: Number(r.totalOrders || 0),
+          lifetimeValue: Number(r.lifetimeValue || 0),
+          createdAt: toIsoDate(r.createdAt),
+        }));
+      },
+      { ttlMs: 6000, tag: 'customers' }
+    );
 
-    return NextResponse.json({ success: true, source: 'empty', customers: [] });
+    return NextResponse.json({ 
+      success: true, 
+      source: customers.length > 0 ? 'neon_postgresql' : 'empty', 
+      customers 
+    });
   } catch (err: any) {
     console.error('Customers Neon DB query error:', err?.message);
     return NextResponse.json({ success: false, message: err?.message, customers: [] }, { status: 500 });
   }
 }
+
 
 export async function POST(req: NextRequest) {
   try {
@@ -111,6 +122,8 @@ export async function POST(req: NextRequest) {
     `;
 
     const c = inserted[0];
+    invalidateDbCache('customers');
+    
     return NextResponse.json({
       success: true,
       source: 'neon_postgresql',

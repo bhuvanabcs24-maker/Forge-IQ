@@ -13,56 +13,67 @@ function toIsoDate(val: any, fallback = '2026-09-01'): string {
   }
 }
 
+import { cachedDbQuery, invalidateDbCache } from '@/lib/db/neon-cache';
+
 export async function GET() {
   try {
-    const sql = getSql();
-    const rows = await sql`
-      SELECT 
-        id, 
-        order_number as "orderNumber", 
-        customer_id as "customerId", 
-        customer_name as "customerName", 
-        title, 
-        priority, 
-        status, 
-        progress_percent as "progressPercent", 
-        total_amount as "totalAmount", 
-        due_date as "dueDate", 
-        material_sku as "materialSku",
-        assigned_machine_id as "assignedMachineId",
-        quantity_units as "quantityUnits",
-        created_at as "createdAt"
-      FROM orders
-      ORDER BY created_at DESC;
-    `;
+    const orders = await cachedDbQuery(
+      'api:orders:list',
+      async () => {
+        const sql = getSql();
+        const rows = await sql`
+          SELECT 
+            id, 
+            order_number as "orderNumber", 
+            customer_id as "customerId", 
+            customer_name as "customerName", 
+            title, 
+            priority, 
+            status, 
+            progress_percent as "progressPercent", 
+            total_amount as "totalAmount", 
+            due_date as "dueDate", 
+            material_sku as "materialSku",
+            assigned_machine_id as "assignedMachineId",
+            quantity_units as "quantityUnits",
+            created_at as "createdAt"
+          FROM orders
+          ORDER BY created_at DESC;
+        `;
 
-    if (rows && rows.length > 0) {
-      const orders: (Order & { materialSku?: string; assignedMachineId?: string; quantityUnits?: number })[] = rows.map((r: any) => ({
-        id: String(r.id),
-        orderNumber: String(r.orderNumber),
-        customerId: String(r.customerId || 'cust-1'),
-        customerName: String(r.customerName),
-        title: String(r.title),
-        priority: r.priority as OrderPriority,
-        status: r.status as OrderStatus,
-        progressPercent: Number(r.progressPercent || 0),
-        totalAmount: Number(r.totalAmount || 0),
-        dueDate: toIsoDate(r.dueDate, '2026-09-30'),
-        materialSku: r.materialSku ? String(r.materialSku) : undefined,
-        assignedMachineId: r.assignedMachineId ? String(r.assignedMachineId) : undefined,
-        quantityUnits: r.quantityUnits ? Number(r.quantityUnits) : 50,
-        createdAt: toIsoDate(r.createdAt, '2026-09-01'),
-      }));
+        if (!rows || rows.length === 0) return [];
 
-      return NextResponse.json({ success: true, source: 'neon_postgresql', orders });
-    }
+        return rows.map((r: any) => ({
+          id: String(r.id),
+          orderNumber: String(r.orderNumber),
+          customerId: String(r.customerId || 'cust-1'),
+          customerName: String(r.customerName),
+          title: String(r.title),
+          priority: r.priority as OrderPriority,
+          status: r.status as OrderStatus,
+          progressPercent: Number(r.progressPercent || 0),
+          totalAmount: Number(r.totalAmount || 0),
+          dueDate: toIsoDate(r.dueDate, '2026-09-30'),
+          materialSku: r.materialSku ? String(r.materialSku) : undefined,
+          assignedMachineId: r.assignedMachineId ? String(r.assignedMachineId) : undefined,
+          quantityUnits: r.quantityUnits ? Number(r.quantityUnits) : 50,
+          createdAt: toIsoDate(r.createdAt, '2026-09-01'),
+        }));
+      },
+      { ttlMs: 4000, tag: 'orders' }
+    );
 
-    return NextResponse.json({ success: true, source: 'empty', orders: [] });
+    return NextResponse.json({ 
+      success: true, 
+      source: orders.length > 0 ? 'neon_postgresql' : 'empty', 
+      orders 
+    });
   } catch (err: any) {
     console.error('Orders Neon DB query error:', err?.message);
     return NextResponse.json({ success: false, message: err?.message, orders: [] }, { status: 500 });
   }
 }
+
 
 export async function POST(req: NextRequest) {
   try {
@@ -213,6 +224,9 @@ export async function POST(req: NextRequest) {
       createdAt: new Date().toISOString().split('T')[0],
     };
 
+    invalidateDbCache('orders');
+    invalidateDbCache('jobs');
+
     return NextResponse.json({ 
       success: true, 
       source: 'neon_postgresql', 
@@ -221,6 +235,7 @@ export async function POST(req: NextRequest) {
       assignedMachine: machineName,
       reservedMaterialSku: cleanMaterialSku
     });
+
   } catch (err: any) {
     console.error('Failed to create order in Neon DB:', err?.message);
     return NextResponse.json(

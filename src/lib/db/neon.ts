@@ -12,15 +12,20 @@ export function getNeonConnectionString(): string {
   );
 }
 
+let _cachedSql: any = null;
+
 /**
- * Serverless SQL Query Client (HTTP-based, ideal for Edge & Serverless API routes)
+ * Serverless SQL Query Client (HTTP-based with connection reuse)
  */
-export function getSql() {
-  return neon(getNeonConnectionString());
+export function getSql(): any {
+  if (!_cachedSql) {
+    _cachedSql = neon(getNeonConnectionString());
+  }
+  return _cachedSql;
 }
 
 // Default SQL executor instance
-export const sql = neon(getNeonConnectionString());
+export const sql = getSql();
 
 /**
  * Connection Pool for pooled queries

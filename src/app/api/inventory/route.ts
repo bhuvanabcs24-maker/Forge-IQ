@@ -13,50 +13,61 @@ function toIsoDate(val: any, fallback = '2026-09-01'): string {
   }
 }
 
+import { cachedDbQuery, invalidateDbCache } from '@/lib/db/neon-cache';
+
 export async function GET() {
   try {
-    const sql = getSql();
-    const rows = await sql`
-      SELECT 
-        id, 
-        sku, 
-        name, 
-        category, 
-        material_grade as "materialGrade", 
-        quantity, 
-        unit, 
-        reorder_point as "reorderPoint", 
-        unit_cost as "unitCost", 
-        location, 
-        last_restocked as "lastRestocked"
-      FROM inventory_items
-      ORDER BY category, name;
-    `;
+    const inventory = await cachedDbQuery(
+      'api:inventory:list',
+      async () => {
+        const sql = getSql();
+        const rows = await sql`
+          SELECT 
+            id, 
+            sku, 
+            name, 
+            category, 
+            material_grade as "materialGrade", 
+            quantity, 
+            unit, 
+            reorder_point as "reorderPoint", 
+            unit_cost as "unitCost", 
+            location, 
+            last_restocked as "lastRestocked"
+          FROM inventory_items
+          ORDER BY category, name;
+        `;
 
-    if (rows && rows.length > 0) {
-      const inventory: InventoryItem[] = rows.map((r: any) => ({
-        id: String(r.id),
-        sku: String(r.sku),
-        name: String(r.name),
-        category: r.category as InventoryCategory,
-        materialGrade: String(r.materialGrade || 'Standard'),
-        quantity: Number(r.quantity || 0),
-        unit: (r.unit || 'Sheets') as InventoryUnit,
-        reorderPoint: Number(r.reorderPoint || 10),
-        unitCost: Number(r.unitCost || 0),
-        location: String(r.location || 'Bay A'),
-        lastRestocked: toIsoDate(r.lastRestocked),
-      }));
+        if (!rows || rows.length === 0) return [];
 
-      return NextResponse.json({ success: true, source: 'neon_postgresql', inventory });
-    }
+        return rows.map((r: any) => ({
+          id: String(r.id),
+          sku: String(r.sku),
+          name: String(r.name),
+          category: r.category as InventoryCategory,
+          materialGrade: String(r.materialGrade || 'Standard'),
+          quantity: Number(r.quantity || 0),
+          unit: (r.unit || 'Sheets') as InventoryUnit,
+          reorderPoint: Number(r.reorderPoint || 10),
+          unitCost: Number(r.unitCost || 0),
+          location: String(r.location || 'Bay A'),
+          lastRestocked: toIsoDate(r.lastRestocked),
+        }));
+      },
+      { ttlMs: 5000, tag: 'inventory' }
+    );
 
-    return NextResponse.json({ success: true, source: 'empty', inventory: [] });
+    return NextResponse.json({ 
+      success: true, 
+      source: inventory.length > 0 ? 'neon_postgresql' : 'empty', 
+      inventory 
+    });
   } catch (err: any) {
     console.error('Inventory Neon DB query error:', err?.message);
     return NextResponse.json({ success: false, message: err?.message, inventory: [] }, { status: 500 });
   }
 }
+
 
 export async function POST(req: NextRequest) {
   try {
@@ -164,6 +175,8 @@ export async function POST(req: NextRequest) {
     `;
 
     const r = inserted[0];
+    invalidateDbCache('inventory');
+
     return NextResponse.json({ 
       success: true, 
       source: 'neon_postgresql', 

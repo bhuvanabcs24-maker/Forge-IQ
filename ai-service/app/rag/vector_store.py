@@ -20,6 +20,7 @@ class VectorRecord(BaseModel):
 class VectorStore:
     def __init__(self):
         self._records: List[VectorRecord] = []
+        self._np_vectors: Dict[str, np.ndarray] = {}
 
     def add_records(self, records: List[VectorRecord]):
         for r in records:
@@ -44,6 +45,11 @@ class VectorStore:
                 existing_id_map[r.id] = new_idx
                 existing_sig_map[sig] = new_idx
 
+            # Pre-compute and cache normalized numpy vector
+            vec = np.array(r.embedding, dtype=np.float32)
+            v_norm = np.linalg.norm(vec)
+            self._np_vectors[r.id] = (vec / v_norm) if v_norm > 0 else vec
+
     def save_to_disk(self, file_path: str):
         Path(file_path).parent.mkdir(parents=True, exist_ok=True)
         data = [r.model_dump() for r in self._records]
@@ -56,6 +62,7 @@ class VectorStore:
                 data = json.load(f)
             records = [VectorRecord.model_validate(item) for item in data]
             self.add_records(records)
+
 
     def search(
         self,
@@ -79,6 +86,8 @@ class VectorStore:
         q_norm = np.linalg.norm(q_vec)
         if q_norm == 0:
             return []
+        q_norm_vec = q_vec / q_norm
+
 
         # Prepare lexical terms if query_text is present
         stop_words = {'what', 'is', 'are', 'the', 'for', 'and', 'can', 'we', 'our', 'of', 'in', 'to', 'a', 'an'}
@@ -101,12 +110,16 @@ class VectorStore:
             if source_type and record.source_type != source_type:
                 continue
 
-            # 4. Cosine similarity
-            r_vec = np.array(record.embedding, dtype=np.float32)
-            denom = q_norm * np.linalg.norm(r_vec)
-            if denom == 0:
-                continue
-            sim = float(np.dot(q_vec, r_vec) / denom)
+            # 4. Ultra-fast dot product using pre-normalized vector
+            r_vec = self._np_vectors.get(record.id)
+            if r_vec is None:
+                r_raw = np.array(record.embedding, dtype=np.float32)
+                rn = np.linalg.norm(r_raw)
+                r_vec = (r_raw / rn) if rn > 0 else r_raw
+                self._np_vectors[record.id] = r_vec
+
+            sim = float(np.dot(q_norm_vec, r_vec))
+
 
             # 5. Hybrid Lexical Keyword Boost
             if q_tokens:

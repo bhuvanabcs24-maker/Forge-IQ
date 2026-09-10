@@ -444,8 +444,31 @@ TOOL_REGISTRY: Dict[str, Callable[..., Dict[str, Any]]] = {
     "check_dfm": check_dfm
 }
 
+# Pure mathematical calculators eligible for memoization
+PURE_CALCULATION_TOOLS = {
+    "calculate_material_weight",
+    "calculate_material_cost",
+    "calculate_scrap",
+    "calculate_laser_time",
+    "calculate_laser_cost",
+    "calculate_bending_time",
+    "calculate_bending_cost",
+    "calculate_quote",
+    "calculate_lead_time"
+}
+
+_CALC_CACHE: Dict[str, Dict[str, Any]] = {}
+_MAX_CACHE_SIZE = 1000
+
+def _get_cache_key(tool_name: str, arguments: Dict[str, Any]) -> str:
+    try:
+        sorted_args = tuple(sorted((k, str(v)) for k, v in arguments.items()))
+        return f"{tool_name}:{sorted_args}"
+    except Exception:
+        return ""
+
 def execute_tool(tool_name: str, arguments: Dict[str, Any]) -> ToolCallResult:
-    """Safely dispatches a tool call by name with timing and error trapping."""
+    """Safely dispatches a tool call by name with memoization for pure calculators and timing."""
     start = time.time()
     func = TOOL_REGISTRY.get(tool_name)
     if not func:
@@ -457,9 +480,30 @@ def execute_tool(tool_name: str, arguments: Dict[str, Any]) -> ToolCallResult:
             error_message=f"Tool '{tool_name}' not found in ForgeIQ Tool Registry.",
             execution_time_ms=0.0
         )
+
+    # Check memoized result for pure math functions
+    cache_key = ""
+    if tool_name in PURE_CALCULATION_TOOLS:
+        cache_key = _get_cache_key(tool_name, arguments)
+        if cache_key and cache_key in _CALC_CACHE:
+            cached_output = _CALC_CACHE[cache_key]
+            elapsed = (time.time() - start) * 1000.0
+            return ToolCallResult(
+                tool_name=tool_name,
+                arguments=arguments,
+                output=cached_output,
+                success=True,
+                execution_time_ms=round(elapsed, 3)
+            )
+
     try:
         output = func(**arguments)
         elapsed = (time.time() - start) * 1000.0
+
+        # Cache result if pure
+        if cache_key and len(_CALC_CACHE) < _MAX_CACHE_SIZE:
+            _CALC_CACHE[cache_key] = output
+
         return ToolCallResult(
             tool_name=tool_name,
             arguments=arguments,
@@ -478,3 +522,4 @@ def execute_tool(tool_name: str, arguments: Dict[str, Any]) -> ToolCallResult:
             error_message=f"Execution error in '{tool_name}': {str(e)}",
             execution_time_ms=round(elapsed, 2)
         )
+
