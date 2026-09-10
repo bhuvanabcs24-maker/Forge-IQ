@@ -238,7 +238,7 @@ export default function LandingSignInPage() {
           {/* Right Header Navigation & Theme Toggle */}
           <div className="flex items-center gap-3">
             <Link
-              href="/portal/dashboard"
+              href="/portal/login"
               className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg border border-[#D0D5DD] dark:border-[#252B33] bg-white dark:bg-[#18202A] text-[#344054] dark:text-[#D0D5DD] hover:bg-[#F9FAFB] dark:hover:bg-[#1F242F] transition-colors shadow-xs"
             >
               <span>Customer Portal</span>
@@ -623,7 +623,7 @@ export default function LandingSignInPage() {
                 <div>
                   Looking to track an existing part order?{' '}
                   <Link
-                    href="/portal/dashboard"
+                    href="/portal/login"
                     className="text-[#344054] dark:text-[#D0D5DD] font-medium hover:underline inline-flex items-center gap-1"
                   >
                     <span>Buyer Order Tracking</span>

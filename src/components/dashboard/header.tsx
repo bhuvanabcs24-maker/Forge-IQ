@@ -109,7 +109,7 @@ export function Header({ onMobileMenuToggle }: { onMobileMenuToggle: () => void 
 
           {/* Customer Portal Link */}
           <a
-            href="/portal/dashboard"
+            href="/portal/login"
             className="hidden sm:inline-flex items-center gap-1.5 px-3 h-10 rounded-lg border border-[#D0D5DD] dark:border-[#252B33] bg-white dark:bg-[#11161D] text-[#344054] dark:text-[#D0D5DD] font-medium text-xs hover:bg-[#F9FAFB] dark:hover:bg-[#18202A] transition-colors shadow-[0_1px_2px_rgba(16,24,40,0.02)]"
             title="Launch Customer Self-Service Portal"
           >
