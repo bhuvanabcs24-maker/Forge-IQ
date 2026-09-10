@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getSql } from '@/lib/db/neon';
 import { Order, OrderPriority, OrderStatus } from '@/types';
+import { cachedDbQuery, invalidateDbCache, appendOrderToCache } from '@/lib/db/neon-cache';
 
 function toIsoDate(val: any, fallback = '2026-09-01'): string {
   if (!val) return fallback;
@@ -12,8 +13,6 @@ function toIsoDate(val: any, fallback = '2026-09-01'): string {
     return fallback;
   }
 }
-
-import { cachedDbQuery, invalidateDbCache, appendOrderToCache } from '@/lib/db/neon-cache';
 
 export async function GET() {
   try {

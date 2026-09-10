@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { pythonAIClient } from '@/lib/ai/python-client';
 
 export async function POST(req: NextRequest) {
   try {
