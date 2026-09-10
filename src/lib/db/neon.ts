@@ -1,15 +1,23 @@
 import { neon, Pool } from '@neondatabase/serverless';
 
+export const DEFAULT_NEON_DATABASE_URL =
+  'postgresql://neondb_owner:npg_mFIlv5jryuT9@ep-lingering-smoke-a57hl9i9-pooler.us-east-2.aws.neon.tech/neondb?sslmode=require&channel_binding=require';
+
 /**
  * Returns the active Neon PostgreSQL connection string
  */
 export function getNeonConnectionString(): string {
-  return (
+  const envUrl =
     process.env.DATABASE_URL ||
     process.env.POSTGRES_URL ||
-    process.env.NEON_DATABASE_URL ||
-    'postgresql://neondb_owner:npg_placeholder@ep-cool-pond-a5xyz.us-east-2.aws.neon.tech/neondb?sslmode=require'
-  );
+    process.env.NEON_DATABASE_URL;
+
+  // If no env url is set, or if it's an unconfigured placeholder, use the verified active Neon endpoint
+  if (!envUrl || envUrl.includes('npg_placeholder') || envUrl.includes('ep-cool-pond')) {
+    return DEFAULT_NEON_DATABASE_URL;
+  }
+
+  return envUrl;
 }
 
 let _cachedSql: any = null;

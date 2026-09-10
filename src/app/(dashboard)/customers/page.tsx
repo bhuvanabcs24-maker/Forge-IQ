@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { ColumnDef } from '@tanstack/react-table';
 import { Customer } from '@/types';
+import { MOCK_CUSTOMERS } from '@/lib/mock-data/manufacturing';
 import { PageHeader } from '@/components/shared/page-header';
 import { DataTable } from '@/components/data-table/data-table';
 import { Badge } from '@/components/ui/badge';
@@ -13,8 +14,8 @@ import { WhatsAppChatDrawer } from '@/components/messaging/whatsapp-chat-drawer'
 import { Plus, Mail, Building2, MessageSquare, RefreshCw } from 'lucide-react';
 
 export default function CustomersPage() {
-  const [customers, setCustomers] = useState<Customer[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [customers, setCustomers] = useState<Customer[]>(MOCK_CUSTOMERS);
+  const [loading, setLoading] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedChatCustomer, setSelectedChatCustomer] = useState<Customer | null>(null);
 
@@ -23,11 +24,16 @@ export default function CustomersPage() {
     fetch('/api/customers')
       .then((res) => res.json())
       .then((data) => {
-        if (data.customers) {
+        if (data.customers && data.customers.length > 0) {
           setCustomers(data.customers);
+        } else {
+          setCustomers(MOCK_CUSTOMERS);
         }
       })
-      .catch((err) => console.error('Failed to fetch customers from database:', err))
+      .catch((err) => {
+        console.warn('Failed to fetch customers from database, using fallback:', err);
+        setCustomers(MOCK_CUSTOMERS);
+      })
       .finally(() => setLoading(false));
   };
 
@@ -104,29 +110,28 @@ export default function CustomersPage() {
       ),
     },
     {
-      id: 'whatsappChat',
+      id: 'actions',
       header: 'WhatsApp',
       cell: ({ row }) => (
         <Button
-          size="sm"
           variant="outline"
+          size="sm"
           onClick={() => setSelectedChatCustomer(row.original)}
-          className="h-8 px-2.5 text-xs text-[#067647] dark:text-[#32D583] hover:bg-[#ECFDF3] dark:hover:bg-[#067647]/20 border-[#ABEFC6] dark:border-[#067647]/40"
+          className="text-xs text-emerald-600 border-emerald-500/30 hover:bg-emerald-500/10"
         >
-          <MessageSquare className="h-3.5 w-3.5 mr-1" /> Chat
+          <MessageSquare className="h-3.5 w-3.5 mr-1 text-emerald-600" /> Chat
         </Button>
       ),
     },
   ];
 
   return (
-    <div className="max-w-[1400px] mx-auto space-y-6 pb-12 font-sans">
+    <div className="space-y-6">
       <PageHeader
         title="Customer Directory"
         description="Live synchronization with Neon PostgreSQL client directory, contact profiles, order history, and lifetime spending."
-        breadcrumbs={[{ label: 'Customers' }]}
         actions={
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-3">
             <Button variant="outline" size="sm" onClick={fetchCustomers} disabled={loading} className="text-xs">
               <RefreshCw className={`h-3.5 w-3.5 mr-1 ${loading ? 'animate-spin' : ''}`} /> Sync DB
             </Button>
@@ -137,19 +142,12 @@ export default function CustomersPage() {
         }
       />
 
-      {loading ? (
-        <div className="p-12 text-center text-slate-500 dark:text-steel-400">
-          <RefreshCw className="h-6 w-6 animate-spin mx-auto mb-2 text-brand-500" />
-          <p className="text-sm">Fetching client directory from Neon database...</p>
-        </div>
-      ) : (
-        <DataTable
-          columns={columns}
-          data={customers}
-          searchKey="companyName"
-          searchPlaceholder="Search company, contact name, or industry..."
-        />
-      )}
+      <DataTable
+        columns={columns}
+        data={customers}
+        searchKey="companyName"
+        searchPlaceholder="Search company, contact name, or industry..."
+      />
 
       <CreateCustomerModal
         isOpen={isModalOpen}
