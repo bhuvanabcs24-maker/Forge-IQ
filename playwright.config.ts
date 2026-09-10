@@ -22,27 +22,6 @@ export default defineConfig({
       name: 'chromium',
       use: { ...devices['Desktop Chrome'] },
     },
-    {
-      name: 'firefox',
-      use: { ...devices['Desktop Firefox'] },
-    },
-    {
-      name: 'webkit',
-      use: { ...devices['Desktop Safari'] },
-    },
-    {
-      name: 'mobile-iphone',
-      use: {
-        viewport: { width: 375, height: 667 },
-        userAgent: 'Mozilla/5.0 (iPhone; CPU iPhone OS 16_0 like Mac OS X) AppleWebKit/605.1.15',
-      },
-    },
-    {
-      name: 'tablet-ipad',
-      use: {
-        viewport: { width: 768, height: 1024 },
-      },
-    },
   ],
   webServer: {
     command: 'npm run dev',

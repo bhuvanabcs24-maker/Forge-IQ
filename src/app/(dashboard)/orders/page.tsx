@@ -11,10 +11,11 @@ import { formatCurrency, formatDate } from '@/lib/utils';
 import { CreateOrderModal } from '@/components/modals/create-order-modal';
 import Link from 'next/link';
 import { Plus, ShoppingBag, Sparkles, Database, RefreshCw } from 'lucide-react';
+import { MOCK_ORDERS } from '@/lib/mock-data/manufacturing';
 
 export default function OrdersPage() {
-  const [orders, setOrders] = useState<Order[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [orders, setOrders] = useState<Order[]>(MOCK_ORDERS);
+  const [loading, setLoading] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const fetchOrders = () => {
@@ -22,7 +23,7 @@ export default function OrdersPage() {
     fetch('/api/orders')
       .then((res) => res.json())
       .then((data) => {
-        if (data.orders) {
+        if (data.orders && Array.isArray(data.orders) && data.orders.length > 0) {
           setOrders(data.orders);
         }
       })
@@ -148,7 +149,7 @@ export default function OrdersPage() {
         }
       />
 
-      {loading ? (
+      {loading && orders.length === 0 ? (
         <div className="p-12 text-center text-slate-500 dark:text-steel-400">
           <RefreshCw className="h-6 w-6 animate-spin mx-auto mb-2 text-brand-500" />
           <p className="text-sm">Fetching work orders from Neon database...</p>

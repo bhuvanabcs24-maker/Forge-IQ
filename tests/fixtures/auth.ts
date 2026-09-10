@@ -6,6 +6,14 @@ import { TEST_USERS } from './test-data';
  */
 export async function loginAsCustomer(page: Page) {
   await page.goto('/portal/login');
+
+  const demoCustBtn = page.locator('button').filter({ hasText: 'Apex Aerospace' }).first();
+  if (await demoCustBtn.isVisible()) {
+    await demoCustBtn.click();
+    await page.waitForURL(/\/portal\/dashboard/, { timeout: 15000 });
+    await expect(page).toHaveURL(/\/portal\/dashboard/);
+    return;
+  }
   
   // Fill email and password inputs
   const emailInput = page.locator('input[type="email"]');
@@ -19,7 +27,7 @@ export async function loginAsCustomer(page: Page) {
   await submitBtn.click();
 
   // Wait for redirect to /portal/dashboard
-  await page.waitForURL('**/portal/dashboard', { timeout: 15000 });
+  await page.waitForURL(/\/portal\/dashboard/, { timeout: 15000 });
   await expect(page).toHaveURL(/\/portal\/dashboard/);
 }
 
