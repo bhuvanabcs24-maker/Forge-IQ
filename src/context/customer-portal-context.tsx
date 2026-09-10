@@ -34,16 +34,25 @@ export function CustomerPortalProvider({ children }: { children: React.ReactNode
   useEffect(() => {
     if (typeof window !== 'undefined') {
       try {
+        const hasAuthCookie = document.cookie.includes('forgeiq_customer_session=true');
         const stored = localStorage.getItem('FORGEIQ_CUSTOMER_USER');
-        if (stored) {
+
+        if (hasAuthCookie && stored) {
           const parsed = JSON.parse(stored);
           if (parsed && parsed.email) {
             setCurrentCustomer(parsed);
             setIsAuthenticated(true);
+          } else {
+            setIsAuthenticated(false);
           }
+        } else {
+          // If no auth cookie, enforce unauthenticated state and clear stale storage
+          setIsAuthenticated(false);
+          localStorage.removeItem('FORGEIQ_CUSTOMER_USER');
         }
       } catch (e) {
         console.warn('Error reading customer session:', e);
+        setIsAuthenticated(false);
       } finally {
         setIsLoading(false);
       }
@@ -71,6 +80,8 @@ export function CustomerPortalProvider({ children }: { children: React.ReactNode
     setIsAuthenticated(true);
     if (typeof window !== 'undefined') {
       localStorage.setItem('FORGEIQ_CUSTOMER_USER', JSON.stringify(newUser));
+      // Set auth cookie for server-side Next.js middleware verification
+      document.cookie = 'forgeiq_customer_session=true; path=/; max-age=86400; SameSite=Lax';
     }
   };
 
@@ -78,6 +89,8 @@ export function CustomerPortalProvider({ children }: { children: React.ReactNode
     setIsAuthenticated(false);
     if (typeof window !== 'undefined') {
       localStorage.removeItem('FORGEIQ_CUSTOMER_USER');
+      // Expire auth cookie so middleware blocks access immediately
+      document.cookie = 'forgeiq_customer_session=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT; SameSite=Lax';
     }
   };
 
@@ -95,6 +108,7 @@ export function CustomerPortalProvider({ children }: { children: React.ReactNode
     setCurrentCustomer(updated);
     if (typeof window !== 'undefined') {
       localStorage.setItem('FORGEIQ_CUSTOMER_USER', JSON.stringify(updated));
+      document.cookie = 'forgeiq_customer_session=true; path=/; max-age=86400; SameSite=Lax';
     }
   };
 

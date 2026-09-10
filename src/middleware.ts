@@ -1,10 +1,23 @@
-import { type NextRequest } from 'next/server';
+import { NextResponse, type NextRequest } from 'next/server';
 import { updateSession } from '@/lib/supabase/middleware';
 
 export async function middleware(request: NextRequest) {
-  if (request.nextUrl.pathname.startsWith('/api')) {
+  const { pathname } = request.nextUrl;
+
+  if (pathname.startsWith('/api')) {
     return;
   }
+
+  // Strictly protect all Customer Portal routes from direct unauthenticated access
+  if (pathname.startsWith('/portal') && pathname !== '/portal/login') {
+    const customerSession = request.cookies.get('forgeiq_customer_session');
+    if (!customerSession || customerSession.value !== 'true') {
+      const loginUrl = new URL('/portal/login', request.url);
+      loginUrl.searchParams.set('redirect', pathname);
+      return NextResponse.redirect(loginUrl);
+    }
+  }
+
   return await updateSession(request);
 }
 

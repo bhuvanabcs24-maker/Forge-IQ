@@ -11,7 +11,9 @@ import { useAuth } from '@/context/auth-context';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
+import { Dialog } from '@/components/ui/dialog';
 import { UserRole } from '@/types';
+import { MOCK_CUSTOMERS } from '@/lib/mock-data/manufacturing';
 import {
   Zap,
   Lock,
@@ -34,6 +36,7 @@ import {
   ArrowUpRight,
   Building2,
   Check,
+  X,
 } from 'lucide-react';
 
 const loginSchema = z.object({
@@ -91,6 +94,13 @@ export default function LandingSignInPage() {
   const [isSendingOtp, setIsSendingOtp] = useState(false);
   const [isVerifyingOtp, setIsVerifyingOtp] = useState(false);
 
+  // Customer Portal Sign In Modal State
+  const [isCustomerModalOpen, setIsCustomerModalOpen] = useState(false);
+  const [customerEmail, setCustomerEmail] = useState('');
+  const [customerPassword, setCustomerPassword] = useState('');
+  const [customerError, setCustomerError] = useState<string | null>(null);
+  const [isCustomerSubmitting, setIsCustomerSubmitting] = useState(false);
+
   const {
     register,
     handleSubmit,
@@ -123,7 +133,7 @@ export default function LandingSignInPage() {
         login(email, role);
       }
       router.push('/dashboard');
-    } catch (err) {
+    } catch {
       login(email, role);
       router.push('/dashboard');
     }
@@ -210,6 +220,65 @@ export default function LandingSignInPage() {
     }
   };
 
+  // Customer Portal Sign In Handler
+  const handleCustomerModalLogin = (e: React.FormEvent) => {
+    e.preventDefault();
+    setCustomerError(null);
+    if (!customerEmail || !customerPassword) {
+      setCustomerError('Please enter your corporate email address and password.');
+      return;
+    }
+    setIsCustomerSubmitting(true);
+    const cust =
+      MOCK_CUSTOMERS.find((c) => c.email.toLowerCase() === customerEmail.toLowerCase()) ||
+      MOCK_CUSTOMERS[0];
+
+    const customerUser = {
+      id: `usr-${cust.id}`,
+      customerId: cust.id,
+      companyName: cust.companyName,
+      contactName: cust.contactName,
+      email: customerEmail,
+      phone: cust.phone,
+      role: 'CustomerAdmin',
+    };
+
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('FORGEIQ_CUSTOMER_USER', JSON.stringify(customerUser));
+      document.cookie = 'forgeiq_customer_session=true; path=/; max-age=86400; SameSite=Lax';
+    }
+
+    setTimeout(() => {
+      setIsCustomerSubmitting(false);
+      setIsCustomerModalOpen(false);
+      router.push('/portal/dashboard');
+    }, 400);
+  };
+
+  const handle1ClickCustomerLogin = (cust: (typeof MOCK_CUSTOMERS)[0]) => {
+    setIsCustomerSubmitting(true);
+    const customerUser = {
+      id: `usr-${cust.id}`,
+      customerId: cust.id,
+      companyName: cust.companyName,
+      contactName: cust.contactName,
+      email: cust.email,
+      phone: cust.phone,
+      role: 'CustomerAdmin',
+    };
+
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('FORGEIQ_CUSTOMER_USER', JSON.stringify(customerUser));
+      document.cookie = 'forgeiq_customer_session=true; path=/; max-age=86400; SameSite=Lax';
+    }
+
+    setTimeout(() => {
+      setIsCustomerSubmitting(false);
+      setIsCustomerModalOpen(false);
+      router.push('/portal/dashboard');
+    }, 400);
+  };
+
   return (
     <div className="min-h-screen w-full bg-slate-50 dark:bg-[#0B0F15] text-[#111827] dark:text-[#F2F4F7] transition-colors flex flex-col font-sans">
       {/* Top Universal Navbar */}
@@ -237,13 +306,14 @@ export default function LandingSignInPage() {
 
           {/* Right Header Navigation & Theme Toggle */}
           <div className="flex items-center gap-3">
-            <Link
-              href="/portal/login"
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg border border-[#D0D5DD] dark:border-[#252B33] bg-white dark:bg-[#18202A] text-[#344054] dark:text-[#D0D5DD] hover:bg-[#F9FAFB] dark:hover:bg-[#1F242F] transition-colors shadow-xs"
+            <button
+              type="button"
+              onClick={() => setIsCustomerModalOpen(true)}
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg border border-[#D0D5DD] dark:border-[#252B33] bg-white dark:bg-[#18202A] text-[#344054] dark:text-[#D0D5DD] hover:bg-[#F9FAFB] dark:hover:bg-[#1F242F] transition-colors shadow-xs cursor-pointer"
             >
               <span>Customer Portal</span>
               <ExternalLink className="h-3 w-3 text-[#667085] dark:text-[#98A2B3]" />
-            </Link>
+            </button>
 
             {/* Theme Toggle Button */}
             {mounted && (
@@ -622,13 +692,14 @@ export default function LandingSignInPage() {
                 </div>
                 <div>
                   Looking to track an existing part order?{' '}
-                  <Link
-                    href="/portal/login"
-                    className="text-[#344054] dark:text-[#D0D5DD] font-medium hover:underline inline-flex items-center gap-1"
+                  <button
+                    type="button"
+                    onClick={() => setIsCustomerModalOpen(true)}
+                    className="text-[#344054] dark:text-[#D0D5DD] font-medium hover:underline inline-flex items-center gap-1 cursor-pointer"
                   >
                     <span>Buyer Order Tracking</span>
                     <ArrowUpRight className="h-3 w-3" />
-                  </Link>
+                  </button>
                 </div>
               </div>
 
@@ -637,6 +708,112 @@ export default function LandingSignInPage() {
 
         </div>
       </main>
+
+      {/* Customer Portal Sign In Modal */}
+      <Dialog
+        isOpen={isCustomerModalOpen}
+        onClose={() => setIsCustomerModalOpen(false)}
+        title="Sign In to Customer Portal"
+        description="Enter your corporate client credentials to track fabrication jobs and quotes."
+        maxWidth="md"
+      >
+        <div className="space-y-4 pt-1">
+          {/* 1-Click Client Accounts */}
+          <div className="p-3 rounded-xl border border-purple-200 dark:border-purple-800/30 bg-purple-50/50 dark:bg-purple-950/20">
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-[11px] font-bold uppercase tracking-wider text-purple-700 dark:text-purple-300 flex items-center gap-1.5">
+                <Sparkles className="h-3.5 w-3.5" /> 1-Click Demo Client Accounts
+              </span>
+              <span className="text-[10px] text-[#667085] dark:text-[#98A2B3]">Click to auto-login</span>
+            </div>
+            <div className="space-y-1.5">
+              {MOCK_CUSTOMERS.slice(0, 3).map((cust) => (
+                <button
+                  key={cust.id}
+                  type="button"
+                  onClick={() => handle1ClickCustomerLogin(cust)}
+                  disabled={isCustomerSubmitting}
+                  className="w-full p-2 rounded-lg border border-[#D0D5DD] dark:border-[#252B33] bg-white dark:bg-[#18202A] hover:border-purple-500 hover:bg-purple-50/80 dark:hover:bg-purple-950/30 text-left transition-all cursor-pointer shadow-2xs flex items-center justify-between disabled:opacity-50"
+                >
+                  <div className="truncate mr-2">
+                    <div className="text-xs font-bold text-[#111827] dark:text-white truncate">
+                      {cust.companyName}
+                    </div>
+                    <div className="text-[11px] text-[#667085] dark:text-[#98A2B3] truncate">
+                      {cust.contactName} ({cust.email})
+                    </div>
+                  </div>
+                  <span className="text-[10px] font-bold text-purple-600 dark:text-purple-400 shrink-0 bg-purple-100 dark:bg-purple-950/50 px-2 py-0.5 rounded">
+                    Sign In →
+                  </span>
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Form Fields */}
+          {customerError && (
+            <div className="p-2.5 rounded-lg bg-rose-50 dark:bg-rose-950/30 border border-rose-200 dark:border-rose-900/50 text-rose-700 dark:text-rose-400 text-xs font-medium">
+              {customerError}
+            </div>
+          )}
+
+          <form onSubmit={handleCustomerModalLogin} className="space-y-3 text-xs">
+            <div>
+              <label className="block font-semibold text-[#344054] dark:text-[#D0D5DD] mb-1">
+                Corporate Email Address
+              </label>
+              <Input
+                type="email"
+                value={customerEmail}
+                onChange={(e) => setCustomerEmail(e.target.value)}
+                placeholder="e.g. rvance@apexaero.com"
+                icon={<Mail className="h-4 w-4" />}
+                required
+              />
+            </div>
+
+            <div>
+              <label className="block font-semibold text-[#344054] dark:text-[#D0D5DD] mb-1">
+                Account Password
+              </label>
+              <Input
+                type="password"
+                value={customerPassword}
+                onChange={(e) => setCustomerPassword(e.target.value)}
+                placeholder="Enter your customer password"
+                icon={<Lock className="h-4 w-4" />}
+                required
+              />
+            </div>
+
+            <Button
+              type="submit"
+              disabled={isCustomerSubmitting}
+              className="w-full h-10 bg-purple-600 hover:bg-purple-700 text-white font-semibold text-xs shadow-xs"
+            >
+              {isCustomerSubmitting ? (
+                'Authenticating Client...'
+              ) : (
+                <span className="flex items-center justify-center gap-1.5">
+                  Sign In & Open Customer Portal <ArrowRight className="h-4 w-4" />
+                </span>
+              )}
+            </Button>
+          </form>
+
+          <div className="text-center pt-2 text-[11px] text-[#667085] dark:text-[#98A2B3]">
+            Or view dedicated sign in page:{' '}
+            <Link
+              href="/portal/login"
+              onClick={() => setIsCustomerModalOpen(false)}
+              className="text-purple-600 dark:text-purple-400 font-semibold hover:underline"
+            >
+              /portal/login
+            </Link>
+          </div>
+        </div>
+      </Dialog>
 
       {/* Modern Minimal Footer */}
       <footer className="w-full border-t border-[#E4E7EC] dark:border-[#252B33] bg-white dark:bg-[#11161D] py-4 text-center text-xs text-[#667085] dark:text-[#98A2B3]">

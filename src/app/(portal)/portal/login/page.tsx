@@ -2,42 +2,49 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useCustomerPortal } from '@/context/customer-portal-context';
 import { MOCK_CUSTOMERS } from '@/lib/mock-data/manufacturing';
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { ShieldCheck, Lock, Mail, ArrowRight, ArrowLeft, Building2, Sparkles, CheckCircle2, Eye, EyeOff } from 'lucide-react';
+import { ShieldCheck, Lock, Mail, ArrowRight, ArrowLeft, Sparkles, CheckCircle2, Eye, EyeOff } from 'lucide-react';
 
 export default function CustomerPortalLoginPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const redirectTarget = searchParams.get('redirect') || '/portal/dashboard';
   const { login } = useCustomerPortal();
 
-  const [email, setEmail] = useState('rvance@apexaero.com');
-  const [password, setPassword] = useState('demo_customer_pass');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [selectedCustomerId, setSelectedCustomerId] = useState('cust-1');
   const [showPassword, setShowPassword] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
+    setErrorMsg(null);
+    if (!email || !password) {
+      setErrorMsg('Please enter your corporate email address and password.');
+      return;
+    }
     setIsSubmitting(true);
     login(email, selectedCustomerId);
     setTimeout(() => {
-      router.push('/portal/dashboard');
-    }, 400);
+      router.push(redirectTarget);
+    }, 300);
   };
 
   const handleSelectClient = (cust: (typeof MOCK_CUSTOMERS)[0]) => {
     setEmail(cust.email);
     setSelectedCustomerId(cust.id);
-    setPassword('demo_customer_pass');
+    setPassword('demo_pass_123');
     setIsSubmitting(true);
     login(cust.email, cust.id);
     setTimeout(() => {
-      router.push('/portal/dashboard');
-    }, 400);
+      router.push(redirectTarget);
+    }, 300);
   };
 
   return (
@@ -61,7 +68,7 @@ export default function CustomerPortalLoginPage() {
 
           <Link
             href="/"
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg border border-[#D0D5DD] dark:border-[#252B33] bg-white dark:bg-[#18202A] text-[#344054] dark:text-[#D0D5DD] hover:bg-[#F9FAFB] transition-colors"
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg border border-[#D0D5DD] dark:border-[#252B33] bg-white dark:bg-[#18202A] text-[#344054] dark:text-[#D0D5DD] hover:bg-[#F9FAFB] transition-colors shadow-2xs"
           >
             <ArrowLeft className="h-3.5 w-3.5" />
             <span>Factory Sign In</span>
@@ -81,7 +88,7 @@ export default function CustomerPortalLoginPage() {
               Sign In to Customer Portal
             </h1>
             <p className="text-xs sm:text-sm text-[#667085] dark:text-[#98A2B3]">
-              Track active quotations, live laser cutting milestones, and parts delivery.
+              Authentication required to track active quotations and live fabrication milestones.
             </p>
           </div>
 
@@ -120,6 +127,12 @@ export default function CustomerPortalLoginPage() {
 
           {/* Manual Login Card */}
           <div className="bg-white dark:bg-[#11161D] rounded-2xl border border-[#E4E7EC] dark:border-[#252B33] p-6 shadow-sm">
+            {errorMsg && (
+              <div className="mb-4 p-2.5 rounded-lg bg-rose-50 dark:bg-rose-950/30 border border-rose-200 dark:border-rose-900/50 text-rose-700 dark:text-rose-400 text-xs font-medium">
+                {errorMsg}
+              </div>
+            )}
+
             <form onSubmit={handleLogin} className="space-y-4 text-xs">
               <div>
                 <label className="block font-semibold text-[#344054] dark:text-[#D0D5DD] mb-1">
@@ -143,6 +156,7 @@ export default function CustomerPortalLoginPage() {
                   type={showPassword ? 'text' : 'password'}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
+                  placeholder="Enter your customer password"
                   icon={<Lock className="h-4 w-4" />}
                   rightElement={
                     <button
