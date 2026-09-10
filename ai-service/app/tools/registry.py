@@ -467,11 +467,19 @@ def _get_cache_key(tool_name: str, arguments: Dict[str, Any]) -> str:
     except Exception:
         return ""
 
+import logging
+
+logger = logging.getLogger("forgeiq.tools")
+
 def execute_tool(tool_name: str, arguments: Dict[str, Any]) -> ToolCallResult:
     """Safely dispatches a tool call by name with memoization for pure calculators and timing."""
     start = time.time()
     func = TOOL_REGISTRY.get(tool_name)
     if not func:
+        logger.warning(
+            f"Tool '{tool_name}' not found in registry",
+            extra={"tool_name": tool_name, "operation": "tool_execute"}
+        )
         return ToolCallResult(
             tool_name=tool_name,
             arguments=arguments,
@@ -481,13 +489,33 @@ def execute_tool(tool_name: str, arguments: Dict[str, Any]) -> ToolCallResult:
             execution_time_ms=0.0
         )
 
+    is_calculator = tool_name in PURE_CALCULATION_TOOLS
+    logger.info(
+        f"Calculator/tool execution initiated: {tool_name}",
+        extra={
+            "tool_name": tool_name,
+            "is_calculator": is_calculator,
+            "arguments": {k: str(v) for k, v in arguments.items()},
+            "operation": "tool_execute"
+        }
+    )
+
     # Check memoized result for pure math functions
     cache_key = ""
-    if tool_name in PURE_CALCULATION_TOOLS:
+    if is_calculator:
         cache_key = _get_cache_key(tool_name, arguments)
         if cache_key and cache_key in _CALC_CACHE:
             cached_output = _CALC_CACHE[cache_key]
             elapsed = (time.time() - start) * 1000.0
+            logger.info(
+                f"Calculator/tool execution finished (cached): {tool_name}",
+                extra={
+                    "tool_name": tool_name,
+                    "duration_ms": round(elapsed, 3),
+                    "cache_hit": True,
+                    "operation": "tool_execute"
+                }
+            )
             return ToolCallResult(
                 tool_name=tool_name,
                 arguments=arguments,
@@ -504,6 +532,29 @@ def execute_tool(tool_name: str, arguments: Dict[str, Any]) -> ToolCallResult:
         if cache_key and len(_CALC_CACHE) < _MAX_CACHE_SIZE:
             _CALC_CACHE[cache_key] = output
 
+        # Performance monitoring (>1000ms threshold)
+        if elapsed > 1000.0:
+            logger.warning(
+                f"SLOW TOOL EXECUTION: {tool_name} took {elapsed:.1f}ms (>1000ms threshold)",
+                extra={
+                    "tool_name": tool_name,
+                    "duration_ms": round(elapsed, 2),
+                    "performance_warning": True,
+                    "threshold_ms": 1000.0,
+                    "operation": "tool_execute"
+                }
+            )
+
+        logger.info(
+            f"Calculator/tool execution finished: {tool_name}",
+            extra={
+                "tool_name": tool_name,
+                "duration_ms": round(elapsed, 2),
+                "cache_hit": False,
+                "operation": "tool_execute"
+            }
+        )
+
         return ToolCallResult(
             tool_name=tool_name,
             arguments=arguments,
@@ -514,6 +565,16 @@ def execute_tool(tool_name: str, arguments: Dict[str, Any]) -> ToolCallResult:
         )
     except Exception as e:
         elapsed = (time.time() - start) * 1000.0
+        logger.error(
+            f"Calculator/tool execution failed: {tool_name}: {str(e)}",
+            exc_info=True,
+            extra={
+                "tool_name": tool_name,
+                "duration_ms": round(elapsed, 2),
+                "error_type": type(e).__name__,
+                "operation": "tool_execute"
+            }
+        )
         return ToolCallResult(
             tool_name=tool_name,
             arguments=arguments,

@@ -1,20 +1,31 @@
 from fastapi import APIRouter, Depends
 from app.models.requests import ChatQueryRequest, CustomerChatRequest
-from app.models.responses import APIEnvelope, CopilotResponse
+from app.models.responses import APIEnvelope, CopilotResponse, COMMON_ERROR_RESPONSES
 from app.security.auth import get_tenant_context, TenantContext
 from app.agents.orchestrator import orchestrator
 
 router = APIRouter(prefix="/api/v1/chat", tags=["Chat & Copilot"])
 
-@router.post("/completions", response_model=APIEnvelope[CopilotResponse])
+@router.post(
+    "/completions",
+    response_model=APIEnvelope[CopilotResponse],
+    summary="Multi-Agent Manufacturing Operations Copilot",
+    description="""
+Evaluates manufacturing inquiries, machine telemetry questions, or quotation calculations.
+Routes intent to specialized autonomous agents:
+- **ProductionAgent**: Machine capacity, bottleneck resolution, shift schedules.
+- **InventoryAgent**: Sheet stock levels, material reservations, warehouse location.
+- **QuotationAgent**: Laser cutting cycle times, bending tonnage, raw material scrap.
+- **AnalyticsAgent**: COGS, margin variances, scrap metrics.
+
+Enforces strict tenant isolation via `X-Org-ID` and retrieves context from the company's private RAG index.
+    """,
+    responses=COMMON_ERROR_RESPONSES
+)
 async def chat_completions(
     req: ChatQueryRequest,
     tenant: TenantContext = Depends(get_tenant_context)
 ):
-    """
-    Main Copilot entrypoint supporting multi-agent routing,
-    organization-scoped RAG retrieval, evidence citations, and confidence scoring.
-    """
     res = await orchestrator.process_query(
         query=req.query,
         tenant=tenant,
@@ -28,15 +39,21 @@ async def chat_completions(
         latency_ms=res.latency_ms
     )
 
-@router.post("/customer", response_model=APIEnvelope[CopilotResponse])
+@router.post(
+    "/customer",
+    response_model=APIEnvelope[CopilotResponse],
+    summary="Customer Portal Buyer Copilot",
+    description="""
+Dedicated assistant for external buyers and customers.
+Provides order tracking, quotation explanations, and delivery ETAs strictly constrained
+to the authenticated `customer_id`. Guarantees zero cross-tenant or factory internal data leakage.
+    """,
+    responses=COMMON_ERROR_RESPONSES
+)
 async def customer_chat(
     req: CustomerChatRequest,
     tenant: TenantContext = Depends(get_tenant_context)
 ):
-    """
-    Dedicated endpoint for Buyer / Customer Portal assistants.
-    Strictly enforces customer_id scope to prevent cross-tenant data leakage.
-    """
     customer_tenant = TenantContext(
         org_id=tenant.org_id,
         user_id=tenant.user_id,

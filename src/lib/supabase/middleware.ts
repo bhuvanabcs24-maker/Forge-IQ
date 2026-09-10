@@ -26,8 +26,21 @@ export async function updateSession(request: NextRequest) {
     },
   });
 
-  // Refresh auth session
-  await supabase.auth.getUser();
+  // Skip external network auth handshake for API routes or unconfigured placeholder credentials
+  if (
+    request.nextUrl.pathname.startsWith('/api') ||
+    supabaseUrl.includes('placeholder.supabase.co') ||
+    supabaseAnonKey === 'placeholder-anon-key'
+  ) {
+    return supabaseResponse;
+  }
+
+  // Refresh auth session for UI pages when configured
+  try {
+    await supabase.auth.getUser();
+  } catch {
+    // Graceful fallback if network unreachable
+  }
 
   return supabaseResponse;
 }

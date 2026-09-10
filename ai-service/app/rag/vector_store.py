@@ -1,10 +1,14 @@
 import os
 import json
+import logging
+import time
 from pathlib import Path
 import numpy as np
 from typing import List, Dict, Any, Optional
 from pydantic import BaseModel
 from app.models.schemas import RAGCitation
+
+logger = logging.getLogger("forgeiq.database")
 
 class VectorRecord(BaseModel):
     id: str
@@ -82,6 +86,7 @@ class VectorStore:
         if not org_id:
             raise ValueError("Tenant org_id is required for vector search")
 
+        start_db = time.perf_counter()
         q_vec = np.array(query_embedding, dtype=np.float32)
         q_norm = np.linalg.norm(q_vec)
         if q_norm == 0:
@@ -146,6 +151,31 @@ class VectorStore:
             )
             for score, rec in top_results
         ]
+
+        duration_ms = round((time.perf_counter() - start_db) * 1000.0, 2)
+        if duration_ms > 1000.0:
+            logger.warning(
+                f"SLOW DATABASE QUERY: vector search took {duration_ms}ms (>1000ms threshold)",
+                extra={
+                    "org_id": org_id,
+                    "duration_ms": duration_ms,
+                    "performance_warning": True,
+                    "threshold_ms": 1000.0,
+                    "operation": "db_query"
+                }
+            )
+
+        logger.info(
+            "Vector database query completed",
+            extra={
+                "org_id": org_id,
+                "total_records": len(self._records),
+                "matched_candidates": len(results),
+                "top_k": top_k,
+                "duration_ms": duration_ms,
+                "operation": "db_query"
+            }
+        )
 
         return citations
 

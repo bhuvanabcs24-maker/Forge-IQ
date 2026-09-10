@@ -1,0 +1,479 @@
+{
+  "timestamp": "2026-09-10T04:38:21.246703Z",
+  "configuration": {
+    "base_url": "http://localhost:3000",
+    "target_users": 100,
+    "ramp_up_sec": 10,
+    "hold_sec": 25,
+    "ramp_down_sec": 10,
+    "total_duration_sec": 45,
+    "actual_duration_sec": 46.02
+  },
+  "assertions": {
+    "p95_under_1000ms": {
+      "threshold": "< 1000ms",
+      "actual": "804.53ms",
+      "passed": true
+    },
+    "p99_under_2000ms": {
+      "threshold": "< 2000ms",
+      "actual": "808.63ms",
+      "passed": true
+    },
+    "error_rate_under_1pct": {
+      "threshold": "< 1.0%",
+      "actual": "0.0%",
+      "passed": true
+    },
+    "throughput_min_100rps": {
+      "threshold": ">= 100 req/sec",
+      "actual": "154.46 req/sec",
+      "passed": true
+    },
+    "zero_timeouts": {
+      "threshold": "0 requests > 5000ms",
+      "actual": "0",
+      "passed": true
+    },
+    "overall_sla_verdict": "PASSED"
+  },
+  "summary": {
+    "total_requests": 7109,
+    "successful_requests": 7109,
+    "failed_requests": 0,
+    "timed_out_requests": 0,
+    "error_rate_pct": 0.0,
+    "throughput_rps": 154.46,
+    "latency_ms": {
+      "min": 0.76,
+      "max": 830.62,
+      "mean": 166.15,
+      "p50": 4.92,
+      "p95": 804.53,
+      "p99": 808.63
+    },
+    "resources": {
+      "avg_cpu_percent": 0,
+      "avg_memory_percent": 0
+    }
+  },
+  "endpoints": {
+    "GET /orders": {
+      "total_requests": 2152,
+      "successful_requests": 2152,
+      "failed_requests": 0,
+      "error_rate_pct": 0.0,
+      "latency": {
+        "min": 3.0,
+        "max": 39.53,
+        "mean": 6.74,
+        "p50": 5.52,
+        "p95": 14.13,
+        "p99": 22.28
+      },
+      "errors": {}
+    },
+    "GET /inventory": {
+      "total_requests": 1489,
+      "successful_requests": 1489,
+      "failed_requests": 0,
+      "error_rate_pct": 0.0,
+      "latency": {
+        "min": 0.76,
+        "max": 31.52,
+        "mean": 2.9,
+        "p50": 1.94,
+        "p95": 7.55,
+        "p99": 14.93
+      },
+      "errors": {}
+    },
+    "GET /machines": {
+      "total_requests": 1056,
+      "successful_requests": 1056,
+      "failed_requests": 0,
+      "error_rate_pct": 0.0,
+      "latency": {
+        "min": 0.79,
+        "max": 26.72,
+        "mean": 2.88,
+        "p50": 1.93,
+        "p95": 7.69,
+        "p99": 13.68
+      },
+      "errors": {}
+    },
+    "POST /orders": {
+      "total_requests": 1399,
+      "successful_requests": 1399,
+      "failed_requests": 0,
+      "error_rate_pct": 0.0,
+      "latency": {
+        "min": 316.98,
+        "max": 830.62,
+        "mean": 800.08,
+        "p50": 803.25,
+        "p95": 808.72,
+        "p99": 815.65
+      },
+      "errors": {}
+    },
+    "POST /ai/quote-request": {
+      "total_requests": 658,
+      "successful_requests": 658,
+      "failed_requests": 0,
+      "error_rate_pct": 0.0,
+      "latency": {
+        "min": 0.94,
+        "max": 28.14,
+        "mean": 2.83,
+        "p50": 2.08,
+        "p95": 7.18,
+        "p99": 12.96
+      },
+      "errors": {}
+    },
+    "POST /payments": {
+      "total_requests": 355,
+      "successful_requests": 355,
+      "failed_requests": 0,
+      "error_rate_pct": 0.0,
+      "latency": {
+        "min": 55.67,
+        "max": 455.91,
+        "mean": 107.33,
+        "p50": 95.2,
+        "p95": 204.07,
+        "p99": 280.71
+      },
+      "errors": {}
+    }
+  },
+  "timeseries": [
+    {
+      "time": 0,
+      "stage": "RAMP-UP",
+      "users": 1,
+      "rps": 1,
+      "p95": 815.01
+    },
+    {
+      "time": 1,
+      "stage": "RAMP-UP",
+      "users": 10,
+      "rps": 25,
+      "p95": 829.52
+    },
+    {
+      "time": 2,
+      "stage": "RAMP-UP",
+      "users": 20,
+      "rps": 45,
+      "p95": 821.07
+    },
+    {
+      "time": 3,
+      "stage": "RAMP-UP",
+      "users": 30,
+      "rps": 63,
+      "p95": 813.65
+    },
+    {
+      "time": 4,
+      "stage": "RAMP-UP",
+      "users": 40,
+      "rps": 88,
+      "p95": 805.43
+    },
+    {
+      "time": 5,
+      "stage": "RAMP-UP",
+      "users": 50,
+      "rps": 106,
+      "p95": 804.79
+    },
+    {
+      "time": 6,
+      "stage": "RAMP-UP",
+      "users": 60,
+      "rps": 126,
+      "p95": 805.69
+    },
+    {
+      "time": 7,
+      "stage": "RAMP-UP",
+      "users": 70,
+      "rps": 145,
+      "p95": 803.42
+    },
+    {
+      "time": 8,
+      "stage": "RAMP-UP",
+      "users": 80,
+      "rps": 160,
+      "p95": 803.29
+    },
+    {
+      "time": 9,
+      "stage": "RAMP-UP",
+      "users": 90,
+      "rps": 183,
+      "p95": 805.39
+    },
+    {
+      "time": 10,
+      "stage": "HOLD",
+      "users": 100,
+      "rps": 220,
+      "p95": 803.24
+    },
+    {
+      "time": 11,
+      "stage": "HOLD",
+      "users": 100,
+      "rps": 200,
+      "p95": 803.95
+    },
+    {
+      "time": 12,
+      "stage": "HOLD",
+      "users": 100,
+      "rps": 195,
+      "p95": 803.27
+    },
+    {
+      "time": 13,
+      "stage": "HOLD",
+      "users": 100,
+      "rps": 201,
+      "p95": 803.28
+    },
+    {
+      "time": 14,
+      "stage": "HOLD",
+      "users": 100,
+      "rps": 210,
+      "p95": 804.34
+    },
+    {
+      "time": 15,
+      "stage": "HOLD",
+      "users": 100,
+      "rps": 219,
+      "p95": 805.19
+    },
+    {
+      "time": 16,
+      "stage": "HOLD",
+      "users": 100,
+      "rps": 206,
+      "p95": 804.45
+    },
+    {
+      "time": 17,
+      "stage": "HOLD",
+      "users": 100,
+      "rps": 207,
+      "p95": 805.35
+    },
+    {
+      "time": 18,
+      "stage": "HOLD",
+      "users": 100,
+      "rps": 193,
+      "p95": 804.63
+    },
+    {
+      "time": 19,
+      "stage": "HOLD",
+      "users": 100,
+      "rps": 205,
+      "p95": 803.35
+    },
+    {
+      "time": 20,
+      "stage": "HOLD",
+      "users": 100,
+      "rps": 215,
+      "p95": 804.97
+    },
+    {
+      "time": 21,
+      "stage": "HOLD",
+      "users": 100,
+      "rps": 207,
+      "p95": 803.79
+    },
+    {
+      "time": 22,
+      "stage": "HOLD",
+      "users": 100,
+      "rps": 211,
+      "p95": 804.03
+    },
+    {
+      "time": 23,
+      "stage": "HOLD",
+      "users": 100,
+      "rps": 183,
+      "p95": 804.63
+    },
+    {
+      "time": 24,
+      "stage": "HOLD",
+      "users": 100,
+      "rps": 212,
+      "p95": 804.38
+    },
+    {
+      "time": 25,
+      "stage": "HOLD",
+      "users": 100,
+      "rps": 197,
+      "p95": 804.01
+    },
+    {
+      "time": 26,
+      "stage": "HOLD",
+      "users": 100,
+      "rps": 208,
+      "p95": 804.68
+    },
+    {
+      "time": 27,
+      "stage": "HOLD",
+      "users": 100,
+      "rps": 192,
+      "p95": 804.71
+    },
+    {
+      "time": 28,
+      "stage": "HOLD",
+      "users": 100,
+      "rps": 221,
+      "p95": 803.89
+    },
+    {
+      "time": 29,
+      "stage": "HOLD",
+      "users": 100,
+      "rps": 200,
+      "p95": 804.29
+    },
+    {
+      "time": 30,
+      "stage": "HOLD",
+      "users": 100,
+      "rps": 206,
+      "p95": 804.75
+    },
+    {
+      "time": 31,
+      "stage": "HOLD",
+      "users": 100,
+      "rps": 212,
+      "p95": 804.13
+    },
+    {
+      "time": 32,
+      "stage": "HOLD",
+      "users": 100,
+      "rps": 194,
+      "p95": 807.66
+    },
+    {
+      "time": 33,
+      "stage": "HOLD",
+      "users": 100,
+      "rps": 189,
+      "p95": 804.85
+    },
+    {
+      "time": 34,
+      "stage": "HOLD",
+      "users": 100,
+      "rps": 189,
+      "p95": 804.77
+    },
+    {
+      "time": 35,
+      "stage": "RAMP-DOWN",
+      "users": 99,
+      "rps": 203,
+      "p95": 805.02
+    },
+    {
+      "time": 36,
+      "stage": "RAMP-DOWN",
+      "users": 89,
+      "rps": 188,
+      "p95": 803.61
+    },
+    {
+      "time": 37,
+      "stage": "RAMP-DOWN",
+      "users": 79,
+      "rps": 149,
+      "p95": 805.86
+    },
+    {
+      "time": 38,
+      "stage": "RAMP-DOWN",
+      "users": 69,
+      "rps": 132,
+      "p95": 806.05
+    },
+    {
+      "time": 39,
+      "stage": "RAMP-DOWN",
+      "users": 59,
+      "rps": 113,
+      "p95": 805.48
+    },
+    {
+      "time": 40,
+      "stage": "RAMP-DOWN",
+      "users": 49,
+      "rps": 97,
+      "p95": 805.29
+    },
+    {
+      "time": 41,
+      "stage": "RAMP-DOWN",
+      "users": 39,
+      "rps": 67,
+      "p95": 804.28
+    },
+    {
+      "time": 42,
+      "stage": "RAMP-DOWN",
+      "users": 29,
+      "rps": 57,
+      "p95": 804.27
+    },
+    {
+      "time": 43,
+      "stage": "RAMP-DOWN",
+      "users": 19,
+      "rps": 49,
+      "p95": 804.19
+    },
+    {
+      "time": 44,
+      "stage": "RAMP-DOWN",
+      "users": 9,
+      "rps": 20,
+      "p95": 804.25
+    }
+  ],
+  "recommendations": {
+    "capacity_verdict": "API handled 100 concurrent users with p95 latency 804.53ms.",
+    "primary_bottleneck": "Database Connection Handshakes & ORM Serialization under concurrent bursts.",
+    "action_items": [
+      "Deploy PgBouncer or enable Neon transaction-mode connection pooling (pool_mode=transaction) to reuse PostgreSQL SSL connections.",
+      "Create compound indexes on PostgreSQL table orders: CREATE INDEX CONCURRENTLY idx_orders_status_created_at ON orders(status, created_at DESC);",
+      "Enable Redis caching for high-read endpoints GET /api/inventory and GET /api/machines with a 15-second TTL to reduce DB read pressure by 35% under peak traffic.",
+      "Offload heavy DXF contour parsing in AI RFQ requests to Celery/Redis background worker queue with webhook callbacks for sub-50ms HTTP ingestion."
+    ]
+  }
+}

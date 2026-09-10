@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select } from '@/components/ui/select';
 import { Order, OrderPriority } from '@/types';
+import { AlertTriangle } from 'lucide-react';
 
 const orderSchema = z.object({
   title: z.string().min(3, 'Work Order Title / Part Description is required'),
@@ -36,6 +37,8 @@ export function CreateOrderModal({
   const [materials, setMaterials] = useState<{ label: string; value: string }[]>([]);
   const [machines, setMachines] = useState<{ label: string; value: string }[]>([]);
   const [isSubmittingToDb, setIsSubmittingToDb] = useState(false);
+  const [inventoryError, setInventoryError] = useState<string | null>(null);
+  const [reorderAlert, setReorderAlert] = useState<string | null>(null);
 
   // Load real customers, materials, and machines from database
   useEffect(() => {
@@ -108,13 +111,18 @@ export function CreateOrderModal({
       const json = await res.json();
       if (json.success && json.order) {
         onAddOrder(json.order);
+        setInventoryError(null);
+        setReorderAlert(null);
         reset();
         onClose();
       } else {
-        alert(json.message || 'Failed to create work order');
+        setInventoryError(json.error || json.message || 'Insufficient inventory');
+        if (json.reorderAlert) {
+          setReorderAlert(json.reorderAlert);
+        }
       }
     } catch (err: any) {
-      alert('Error creating work order: ' + err?.message);
+      setInventoryError('Error creating work order: ' + err?.message);
     } finally {
       setIsSubmittingToDb(false);
     }
@@ -123,6 +131,20 @@ export function CreateOrderModal({
   return (
     <Dialog isOpen={isOpen} onClose={onClose} title="Create New Work Order" maxWidth="lg">
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+        {inventoryError && (
+          <div className="p-3 rounded-xl border border-rose-500/30 bg-rose-500/10 text-rose-600 dark:text-rose-400 text-xs space-y-1">
+            <div className="font-bold flex items-center gap-1.5">
+              <AlertTriangle className="h-4 w-4 shrink-0" />
+              <span>{inventoryError}</span>
+            </div>
+            {reorderAlert && (
+              <div className="text-[11px] font-semibold text-slate-700 dark:text-steel-300">
+                {reorderAlert}
+              </div>
+            )}
+          </div>
+        )}
+
         <div>
           <label className="block text-xs font-semibold text-slate-700 dark:text-steel-300 mb-1">
             Work Order Title / Part Description
@@ -176,6 +198,7 @@ export function CreateOrderModal({
                         { label: 'RAW-AL6061-250 — Aluminum 6061 Plate', value: 'RAW-AL6061-250' },
                         { label: 'RAW-STEEL-IS2062 — Carbon Steel', value: 'RAW-STEEL-IS2062' },
                         { label: 'RAW-CRCA-D-16G — CRCA Steel Sheet', value: 'RAW-CRCA-D-16G' },
+                        { label: 'INVAR-36-05 — Invar-36 Sheet (0 Sheets in stock)', value: 'INVAR-36-05' },
                       ]
                 }
                 {...register('materialSku')}

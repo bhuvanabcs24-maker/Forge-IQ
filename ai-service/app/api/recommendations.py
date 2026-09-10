@@ -1,14 +1,27 @@
 import time
 from fastapi import APIRouter, Depends
 from app.models.requests import FactoryMatchRequest
-from app.models.responses import APIEnvelope
+from app.models.responses import APIEnvelope, COMMON_ERROR_RESPONSES
 from app.models.schemas import FactoryMatchRecommendation
 from app.security.auth import get_tenant_context, TenantContext
 from app.services.llm_service import get_llm_provider
 
 router = APIRouter(prefix="/api/v1/recommendations", tags=["Manufacturer Matching"])
 
-@router.post("/match", response_model=APIEnvelope[FactoryMatchRecommendation])
+@router.post(
+    "/match",
+    response_model=APIEnvelope[FactoryMatchRecommendation],
+    summary="Match RFQ to Verified Manufacturer / Supplier Factory",
+    description="""
+Evaluates buyer manufacturing specifications against the verified supplier registry.
+Matches based on:
+- Machine capability alignment (cutting power, bed size, press brake tonnage)
+- Verified ISO quality certifications and historical on-time delivery rates
+- Geographic location and logistics efficiency
+- Target buyer preference (balanced, cost-optimized, speed-optimized).
+    """,
+    responses=COMMON_ERROR_RESPONSES
+)
 async def recommend_factory_match(
     req: FactoryMatchRequest,
     tenant: TenantContext = Depends(get_tenant_context)

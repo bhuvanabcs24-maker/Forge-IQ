@@ -33,13 +33,37 @@ export async function cachedDbQuery<T>(
   const { ttlMs = 3000, tag = 'static', bypassCache = false } = options;
   const now = Date.now();
 
-  // 1. Return from cache if fresh
+  // 1. Return from cache if fresh, or serve stale while revalidating in background
   if (!bypassCache && cacheStore.has(key)) {
     const entry = cacheStore.get(key)!;
     if (now < entry.expiresAt) {
       return entry.data;
     }
-    cacheStore.delete(key);
+
+    // Stale-While-Revalidate: serve cached data immediately, refresh asynchronously
+    if (!inFlightRequests.has(key)) {
+      const backgroundRefresh = queryFn()
+        .then((result) => {
+          if (ttlMs > 0 && result !== undefined && result !== null) {
+            cacheStore.set(key, {
+              data: result,
+              createdAt: Date.now(),
+              expiresAt: Date.now() + ttlMs,
+              tag,
+            });
+          }
+          return result;
+        })
+        .catch((err) => {
+          console.warn(`[SWR Cache] Background revalidation failed for ${key}:`, err?.message);
+          return entry.data;
+        })
+        .finally(() => {
+          inFlightRequests.delete(key);
+        });
+      inFlightRequests.set(key, backgroundRefresh);
+    }
+    return entry.data;
   }
 
   // 2. In-flight request deduplication: If identical query is already running, share the promise
@@ -69,16 +93,54 @@ export async function cachedDbQuery<T>(
 }
 
 /**
- * Invalidates cached queries associated with a mutated entity tag.
+ * Write-Through cache update: immediately updates cached orders list with newly created order
  */
-export function invalidateDbCache(tag: 'orders' | 'inventory' | 'machines' | 'jobs' | 'customers' | 'quotations' | 'all') {
+export function appendOrderToCache(order: any) {
+  const key = 'api:orders:list';
+  const entry = cacheStore.get(key);
+  const now = Date.now();
+  if (entry && Array.isArray(entry.data)) {
+    // Prepend order if not already present
+    if (!entry.data.some((o: any) => o.id === order.id || o.orderNumber === order.orderNumber)) {
+      entry.data = [order, ...entry.data];
+    }
+    entry.expiresAt = Math.max(entry.expiresAt, now + 5000);
+  } else {
+    cacheStore.set(key, {
+      data: [order],
+      createdAt: now,
+      expiresAt: now + 5000,
+      tag: 'orders',
+    });
+  }
+}
+
+// Invalidation throttles to prevent stampedes under continuous write streams
+const lastInvalidationTime = new Map<string, number>();
+
+/**
+ * Invalidates cached queries associated with a mutated entity tag with stampede throttling.
+ */
+export function invalidateDbCache(
+  tag: 'orders' | 'inventory' | 'machines' | 'jobs' | 'customers' | 'quotations' | 'all',
+  force = false
+) {
   if (tag === 'all') {
     cacheStore.clear();
     return;
   }
-  for (const [key, entry] of cacheStore.entries()) {
+
+  const now = Date.now();
+  const lastTime = lastInvalidationTime.get(tag) || 0;
+  // Under concurrent write bursts, allow at most one invalidation every 2.5 seconds
+  if (!force && now - lastTime < 2500) {
+    return;
+  }
+  lastInvalidationTime.set(tag, now);
+
+  for (const [, entry] of cacheStore.entries()) {
     if (entry.tag === tag) {
-      cacheStore.delete(key);
+      entry.expiresAt = now; // Soft invalidation: trigger background refresh while continuing to serve readers instantly
     }
   }
 }

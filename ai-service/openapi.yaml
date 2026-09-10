@@ -1,0 +1,2512 @@
+openapi: 3.1.0
+info:
+  title: ForgeIQ AI Engine API
+  description: '
+
+    # ForgeIQ Industrial AI & Multi-Agent Operations Engine
+
+
+    ForgeIQ is an AI-powered manufacturing intelligence and commerce platform for
+    sheet-metal fabrication, CNC machining, laser cutting, and bending.
+
+
+    ---
+
+
+    ### Core Architectural Features
+
+    - **100% Autonomous Local Intelligence**: Operates fully offline with zero runtime
+    dependency on external LLM providers or OpenAI API keys.
+
+    - **Deterministic Manufacturing Calculators**: Exact physics, material weight,
+    laser cutting cycle time, and bending tonnage calculations run in pure deterministic
+    Python algorithms outside the LLM.
+
+    - **Tenant Isolation**: Every query and vector retrieval is strictly isolated
+    by `X-Org-ID`.
+
+    - **Structured JSON Observability**: Implements 12-factor JSON streaming logs
+    with distributed request correlation (`X-Request-ID`) and performance alerts (>1000ms).
+
+
+    ---
+
+
+    ### Authentication & Multi-Tenancy Headers
+
+    The microservice enforces the following headers for inter-service and client requests:
+
+    - **`X-Org-ID`** *(string, required)*: Tenant organization ID (e.g. `org-forge-default`).
+
+    - **`X-Service-Key`** *(string, optional in dev)*: Internal microservice authentication
+    key.
+
+    - **`X-User-ID`** *(string, optional)*: Authenticated user identifier (e.g. `usr-operator-42`).
+
+    - **`Authorization`** *(string, optional)*: Standard `Bearer <JWT>` token. If
+    provided, user identity is automatically extracted.
+
+    - **`X-Request-ID`** *(string, optional)*: Client correlation ID. If omitted,
+    the server automatically generates and returns a UUID in response headers.
+
+
+    ---
+
+
+    ### API Capabilities & Status
+
+    | Feature | Implementation Status | Notes |
+
+    | :--- | :--- | :--- |
+
+    | **API Versioning** | **Implemented** | All business endpoints use the `/api/v1/`
+    prefix. |
+
+    | **Pagination** | **Limit-Only** | List endpoints (e.g. `/api/v1/telemetry`)
+    support `?limit=N` (max 200). Cursor-based pagination (`?cursor=...`) is **Not
+    currently supported**. |
+
+    | **Filtering** | **Source-Type Only** | RAG search supports `?source_type=...`.
+    Arbitrary field filtering (e.g. `?status=...`) is **Not currently supported**.
+    |
+
+    | **Sorting** | **Automatic Ranking** | RAG results are ranked by `relevance_score
+    DESC`; telemetry by `timestamp DESC`. Arbitrary sorting (e.g. `?sort=-created_at`)
+    is **Not currently supported**. |
+
+    | **Query Language (DSL)**| **Not Supported** | SQL/DSL expressions such as `price
+    > 50000` or `name LIKE ''sheet''` are **Not currently supported**. |
+
+    | **Rate Limiting** | **Unavailable** | Rate limiting headers (`X-RateLimit-*`)
+    are **Not currently implemented**. |
+
+    '
+  contact:
+    name: ForgeIQ Engineering Team
+    email: engineering@forgeiq.com
+  version: 1.0.0
+servers:
+- url: http://localhost:8000
+  description: Local Development Server
+- url: https://ai.forgeiq.internal
+  description: Internal Production AI Gateway
+paths:
+  /health:
+    get:
+      tags:
+      - Health
+      summary: Microservice Health & Readiness Check
+      description: Returns service availability, active AI provider engine ('local'),
+        environment, and vector storage backend.
+      operationId: health_check_health_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+  /:
+    get:
+      tags:
+      - Health
+      summary: Root Service Index
+      description: Returns welcome status and links to interactive OpenAPI Swagger
+        (/docs) and ReDoc (/redoc) documentation.
+      operationId: root__get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+  /api/v1/chat/completions:
+    post:
+      tags:
+      - Chat & Copilot
+      summary: Multi-Agent Manufacturing Operations Copilot
+      description: 'Evaluates manufacturing inquiries, machine telemetry questions,
+        or quotation calculations.
+
+        Routes intent to specialized autonomous agents:
+
+        - **ProductionAgent**: Machine capacity, bottleneck resolution, shift schedules.
+
+        - **InventoryAgent**: Sheet stock levels, material reservations, warehouse
+        location.
+
+        - **QuotationAgent**: Laser cutting cycle times, bending tonnage, raw material
+        scrap.
+
+        - **AnalyticsAgent**: COGS, margin variances, scrap metrics.
+
+
+        Enforces strict tenant isolation via `X-Org-ID` and retrieves context from
+        the company''s private RAG index.'
+      operationId: chat_completions_api_v1_chat_completions_post
+      parameters:
+      - name: X-Org-ID
+        in: header
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          default: org-forge-default
+          title: X-Org-Id
+      - name: X-User-ID
+        in: header
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          default: user-default
+          title: X-User-Id
+      - name: X-User-Role
+        in: header
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          default: factory_admin
+          title: X-User-Role
+      - name: X-Customer-ID
+        in: header
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: X-Customer-Id
+      - name: X-Service-Key
+        in: header
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: X-Service-Key
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChatQueryRequest'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIEnvelope_CopilotResponse_'
+        '400':
+          description: Bad Request — Missing required tenant headers (e.g. X-Org-ID)
+            or malformed request payload.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Unauthorized — Missing or invalid X-Service-Key or invalid
+            Authorization Bearer token.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Not Found — Requested resource or entity does not exist.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal Server Error — Unhandled exception; client should
+            fallback to rule-based operations.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/v1/chat/customer:
+    post:
+      tags:
+      - Chat & Copilot
+      summary: Customer Portal Buyer Copilot
+      description: 'Dedicated assistant for external buyers and customers.
+
+        Provides order tracking, quotation explanations, and delivery ETAs strictly
+        constrained
+
+        to the authenticated `customer_id`. Guarantees zero cross-tenant or factory
+        internal data leakage.'
+      operationId: customer_chat_api_v1_chat_customer_post
+      parameters:
+      - name: X-Org-ID
+        in: header
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          default: org-forge-default
+          title: X-Org-Id
+      - name: X-User-ID
+        in: header
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          default: user-default
+          title: X-User-Id
+      - name: X-User-Role
+        in: header
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          default: factory_admin
+          title: X-User-Role
+      - name: X-Customer-ID
+        in: header
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: X-Customer-Id
+      - name: X-Service-Key
+        in: header
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: X-Service-Key
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CustomerChatRequest'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIEnvelope_CopilotResponse_'
+        '400':
+          description: Bad Request — Missing required tenant headers (e.g. X-Org-ID)
+            or malformed request payload.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Unauthorized — Missing or invalid X-Service-Key or invalid
+            Authorization Bearer token.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Not Found — Requested resource or entity does not exist.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal Server Error — Unhandled exception; client should
+            fallback to rule-based operations.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/v1/rfq/intake:
+    post:
+      tags:
+      - RFQ & Order Intake
+      summary: Unstructured RFQ / Order Intake & Parameter Parsing
+      description: 'Extracts manufacturing parameters from unstructured text briefs,
+        customer emails, or WhatsApp order messages.
+
+        Outputs a strictly validated `StructuredRFQ` schema containing:
+
+        - Customer & company identification
+
+        - Part title, base material, and exact material grade (e.g. SS304, CRCA)
+
+        - Sheet thickness, outer dimensions, and quantity
+
+        - Required manufacturing processes (Fiber Laser, Bending, Powder Coating)
+
+        - Per-field confidence scores (0.0 to 1.0) and missing parameter clarification
+        questions.'
+      operationId: rfq_intake_api_v1_rfq_intake_post
+      parameters:
+      - name: X-Org-ID
+        in: header
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          default: org-forge-default
+          title: X-Org-Id
+      - name: X-User-ID
+        in: header
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          default: user-default
+          title: X-User-Id
+      - name: X-User-Role
+        in: header
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          default: factory_admin
+          title: X-User-Role
+      - name: X-Customer-ID
+        in: header
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: X-Customer-Id
+      - name: X-Service-Key
+        in: header
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: X-Service-Key
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RFQIntakeRequest'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIEnvelope_StructuredRFQ_'
+        '400':
+          description: Bad Request — Missing required tenant headers (e.g. X-Org-ID)
+            or malformed request payload.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Unauthorized — Missing or invalid X-Service-Key or invalid
+            Authorization Bearer token.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Not Found — Requested resource or entity does not exist.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal Server Error — Unhandled exception; client should
+            fallback to rule-based operations.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/v1/quotation/estimate:
+    post:
+      tags:
+      - Quotation Estimation
+      summary: Estimate Technical Quotation & Manufacturing Parameters
+      description: 'Calculates technical manufacturing estimates for sheet metal components
+        prior to commercial pricing:
+
+        - Raw blank material weight (kg) based on alloy density and part geometry
+
+        - Anticipated scrap rate percentage
+
+        - Total laser cutting perimeter length (meters) and beam-on cutting time
+
+        - Press brake bending stroke count and machine cycle time
+
+        - Secondary deburring / finishing requirements and labor minutes
+
+        - Estimated factory lead time in calendar days
+
+
+        *Note: Commercial markups and GST pricing calculations are deterministically
+        computed on these engineering outputs.*'
+      operationId: estimate_quotation_parameters_api_v1_quotation_estimate_post
+      parameters:
+      - name: X-Org-ID
+        in: header
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          default: org-forge-default
+          title: X-Org-Id
+      - name: X-User-ID
+        in: header
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          default: user-default
+          title: X-User-Id
+      - name: X-User-Role
+        in: header
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          default: factory_admin
+          title: X-User-Role
+      - name: X-Customer-ID
+        in: header
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: X-Customer-Id
+      - name: X-Service-Key
+        in: header
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: X-Service-Key
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/QuotationEstimationRequest'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIEnvelope_QuotationEstimate_'
+        '400':
+          description: Bad Request — Missing required tenant headers (e.g. X-Org-ID)
+            or malformed request payload.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Unauthorized — Missing or invalid X-Service-Key or invalid
+            Authorization Bearer token.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Not Found — Requested resource or entity does not exist.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal Server Error — Unhandled exception; client should
+            fallback to rule-based operations.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/v1/production/recommendations:
+    post:
+      tags:
+      - Production AI
+      summary: Production Scheduling Proposal & Machine Workload Balancing
+      description: 'Analyzes active shop floor machine loads, queue depths, and shift
+        calendars to generate
+
+        an optimal machine routing and shift scheduling proposal for a production
+        job.
+
+        - Assigns optimal machine (e.g. Bystronic Fiber Laser or Amada Press Brake)
+
+        - Identifies earliest open shift window (Morning, Afternoon, Night)
+
+        - Calculates delay risk indices (0.0 to 1.0) and queue delay reasons
+
+        - Enforces human-in-the-loop safety: `manager_approval_required=True` is always
+        mandated.'
+      operationId: get_production_scheduling_recommendation_api_v1_production_recommendations_post
+      parameters:
+      - name: X-Org-ID
+        in: header
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          default: org-forge-default
+          title: X-Org-Id
+      - name: X-User-ID
+        in: header
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          default: user-default
+          title: X-User-Id
+      - name: X-User-Role
+        in: header
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          default: factory_admin
+          title: X-User-Role
+      - name: X-Customer-ID
+        in: header
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: X-Customer-Id
+      - name: X-Service-Key
+        in: header
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: X-Service-Key
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProductionRecommendationRequest'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIEnvelope_ProductionSchedulingProposal_'
+        '400':
+          description: Bad Request — Missing required tenant headers (e.g. X-Org-ID)
+            or malformed request payload.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Unauthorized — Missing or invalid X-Service-Key or invalid
+            Authorization Bearer token.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Not Found — Requested resource or entity does not exist.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal Server Error — Unhandled exception; client should
+            fallback to rule-based operations.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/v1/recommendations/match:
+    post:
+      tags:
+      - Manufacturer Matching
+      summary: Match RFQ to Verified Manufacturer / Supplier Factory
+      description: 'Evaluates buyer manufacturing specifications against the verified
+        supplier registry.
+
+        Matches based on:
+
+        - Machine capability alignment (cutting power, bed size, press brake tonnage)
+
+        - Verified ISO quality certifications and historical on-time delivery rates
+
+        - Geographic location and logistics efficiency
+
+        - Target buyer preference (balanced, cost-optimized, speed-optimized).'
+      operationId: recommend_factory_match_api_v1_recommendations_match_post
+      parameters:
+      - name: X-Org-ID
+        in: header
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          default: org-forge-default
+          title: X-Org-Id
+      - name: X-User-ID
+        in: header
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          default: user-default
+          title: X-User-Id
+      - name: X-User-Role
+        in: header
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          default: factory_admin
+          title: X-User-Role
+      - name: X-Customer-ID
+        in: header
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: X-Customer-Id
+      - name: X-Service-Key
+        in: header
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: X-Service-Key
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FactoryMatchRequest'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIEnvelope_FactoryMatchRecommendation_'
+        '400':
+          description: Bad Request — Missing required tenant headers (e.g. X-Org-ID)
+            or malformed request payload.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Unauthorized — Missing or invalid X-Service-Key or invalid
+            Authorization Bearer token.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Not Found — Requested resource or entity does not exist.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal Server Error — Unhandled exception; client should
+            fallback to rule-based operations.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/v1/documents/ingest:
+    post:
+      tags:
+      - Document Ingestion
+      summary: Ingest Technical Documentation into Tenant Knowledge Store
+      description: 'Chunks, embeds, and indexes engineering drawings, OEM manuals,
+        material specs, or factory policies
+
+        into tenant-isolated vector storage. All ingested data is strictly isolated
+        to `tenant.org_id`.'
+      operationId: ingest_document_api_v1_documents_ingest_post
+      parameters:
+      - name: X-Org-ID
+        in: header
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          default: org-forge-default
+          title: X-Org-Id
+      - name: X-User-ID
+        in: header
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          default: user-default
+          title: X-User-Id
+      - name: X-User-Role
+        in: header
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          default: factory_admin
+          title: X-User-Role
+      - name: X-Customer-ID
+        in: header
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: X-Customer-Id
+      - name: X-Service-Key
+        in: header
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: X-Service-Key
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DocumentIngestionRequest'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIEnvelope_IngestionResponse_'
+        '400':
+          description: Bad Request — Missing required tenant headers (e.g. X-Org-ID)
+            or malformed request payload.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Unauthorized — Missing or invalid X-Service-Key or invalid
+            Authorization Bearer token.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Not Found — Requested resource or entity does not exist.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal Server Error — Unhandled exception; client should
+            fallback to rule-based operations.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/v1/rag/search:
+    get:
+      tags:
+      - RAG Retrieval
+      summary: Semantic & Lexical Knowledge Base Context Search
+      description: 'Direct semantic retrieval engine querying tenant-isolated engineering
+        documents, machine specifications,
+
+        material price books, and standard operating procedures.
+
+        - Hybrid search combining 384-dimensional cosine similarity with lexical keyword
+        boosting
+
+        - Filterable by `source_type` (e.g. `machine_spec`, `material_spec`, `manual`,
+        `policy`)
+
+        - Results are ranked in descending order of `relevance_score`
+
+        - Cross-tenant boundaries are strictly enforced via `X-Org-ID`.'
+      operationId: rag_search_api_v1_rag_search_get
+      parameters:
+      - name: q
+        in: query
+        required: true
+        schema:
+          type: string
+          description: Semantic search query string
+          examples:
+          - What is the minimum bend radius for 3mm SS304 sheet metal?
+          title: Q
+        description: Semantic search query string
+      - name: source_type
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: Optional document classification filter
+          examples:
+          - machine_spec
+          - material_spec
+          title: Source Type
+        description: Optional document classification filter
+      - name: top_k
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 20
+          minimum: 1
+          description: Maximum number of context snippets to return
+          examples:
+          - 4
+          default: 4
+          title: Top K
+        description: Maximum number of context snippets to return
+      - name: X-Org-ID
+        in: header
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          default: org-forge-default
+          title: X-Org-Id
+      - name: X-User-ID
+        in: header
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          default: user-default
+          title: X-User-Id
+      - name: X-User-Role
+        in: header
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          default: factory_admin
+          title: X-User-Role
+      - name: X-Customer-ID
+        in: header
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: X-Customer-Id
+      - name: X-Service-Key
+        in: header
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: X-Service-Key
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIEnvelope_List_RAGCitation__'
+        '400':
+          description: Bad Request — Missing required tenant headers (e.g. X-Org-ID)
+            or malformed request payload.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Unauthorized — Missing or invalid X-Service-Key or invalid
+            Authorization Bearer token.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Not Found — Requested resource or entity does not exist.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal Server Error — Unhandled exception; client should
+            fallback to rule-based operations.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/v1/telemetry:
+    get:
+      tags:
+      - Observability & Telemetry
+      summary: List Organization AI Telemetry & Observability Records
+      description: 'Returns sanitized execution telemetry audit records for the authenticated
+        organization.
+
+        - Tracks `request_id`, `agent_used`, `latency_ms`, model confidence, and operational
+        status.
+
+        - **Pagination**: Supports count limiting via `?limit=N` (default 50, max
+        200). Note: Cursor-based pagination (`?cursor=...`) is not currently implemented.
+
+        - **Sorting**: Records are delivered in reverse-chronological order (most
+        recent first). Arbitrary field sorting (`?sort=...`) is not currently supported.'
+      operationId: get_telemetry_records_api_v1_telemetry_get
+      parameters:
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 200
+          minimum: 1
+          description: Maximum number of telemetry records to return
+          examples:
+          - 50
+          default: 50
+          title: Limit
+        description: Maximum number of telemetry records to return
+      - name: X-Org-ID
+        in: header
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          default: org-forge-default
+          title: X-Org-Id
+      - name: X-User-ID
+        in: header
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          default: user-default
+          title: X-User-Id
+      - name: X-User-Role
+        in: header
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          default: factory_admin
+          title: X-User-Role
+      - name: X-Customer-ID
+        in: header
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: X-Customer-Id
+      - name: X-Service-Key
+        in: header
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: X-Service-Key
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIEnvelope_List_TelemetryRecord__'
+        '400':
+          description: Bad Request — Missing required tenant headers (e.g. X-Org-ID)
+            or malformed request payload.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Unauthorized — Missing or invalid X-Service-Key or invalid
+            Authorization Bearer token.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Not Found — Requested resource or entity does not exist.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal Server Error — Unhandled exception; client should
+            fallback to rule-based operations.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+components:
+  schemas:
+    APIEnvelope_CopilotResponse_:
+      properties:
+        success:
+          type: boolean
+          title: Success
+          description: Indicates whether the request completed successfully
+          default: true
+          examples:
+          - true
+        data:
+          anyOf:
+          - $ref: '#/components/schemas/CopilotResponse'
+          - type: 'null'
+          description: Typed payload data returned by the endpoint
+        error:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Error
+          description: Error message if success is false
+          examples:
+          - null
+        warning:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Warning
+          description: Optional system warnings or human-verification notices
+          examples:
+          - null
+        is_mock:
+          type: boolean
+          title: Is Mock
+          description: Flag indicating if the response was served from a mock fallback
+          default: false
+          examples:
+          - false
+        provider_used:
+          type: string
+          title: Provider Used
+          description: Name of the manufacturing AI or tool provider
+          default: local
+          examples:
+          - local
+          - quotation_agent
+        latency_ms:
+          type: number
+          title: Latency Ms
+          description: Server-side execution latency in milliseconds
+          default: 0.0
+          examples:
+          - 3.6
+      type: object
+      title: APIEnvelope[CopilotResponse]
+    APIEnvelope_FactoryMatchRecommendation_:
+      properties:
+        success:
+          type: boolean
+          title: Success
+          description: Indicates whether the request completed successfully
+          default: true
+          examples:
+          - true
+        data:
+          anyOf:
+          - $ref: '#/components/schemas/FactoryMatchRecommendation'
+          - type: 'null'
+          description: Typed payload data returned by the endpoint
+        error:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Error
+          description: Error message if success is false
+          examples:
+          - null
+        warning:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Warning
+          description: Optional system warnings or human-verification notices
+          examples:
+          - null
+        is_mock:
+          type: boolean
+          title: Is Mock
+          description: Flag indicating if the response was served from a mock fallback
+          default: false
+          examples:
+          - false
+        provider_used:
+          type: string
+          title: Provider Used
+          description: Name of the manufacturing AI or tool provider
+          default: local
+          examples:
+          - local
+          - quotation_agent
+        latency_ms:
+          type: number
+          title: Latency Ms
+          description: Server-side execution latency in milliseconds
+          default: 0.0
+          examples:
+          - 3.6
+      type: object
+      title: APIEnvelope[FactoryMatchRecommendation]
+    APIEnvelope_IngestionResponse_:
+      properties:
+        success:
+          type: boolean
+          title: Success
+          description: Indicates whether the request completed successfully
+          default: true
+          examples:
+          - true
+        data:
+          anyOf:
+          - $ref: '#/components/schemas/IngestionResponse'
+          - type: 'null'
+          description: Typed payload data returned by the endpoint
+        error:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Error
+          description: Error message if success is false
+          examples:
+          - null
+        warning:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Warning
+          description: Optional system warnings or human-verification notices
+          examples:
+          - null
+        is_mock:
+          type: boolean
+          title: Is Mock
+          description: Flag indicating if the response was served from a mock fallback
+          default: false
+          examples:
+          - false
+        provider_used:
+          type: string
+          title: Provider Used
+          description: Name of the manufacturing AI or tool provider
+          default: local
+          examples:
+          - local
+          - quotation_agent
+        latency_ms:
+          type: number
+          title: Latency Ms
+          description: Server-side execution latency in milliseconds
+          default: 0.0
+          examples:
+          - 3.6
+      type: object
+      title: APIEnvelope[IngestionResponse]
+    APIEnvelope_List_RAGCitation__:
+      properties:
+        success:
+          type: boolean
+          title: Success
+          description: Indicates whether the request completed successfully
+          default: true
+          examples:
+          - true
+        data:
+          anyOf:
+          - items:
+              $ref: '#/components/schemas/RAGCitation'
+            type: array
+          - type: 'null'
+          title: Data
+          description: Typed payload data returned by the endpoint
+        error:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Error
+          description: Error message if success is false
+          examples:
+          - null
+        warning:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Warning
+          description: Optional system warnings or human-verification notices
+          examples:
+          - null
+        is_mock:
+          type: boolean
+          title: Is Mock
+          description: Flag indicating if the response was served from a mock fallback
+          default: false
+          examples:
+          - false
+        provider_used:
+          type: string
+          title: Provider Used
+          description: Name of the manufacturing AI or tool provider
+          default: local
+          examples:
+          - local
+          - quotation_agent
+        latency_ms:
+          type: number
+          title: Latency Ms
+          description: Server-side execution latency in milliseconds
+          default: 0.0
+          examples:
+          - 3.6
+      type: object
+      title: APIEnvelope[List[app.models.schemas.RAGCitation]]
+    APIEnvelope_List_TelemetryRecord__:
+      properties:
+        success:
+          type: boolean
+          title: Success
+          description: Indicates whether the request completed successfully
+          default: true
+          examples:
+          - true
+        data:
+          anyOf:
+          - items:
+              $ref: '#/components/schemas/TelemetryRecord'
+            type: array
+          - type: 'null'
+          title: Data
+          description: Typed payload data returned by the endpoint
+        error:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Error
+          description: Error message if success is false
+          examples:
+          - null
+        warning:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Warning
+          description: Optional system warnings or human-verification notices
+          examples:
+          - null
+        is_mock:
+          type: boolean
+          title: Is Mock
+          description: Flag indicating if the response was served from a mock fallback
+          default: false
+          examples:
+          - false
+        provider_used:
+          type: string
+          title: Provider Used
+          description: Name of the manufacturing AI or tool provider
+          default: local
+          examples:
+          - local
+          - quotation_agent
+        latency_ms:
+          type: number
+          title: Latency Ms
+          description: Server-side execution latency in milliseconds
+          default: 0.0
+          examples:
+          - 3.6
+      type: object
+      title: APIEnvelope[List[app.models.schemas.TelemetryRecord]]
+    APIEnvelope_ProductionSchedulingProposal_:
+      properties:
+        success:
+          type: boolean
+          title: Success
+          description: Indicates whether the request completed successfully
+          default: true
+          examples:
+          - true
+        data:
+          anyOf:
+          - $ref: '#/components/schemas/ProductionSchedulingProposal'
+          - type: 'null'
+          description: Typed payload data returned by the endpoint
+        error:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Error
+          description: Error message if success is false
+          examples:
+          - null
+        warning:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Warning
+          description: Optional system warnings or human-verification notices
+          examples:
+          - null
+        is_mock:
+          type: boolean
+          title: Is Mock
+          description: Flag indicating if the response was served from a mock fallback
+          default: false
+          examples:
+          - false
+        provider_used:
+          type: string
+          title: Provider Used
+          description: Name of the manufacturing AI or tool provider
+          default: local
+          examples:
+          - local
+          - quotation_agent
+        latency_ms:
+          type: number
+          title: Latency Ms
+          description: Server-side execution latency in milliseconds
+          default: 0.0
+          examples:
+          - 3.6
+      type: object
+      title: APIEnvelope[ProductionSchedulingProposal]
+    APIEnvelope_QuotationEstimate_:
+      properties:
+        success:
+          type: boolean
+          title: Success
+          description: Indicates whether the request completed successfully
+          default: true
+          examples:
+          - true
+        data:
+          anyOf:
+          - $ref: '#/components/schemas/QuotationEstimate'
+          - type: 'null'
+          description: Typed payload data returned by the endpoint
+        error:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Error
+          description: Error message if success is false
+          examples:
+          - null
+        warning:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Warning
+          description: Optional system warnings or human-verification notices
+          examples:
+          - null
+        is_mock:
+          type: boolean
+          title: Is Mock
+          description: Flag indicating if the response was served from a mock fallback
+          default: false
+          examples:
+          - false
+        provider_used:
+          type: string
+          title: Provider Used
+          description: Name of the manufacturing AI or tool provider
+          default: local
+          examples:
+          - local
+          - quotation_agent
+        latency_ms:
+          type: number
+          title: Latency Ms
+          description: Server-side execution latency in milliseconds
+          default: 0.0
+          examples:
+          - 3.6
+      type: object
+      title: APIEnvelope[QuotationEstimate]
+    APIEnvelope_StructuredRFQ_:
+      properties:
+        success:
+          type: boolean
+          title: Success
+          description: Indicates whether the request completed successfully
+          default: true
+          examples:
+          - true
+        data:
+          anyOf:
+          - $ref: '#/components/schemas/StructuredRFQ'
+          - type: 'null'
+          description: Typed payload data returned by the endpoint
+        error:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Error
+          description: Error message if success is false
+          examples:
+          - null
+        warning:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Warning
+          description: Optional system warnings or human-verification notices
+          examples:
+          - null
+        is_mock:
+          type: boolean
+          title: Is Mock
+          description: Flag indicating if the response was served from a mock fallback
+          default: false
+          examples:
+          - false
+        provider_used:
+          type: string
+          title: Provider Used
+          description: Name of the manufacturing AI or tool provider
+          default: local
+          examples:
+          - local
+          - quotation_agent
+        latency_ms:
+          type: number
+          title: Latency Ms
+          description: Server-side execution latency in milliseconds
+          default: 0.0
+          examples:
+          - 3.6
+      type: object
+      title: APIEnvelope[StructuredRFQ]
+    AgentEvidence:
+      properties:
+        metric_name:
+          type: string
+          title: Metric Name
+        value:
+          title: Value
+        confidence:
+          type: number
+          title: Confidence
+          default: 1.0
+        source:
+          type: string
+          title: Source
+      type: object
+      required:
+      - metric_name
+      - value
+      - source
+      title: AgentEvidence
+    ChatQueryRequest:
+      properties:
+        query:
+          type: string
+          title: Query
+          description: Natural language manufacturing inquiry, order query, or technical
+            question
+          examples:
+          - What is the cutting cycle time and scrap rate for 100 units of 3mm SS304
+            brackets?
+        context:
+          anyOf:
+          - additionalProperties: true
+            type: object
+          - type: 'null'
+          title: Context
+          description: Optional operational context, e.g. current machine_id or active
+            order_id
+          examples:
+          - machine_id: mach-laser-01
+            stage: cutting
+        conversation_history:
+          anyOf:
+          - items:
+              additionalProperties:
+                type: string
+              type: object
+            type: array
+          - type: 'null'
+          title: Conversation History
+          description: Recent conversation turns for contextual dialog resolution
+          examples:
+          - - content: Can we take on 500 brackets?
+              role: user
+            - content: Checking laser capacity...
+              role: assistant
+      type: object
+      required:
+      - query
+      title: ChatQueryRequest
+    CopilotResponse:
+      properties:
+        answer:
+          type: string
+          title: Answer
+        agent_routed:
+          type: string
+          title: Agent Routed
+        supporting_evidence:
+          items:
+            $ref: '#/components/schemas/AgentEvidence'
+          type: array
+          title: Supporting Evidence
+        citations:
+          items:
+            $ref: '#/components/schemas/RAGCitation'
+          type: array
+          title: Citations
+        confidence:
+          type: number
+          title: Confidence
+          default: 0.95
+        recommendation:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Recommendation
+        suggested_action:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Suggested Action
+        requires_approval:
+          type: boolean
+          title: Requires Approval
+          default: false
+        provider_used:
+          type: string
+          title: Provider Used
+          default: mock
+        is_mock:
+          type: boolean
+          title: Is Mock
+          default: false
+        latency_ms:
+          type: number
+          title: Latency Ms
+          default: 0.0
+      type: object
+      required:
+      - answer
+      - agent_routed
+      title: CopilotResponse
+    CustomerChatRequest:
+      properties:
+        query:
+          type: string
+          title: Query
+          description: Customer inquiry regarding order status, delivery date, or
+            quotations
+          examples:
+          - What is the current production milestone for our order PO-2026-0492?
+        customer_id:
+          type: string
+          title: Customer Id
+          description: Authenticated customer account identifier for tenant data isolation
+          examples:
+          - cust-nexa-442
+        order_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Order Id
+          description: Optional specific purchase order or RFQ reference number
+          examples:
+          - PO-2026-0492
+      type: object
+      required:
+      - query
+      - customer_id
+      title: CustomerChatRequest
+    DocumentIngestionRequest:
+      properties:
+        document_title:
+          type: string
+          title: Document Title
+          description: Official title or designation of the technical documentation
+          examples:
+          - Amada HFE 3i CNC Press Brake Tooling & Tonnage Manual
+        document_type:
+          type: string
+          title: Document Type
+          description: 'Classification category: manual | machine_spec | material_spec
+            | policy | contract'
+          examples:
+          - machine_spec
+          - material_spec
+        content_text:
+          type: string
+          title: Content Text
+          description: Full extracted text content to be chunked, embedded, and indexed
+          examples:
+          - V-die opening should be 8x material thickness for mild steel and stainless
+            steel. Minimum flange length is 6x thickness.
+        source_url:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Source Url
+          description: Original reference URL or document storage URI
+          examples:
+          - https://docs.forgeiq.internal/manuals/amada-hfe-3i.pdf
+        metadata:
+          anyOf:
+          - additionalProperties: true
+            type: object
+          - type: 'null'
+          title: Metadata
+          description: Custom metadata tags for filtered retrieval
+          examples:
+          - machine_model: Amada HFE 3i
+            tonnage_kn: 1000
+      type: object
+      required:
+      - document_title
+      - document_type
+      - content_text
+      title: DocumentIngestionRequest
+    ErrorDetail:
+      properties:
+        code:
+          type: string
+          title: Code
+          description: Machine-readable error classification code
+          examples:
+          - INVALID_REQUEST
+          - UNAUTHORIZED
+          - NOT_FOUND
+          - INTERNAL_SERVER_ERROR
+        message:
+          type: string
+          title: Message
+          description: Human-readable description of the error
+          examples:
+          - X-Org-ID header is strictly mandatory for tenant isolation
+        request_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Request Id
+          description: Unique correlation ID for tracing the failed request in logs
+          examples:
+          - f07e6d61-970d-4733-8b98-cb20f67bab07
+      type: object
+      required:
+      - code
+      - message
+      title: ErrorDetail
+    ErrorResponse:
+      properties:
+        success:
+          type: boolean
+          title: Success
+          description: Always false for error responses
+          default: false
+          examples:
+          - false
+        error:
+          $ref: '#/components/schemas/ErrorDetail'
+          description: Structured error payload
+        detail:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Detail
+          description: Additional debugging context available in development environment
+          examples:
+          - null
+      type: object
+      required:
+      - error
+      title: ErrorResponse
+    FactoryMatchRecommendation:
+      properties:
+        factory_id:
+          type: string
+          title: Factory Id
+        factory_name:
+          type: string
+          title: Factory Name
+        match_score:
+          type: number
+          maximum: 100.0
+          minimum: 0.0
+          title: Match Score
+        reasons:
+          items:
+            type: string
+          type: array
+          title: Reasons
+        capability_matches:
+          items:
+            type: string
+          type: array
+          title: Capability Matches
+        estimated_price:
+          type: number
+          minimum: 0.0
+          title: Estimated Price
+        estimated_delivery_days:
+          type: integer
+          minimum: 1.0
+          title: Estimated Delivery Days
+        quality_score:
+          type: number
+          maximum: 5.0
+          minimum: 0.0
+          title: Quality Score
+          default: 4.8
+        confidence:
+          type: number
+          maximum: 1.0
+          minimum: 0.0
+          title: Confidence
+          default: 0.9
+      type: object
+      required:
+      - factory_id
+      - factory_name
+      - match_score
+      - estimated_price
+      - estimated_delivery_days
+      title: FactoryMatchRecommendation
+    FactoryMatchRequest:
+      properties:
+        rfq_title:
+          type: string
+          title: Rfq Title
+          description: Title or summary of the RFQ batch to be outsourced
+          examples:
+          - Solar Inverter Enclosure Chassis
+        material_grade:
+          type: string
+          title: Material Grade
+          description: Engineering material grade required
+          examples:
+          - SS304
+        quantity:
+          type: integer
+          minimum: 1.0
+          title: Quantity
+          description: Target manufacturing quantity
+          examples:
+          - 500
+        required_delivery_days:
+          type: integer
+          minimum: 1.0
+          title: Required Delivery Days
+          description: Maximum acceptable turnaround lead time in calendar days
+          examples:
+          - 7
+        target_budget:
+          anyOf:
+          - type: number
+            minimum: 0.0
+          - type: 'null'
+          title: Target Budget
+          description: Target procurement budget in INR
+          examples:
+          - 45000.0
+        required_processes:
+          anyOf:
+          - items:
+              type: string
+            type: array
+          - type: 'null'
+          title: Required Processes
+          description: Mandatory factory capabilities and machines required
+          examples:
+          - - Fiber Laser Cutting
+            - CNC Bending
+            - Powder Coating
+        buyer_preference:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Buyer Preference
+          description: 'Optimization priority: balanced | cost | quality | speed'
+          default: balanced
+          examples:
+          - balanced
+          - cost
+          - speed
+      type: object
+      required:
+      - rfq_title
+      - material_grade
+      - quantity
+      - required_delivery_days
+      title: FactoryMatchRequest
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    IngestionResponse:
+      properties:
+        document_id:
+          type: string
+          title: Document Id
+          description: Unique generated ID for the indexed document
+          examples:
+          - doc_spec_amada_hfe_01
+        chunks_created:
+          type: integer
+          title: Chunks Created
+          description: Number of text chunks generated during chunking
+          examples:
+          - 12
+        embeddings_generated:
+          type: integer
+          title: Embeddings Generated
+          description: Number of vector embeddings created and indexed
+          examples:
+          - 12
+        org_id:
+          type: string
+          title: Org Id
+          description: Tenant organization ID the document is isolated to
+          examples:
+          - org-forge-default
+        status:
+          type: string
+          title: Status
+          description: Ingestion status
+          default: indexed
+          examples:
+          - indexed
+      type: object
+      required:
+      - document_id
+      - chunks_created
+      - embeddings_generated
+      - org_id
+      title: IngestionResponse
+    ProductionRecommendationRequest:
+      properties:
+        job_id:
+          type: string
+          title: Job Id
+          description: Internal production job identifier
+          examples:
+          - JOB-1082
+        part_name:
+          type: string
+          title: Part Name
+          description: Component part title or description
+          examples:
+          - Solar Inverter Mounting Baseplate
+        quantity:
+          type: integer
+          minimum: 1.0
+          title: Quantity
+          description: Scheduled batch production quantity
+          examples:
+          - 250
+        target_deadline:
+          type: string
+          title: Target Deadline
+          description: ISO 8601 target completion deadline timestamp
+          examples:
+          - '2026-09-18T18:00:00Z'
+        required_processes:
+          items:
+            type: string
+          type: array
+          title: Required Processes
+          description: Ordered sequence of shop-floor manufacturing operations
+          examples:
+          - - Fiber Laser Cutting
+            - CNC Press Brake Bending
+            - QC Inspection
+      type: object
+      required:
+      - job_id
+      - part_name
+      - quantity
+      - target_deadline
+      - required_processes
+      title: ProductionRecommendationRequest
+    ProductionSchedulingProposal:
+      properties:
+        job_id:
+          type: string
+          title: Job Id
+        job_title:
+          type: string
+          title: Job Title
+        recommended_machine_id:
+          type: string
+          title: Recommended Machine Id
+        recommended_machine_name:
+          type: string
+          title: Recommended Machine Name
+        recommended_shift:
+          type: string
+          title: Recommended Shift
+        scheduled_start:
+          type: string
+          title: Scheduled Start
+        estimated_duration_hours:
+          type: number
+          title: Estimated Duration Hours
+        delay_risk_score:
+          type: number
+          title: Delay Risk Score
+          description: 0.0 to 1.0 risk index
+          default: 0.15
+        delay_reasons:
+          items:
+            type: string
+          type: array
+          title: Delay Reasons
+        manager_approval_required:
+          type: boolean
+          title: Manager Approval Required
+          default: true
+        confidence:
+          type: number
+          maximum: 1.0
+          minimum: 0.0
+          title: Confidence
+          default: 0.88
+      type: object
+      required:
+      - job_id
+      - job_title
+      - recommended_machine_id
+      - recommended_machine_name
+      - recommended_shift
+      - scheduled_start
+      - estimated_duration_hours
+      title: ProductionSchedulingProposal
+    QuotationEstimate:
+      properties:
+        material_type:
+          type: string
+          title: Material Type
+        material_grade:
+          type: string
+          title: Material Grade
+        raw_material_weight_kg:
+          type: number
+          minimum: 0.0
+          title: Raw Material Weight Kg
+        scrap_rate_percentage:
+          type: number
+          maximum: 100.0
+          minimum: 0.0
+          title: Scrap Rate Percentage
+          default: 12.5
+        cut_length_meters:
+          type: number
+          minimum: 0.0
+          title: Cut Length Meters
+          default: 0.0
+        machine_cycle_time_minutes:
+          type: number
+          minimum: 0.0
+          title: Machine Cycle Time Minutes
+        bending_strokes_count:
+          type: integer
+          minimum: 0.0
+          title: Bending Strokes Count
+          default: 0
+        finishing_requirements:
+          items:
+            type: string
+          type: array
+          title: Finishing Requirements
+        labor_time_minutes:
+          type: number
+          minimum: 0.0
+          title: Labor Time Minutes
+        estimated_lead_time_days:
+          type: integer
+          minimum: 1.0
+          title: Estimated Lead Time Days
+          default: 7
+        confidence_score:
+          type: number
+          maximum: 1.0
+          minimum: 0.0
+          title: Confidence Score
+          default: 0.92
+        technical_assumptions:
+          items:
+            type: string
+          type: array
+          title: Technical Assumptions
+      type: object
+      required:
+      - material_type
+      - material_grade
+      - raw_material_weight_kg
+      - machine_cycle_time_minutes
+      - labor_time_minutes
+      title: QuotationEstimate
+      description: Technical estimation ONLY. Final pricing is computed by ForgeIQ
+        Pricing Engine.
+    QuotationEstimationRequest:
+      properties:
+        part_title:
+          type: string
+          title: Part Title
+          description: Descriptive title of the manufactured component
+          examples:
+          - SS304 Precision Mounting Bracket
+        material:
+          type: string
+          title: Material
+          description: Base raw material specification
+          examples:
+          - Stainless Steel
+        material_grade:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Material Grade
+          description: Standard engineering material grade
+          default: '304'
+          examples:
+          - '304'
+          - 316L
+          - CRCA-IS513
+        thickness:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Thickness
+          description: Raw sheet stock thickness with units
+          default: 3 mm
+          examples:
+          - 3 mm
+          - 2 mm
+          - 1.5 mm
+        dimensions:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Dimensions
+          description: Outer bounding dimensions (Length x Width x Height in mm)
+          default: 250 x 180 x 45 mm
+          examples:
+          - 250 x 180 x 45 mm
+        quantity:
+          type: integer
+          minimum: 1.0
+          title: Quantity
+          description: Batch production volume
+          default: 500
+          examples:
+          - 500
+        drawing_reference:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Drawing Reference
+          description: CAD drawing or engineering reference code
+          examples:
+          - DWG-SS-BRK-001-REV2
+        special_processes:
+          anyOf:
+          - items:
+              type: string
+            type: array
+          - type: 'null'
+          title: Special Processes
+          description: Specific required industrial manufacturing processes
+          examples:
+          - - Fiber Laser Cutting
+            - CNC Press Brake Bending
+            - Deburring
+      type: object
+      required:
+      - part_title
+      - material
+      title: QuotationEstimationRequest
+    RAGCitation:
+      properties:
+        source_id:
+          type: string
+          title: Source Id
+        source_title:
+          type: string
+          title: Source Title
+        source_type:
+          type: string
+          title: Source Type
+        relevance_score:
+          type: number
+          title: Relevance Score
+        snippet:
+          type: string
+          title: Snippet
+        org_id:
+          type: string
+          title: Org Id
+      type: object
+      required:
+      - source_id
+      - source_title
+      - source_type
+      - relevance_score
+      - snippet
+      - org_id
+      title: RAGCitation
+    RFQIntakeRequest:
+      properties:
+        raw_text:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Raw Text
+          description: Raw text content from customer email, WhatsApp message, or
+            RFQ brief
+          examples:
+          - 'Customer: NexaSolar Industries. Need 500 pcs SS304 brackets, 3mm thickness,
+            outer dimensions 250x180mm with 4 bends. Required within 7 days in Bengaluru.'
+        file_name:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: File Name
+          description: Original filename if document was uploaded
+          examples:
+          - RFQ-Nexa-Solar-Brackets.pdf
+        file_type:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: File Type
+          description: MIME type of uploaded document
+          examples:
+          - application/pdf
+        file_content_base64:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: File Content Base64
+          description: Base64-encoded file payload (optional for text-only RFQs)
+        sample_preset_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Sample Preset Id
+          description: Preset template identifier for benchmark verification
+          examples:
+          - preset-solar-bracket-500
+      type: object
+      title: RFQIntakeRequest
+    StructuredRFQ:
+      properties:
+        customer_name:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Customer Name
+        company_name:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Company Name
+        part_title:
+          type: string
+          title: Part Title
+          description: Identified manufacturing part name
+        material:
+          type: string
+          title: Material
+          description: Base material type (e.g. Stainless Steel, Aluminum)
+        material_grade:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Material Grade
+          default: '304'
+        thickness:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Thickness
+          default: 3 mm
+        dimensions:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Dimensions
+        quantity:
+          type: integer
+          minimum: 1.0
+          title: Quantity
+          default: 1
+        delivery_date:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Delivery Date
+        priority:
+          type: string
+          title: Priority
+          description: urgent | standard | low
+          default: standard
+        special_instructions:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Special Instructions
+        drawing_reference:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Drawing Reference
+        required_processes:
+          items:
+            type: string
+          type: array
+          title: Required Processes
+        confidence_score:
+          type: number
+          maximum: 1.0
+          minimum: 0.0
+          title: Confidence Score
+          default: 0.95
+        field_confidences:
+          additionalProperties:
+            type: number
+          type: object
+          title: Field Confidences
+        clarification_questions:
+          items:
+            type: string
+          type: array
+          title: Clarification Questions
+        requires_human_verification:
+          type: boolean
+          title: Requires Human Verification
+          default: false
+      type: object
+      required:
+      - part_title
+      - material
+      title: StructuredRFQ
+    TelemetryRecord:
+      properties:
+        request_id:
+          type: string
+          title: Request Id
+        org_id:
+          type: string
+          title: Org Id
+        user_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: User Id
+        endpoint:
+          type: string
+          title: Endpoint
+        agent_used:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Agent Used
+        provider:
+          type: string
+          title: Provider
+        model:
+          type: string
+          title: Model
+        latency_ms:
+          type: number
+          title: Latency Ms
+        input_tokens:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Input Tokens
+        output_tokens:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Output Tokens
+        confidence:
+          type: number
+          title: Confidence
+          default: 1.0
+        success:
+          type: boolean
+          title: Success
+          default: true
+        error_message:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Error Message
+        created_at:
+          type: string
+          title: Created At
+      type: object
+      required:
+      - request_id
+      - org_id
+      - endpoint
+      - provider
+      - model
+      - latency_ms
+      title: TelemetryRecord
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+tags:
+- name: Health
+  description: System operational readiness, active AI provider mode, and vector backend
+    status.
+- name: Chat & Copilot
+  description: Autonomous multi-agent copilot for factory shop-floor operators and
+    customer portal buyers.
+- name: RFQ & Order Intake
+  description: Unstructured manufacturing RFQ extraction, parameter parsing, and confidence
+    scoring.
+- name: Quotation Estimation
+  description: Technical parameter estimation (laser cut length, cycle time, scrap
+    rate, bending strokes, labor).
+- name: Production AI
+  description: Shop floor machine workload balancing, routing proposals, and shift
+    schedule optimization.
+- name: Manufacturer Matching
+  description: Factory matchmaking against verified machine specifications, certifications,
+    and delivery windows.
+- name: Document Ingestion
+  description: Tenant-isolated vector indexing of engineering drawings, machine manuals,
+    and material specs.
+- name: RAG Retrieval
+  description: Hybrid semantic and lexical context retrieval scoped strictly to the
+    requesting organization.
+- name: Observability & Telemetry
+  description: Execution audit records, inference latencies, and multi-agent routing
+    telemetry.

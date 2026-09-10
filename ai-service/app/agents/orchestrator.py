@@ -1,3 +1,4 @@
+import logging
 import time
 import uuid
 from typing import Dict, Any, List
@@ -11,6 +12,8 @@ from app.models.schemas import CopilotResponse, TelemetryRecord
 from app.security.auth import TenantContext
 from app.rag.retrieval import rag_retriever
 from app.services.telemetry_service import telemetry_service
+
+logger = logging.getLogger("forgeiq.orchestrator")
 
 class AgentOrchestrator:
     def __init__(self):
@@ -58,6 +61,17 @@ class AgentOrchestrator:
         req_id = f"req_{uuid.uuid4().hex[:8]}"
         ctx = context or {}
 
+        logger.info(
+            "AI orchestrator query initiated",
+            extra={
+                "query": query,
+                "org_id": tenant.org_id,
+                "user_id": tenant.user_id,
+                "customer_id": tenant.customer_id,
+                "operation": "orchestrator_process"
+            }
+        )
+
         # 1. RAG Retrieval strictly scoped to requesting organization
         citations = rag_retriever.retrieve_context(
             query=query,
@@ -67,6 +81,14 @@ class AgentOrchestrator:
 
         # 2. Multi-Agent Routing
         selected_agent = self.route_intent(query, tenant)
+        logger.info(
+            f"AI orchestrator routed to {selected_agent.agent_id}",
+            extra={
+                "selected_agent": selected_agent.agent_id,
+                "query": query,
+                "operation": "orchestrator_routing"
+            }
+        )
 
         # 3. Agent Execution
         try:
@@ -78,6 +100,29 @@ class AgentOrchestrator:
             )
             elapsed_ms = (time.time() - start_time) * 1000.0
             response.latency_ms = round(elapsed_ms, 1)
+
+            # Performance threshold warning
+            if elapsed_ms > 1000.0:
+                logger.warning(
+                    f"SLOW AI ORCHESTRATOR: query took {elapsed_ms:.1f}ms (>1000ms threshold)",
+                    extra={
+                        "agent_used": selected_agent.agent_id,
+                        "duration_ms": response.latency_ms,
+                        "performance_warning": True,
+                        "threshold_ms": 1000.0
+                    }
+                )
+
+            logger.info(
+                "AI orchestrator query completed",
+                extra={
+                    "agent_used": selected_agent.agent_id,
+                    "duration_ms": response.latency_ms,
+                    "confidence": response.confidence,
+                    "provider": response.provider_used,
+                    "operation": "orchestrator_complete"
+                }
+            )
 
             # 4. Telemetry Recording
             telemetry_service.record(
@@ -99,6 +144,16 @@ class AgentOrchestrator:
 
         except Exception as err:
             elapsed_ms = (time.time() - start_time) * 1000.0
+            logger.error(
+                f"AI orchestrator execution failure: {str(err)}",
+                exc_info=True,
+                extra={
+                    "agent_used": selected_agent.agent_id,
+                    "duration_ms": round(elapsed_ms, 1),
+                    "error_type": type(err).__name__,
+                    "operation": "orchestrator_error"
+                }
+            )
             telemetry_service.record(
                 TelemetryRecord(
                     request_id=req_id,

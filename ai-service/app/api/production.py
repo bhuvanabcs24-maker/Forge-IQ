@@ -1,14 +1,27 @@
 import time
 from fastapi import APIRouter, Depends
 from app.models.requests import ProductionRecommendationRequest
-from app.models.responses import APIEnvelope
+from app.models.responses import APIEnvelope, COMMON_ERROR_RESPONSES
 from app.models.schemas import ProductionSchedulingProposal
 from app.security.auth import get_tenant_context, TenantContext
 from app.services.llm_service import get_llm_provider
 
 router = APIRouter(prefix="/api/v1/production", tags=["Production AI"])
 
-@router.post("/recommendations", response_model=APIEnvelope[ProductionSchedulingProposal])
+@router.post(
+    "/recommendations",
+    response_model=APIEnvelope[ProductionSchedulingProposal],
+    summary="Production Scheduling Proposal & Machine Workload Balancing",
+    description="""
+Analyzes active shop floor machine loads, queue depths, and shift calendars to generate
+an optimal machine routing and shift scheduling proposal for a production job.
+- Assigns optimal machine (e.g. Bystronic Fiber Laser or Amada Press Brake)
+- Identifies earliest open shift window (Morning, Afternoon, Night)
+- Calculates delay risk indices (0.0 to 1.0) and queue delay reasons
+- Enforces human-in-the-loop safety: `manager_approval_required=True` is always mandated.
+    """,
+    responses=COMMON_ERROR_RESPONSES
+)
 async def get_production_scheduling_recommendation(
     req: ProductionRecommendationRequest,
     tenant: TenantContext = Depends(get_tenant_context)

@@ -50,7 +50,7 @@ export async function GET() {
           nextScheduledMaintenance: toIsoDate(r.nextScheduledMaintenance, '2026-09-20'),
         }));
       },
-      { ttlMs: 5000, tag: 'machines' }
+      { ttlMs: 20000, tag: 'machines' }
     );
 
     return NextResponse.json({ 

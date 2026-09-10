@@ -18,6 +18,8 @@ class DFMAgent:
         flange_length_mm: Optional[float] = None,
         hole_diameter_mm: Optional[float] = None,
         hole_to_bend_distance_mm: Optional[float] = None,
+        hole_to_edge_distance_mm: Optional[float] = None,
+        slot_width_mm: Optional[float] = None,
         tolerance_mm: Optional[float] = None,
         bend_length_mm: float = 100.0,
         inside_radius_mm: Optional[float] = None,
@@ -33,17 +35,21 @@ class DFMAgent:
 
         # 1. Check Hardox / High-strength materials (Section 18 & Example 8)
         if "HARDOX" in grade_upper:
-            issues.append(DFMIssue(
-                feature="HARDOX_MATERIAL_GRADE",
-                risk="High yield strength causes excessive springback, punch cracking, and requires 3-4x tonnage.",
-                severity="HIGH",
-                current_design=f"{material_grade} ({thickness_mm} mm)",
-                manufacturing_constraint="Hardox requires punch radius >= 3T, die opening >= 10-12T, and OEM bending charts.",
-                recommendation="Hardox bending requires OEM SSAB bending chart and verifying press-brake capacity before scheduling.",
-                confidence=0.98,
-                engineering_review_required=True
-            ))
-            requires_review = True
+            # If OEM SSAB compliant tooling is provided (R >= 3T), allow with verified advisory
+            if inside_radius_mm is not None and inside_radius_mm >= 3.0 * thickness_mm:
+                warnings.append("Hardox wear plate with OEM SSAB-compliant tooling (punch radius >= 3T) approved for scheduling.")
+            else:
+                issues.append(DFMIssue(
+                    feature="HARDOX_MATERIAL_GRADE",
+                    risk="High yield strength causes excessive springback, punch cracking, and requires 3-4x tonnage.",
+                    severity="HIGH",
+                    current_design=f"{material_grade} ({thickness_mm} mm)",
+                    manufacturing_constraint="Hardox requires punch radius >= 3T, die opening >= 10-12T, and OEM bending charts.",
+                    recommendation="Hardox bending requires OEM SSAB bending chart and verifying press-brake capacity before scheduling.",
+                    confidence=0.98,
+                    engineering_review_required=True
+                ))
+                requires_review = True
 
         # 2. Check Critical Tolerances (Section 7, 34 & Example 4)
         if tolerance_mm is not None and tolerance_mm <= 0.05:
@@ -109,6 +115,36 @@ class DFMAgent:
                 confidence=0.94,
                 engineering_review_required=False
             ))
+
+        # 6. Check Hole-to-Edge Distance (Bulging and tear risk)
+        if hole_to_edge_distance_mm is not None:
+            min_edge_dist = 1.5 * thickness_mm
+            if hole_to_edge_distance_mm < min_edge_dist:
+                issues.append(DFMIssue(
+                    feature="HOLE_TO_EDGE_PROXIMITY",
+                    risk="Hole positioned too close to sheet edge risks bulging or edge tearing during punching/cutting.",
+                    severity="HIGH",
+                    current_design=f"Edge distance = {hole_to_edge_distance_mm} mm",
+                    manufacturing_constraint=f"Recommended edge distance E >= 1.5T ({round(min_edge_dist, 1)} mm).",
+                    recommendation="Move hole center to at least 1.5x thickness from the nearest cut edge.",
+                    confidence=0.95,
+                    engineering_review_required=True
+                ))
+                requires_review = True
+
+        # 7. Check Narrow Slot Width
+        if slot_width_mm is not None and slot_width_mm < thickness_mm:
+            issues.append(DFMIssue(
+                feature="NARROW_SLOT_WIDTH",
+                risk="Slot width narrower than material thickness causes thermal heat accumulation and slag bridging.",
+                severity="MEDIUM",
+                current_design=f"Slot width = {slot_width_mm} mm < {thickness_mm} mm",
+                manufacturing_constraint="Minimum slot width W >= 1.0T.",
+                recommendation="Widen slot to at least material thickness or adjust laser cut parameters.",
+                confidence=0.92,
+                engineering_review_required=True
+            ))
+            requires_review = True
 
         # Overall Status
         if any(issue.severity == "CRITICAL" for issue in issues):

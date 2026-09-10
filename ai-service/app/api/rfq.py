@@ -1,14 +1,28 @@
 import time
 from fastapi import APIRouter, Depends
 from app.models.requests import RFQIntakeRequest
-from app.models.responses import APIEnvelope
+from app.models.responses import APIEnvelope, COMMON_ERROR_RESPONSES
 from app.models.schemas import StructuredRFQ
 from app.security.auth import get_tenant_context, TenantContext
 from app.services.llm_service import get_llm_provider
 
 router = APIRouter(prefix="/api/v1/rfq", tags=["RFQ & Order Intake"])
 
-@router.post("/intake", response_model=APIEnvelope[StructuredRFQ])
+@router.post(
+    "/intake",
+    response_model=APIEnvelope[StructuredRFQ],
+    summary="Unstructured RFQ / Order Intake & Parameter Parsing",
+    description="""
+Extracts manufacturing parameters from unstructured text briefs, customer emails, or WhatsApp order messages.
+Outputs a strictly validated `StructuredRFQ` schema containing:
+- Customer & company identification
+- Part title, base material, and exact material grade (e.g. SS304, CRCA)
+- Sheet thickness, outer dimensions, and quantity
+- Required manufacturing processes (Fiber Laser, Bending, Powder Coating)
+- Per-field confidence scores (0.0 to 1.0) and missing parameter clarification questions.
+    """,
+    responses=COMMON_ERROR_RESPONSES
+)
 async def rfq_intake(
     req: RFQIntakeRequest,
     tenant: TenantContext = Depends(get_tenant_context)

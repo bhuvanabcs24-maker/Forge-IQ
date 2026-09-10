@@ -6,7 +6,11 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "load-test": "python3 performance/run_load_test.py --quick",
+    "load-test:full": "python3 performance/run_load_test.py",
+    "load-test:locust": "./ai-service/.venv/bin/locust -f performance/load_test.py --host=http://localhost:3000",
+    "load-test:k6": "k6 run performance/load-test.js"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",
@@ -28,6 +32,7 @@
     "zod": "^3.24.2"
   },
   "devDependencies": {
+    "@playwright/test": "^1.63.0",
     "@types/node": "^22.13.1",
     "@types/react": "^19.0.8",
     "@types/react-dom": "^19.0.3",

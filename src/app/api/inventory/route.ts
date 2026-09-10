@@ -54,7 +54,7 @@ export async function GET() {
           lastRestocked: toIsoDate(r.lastRestocked),
         }));
       },
-      { ttlMs: 5000, tag: 'inventory' }
+      { ttlMs: 15000, tag: 'inventory' }
     );
 
     return NextResponse.json({ 

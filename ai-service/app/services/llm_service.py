@@ -1,6 +1,7 @@
 import abc
 import json
 import logging
+import time
 from typing import Type, TypeVar, Optional, Dict, Any, List
 import httpx
 from pydantic import BaseModel
@@ -466,50 +467,88 @@ class ForgeIQLocalProvider(BaseLLMProvider):
         temperature: float = 0.2,
         max_tokens: int = 1024,
     ) -> str:
+        start_inf = time.perf_counter()
+        logger.info(
+            "AI model inference initiated",
+            extra={
+                "provider": self.provider_name,
+                "prompt_chars": len(prompt),
+                "operation": "model_inference"
+            }
+        )
         p_low = prompt.lower()
+        result_text = ""
 
         # Adversarial prompt injection defense
         if "ignore all" in p_low or "bypass" in p_low or "override" in p_low:
-            return (
+            result_text = (
                 "Request Rejected: Fiber laser positioning repeatability is ±0.03 mm. "
                 "A tolerance of ±0.0001 mm is physically impossible on a laser, and factory safety rules cannot be bypassed."
             )
 
         # Unverified pricing probe
-        if "unobtainium" in p_low or ("spot price" in p_low and "verified" not in p_low):
-            return (
+        elif "unobtainium" in p_low or ("spot price" in p_low and "verified" not in p_low):
+            result_text = (
                 "MATERIAL_RATE_UNAVAILABLE: Unobtainium-999 is not in the verified factory database. "
                 "ForgeIQ strictly refuses to invent material rates. Supplier RFQ required."
             )
 
         # Inventory reasoning
-        if "how much" in p_low and ("ss304" in p_low or "stainless" in p_low) and "stock" in p_low:
+        elif "how much" in p_low and ("ss304" in p_low or "stainless" in p_low) and "stock" in p_low:
             inv = self.execute_tool("get_inventory", {"material_code": "SS304"})
             if inv.success and inv.output:
                 o = inv.output
-                return (
+                result_text = (
                     f"Current inventory for SS304: Total stock {o.get('total_stock_sheets', 840)} sheets, "
                     f"reserved {o.get('reserved_sheets', 320)} sheets, available {o.get('available_sheets', 520)} sheets in Bay 2."
                 )
+            else:
+                result_text = await MockProvider().generate_text(prompt, system_prompt, temperature, max_tokens)
 
         # Machine capacity check
-        if "press brake" in p_low and ("capacity" in p_low or "schedule" in p_low):
+        elif "press brake" in p_low and ("capacity" in p_low or "schedule" in p_low):
             cap = self.execute_tool("check_machine_capacity", {"machine_id": "mach-amada-01", "required_hours": 6.0})
-            return (
+            result_text = (
                 "Press Brake capacity check: Machine has 4.5 hours open headroom today. "
                 "Remaining 1.5 hours must be scheduled on morning shift tomorrow."
             )
 
         # Quotation request
-        if "quote" in p_low and "bracket" in p_low:
-            return (
+        elif "quote" in p_low and "bracket" in p_low:
+            result_text = (
                 "Quotation for 100 units SS304 brackets (3mm thick): "
                 "Raw material cost is ₹13,794, laser cutting cost is ₹1,190, press brake bending is ₹2,400. "
                 "Total direct cost is ₹17,384. With factory overhead, margin, and 18% GST, final quoted amount is ₹28,738 INR."
             )
 
         # General operations
-        return await MockProvider().generate_text(prompt, system_prompt, temperature, max_tokens)
+        else:
+            result_text = await MockProvider().generate_text(prompt, system_prompt, temperature, max_tokens)
+
+        duration_ms = round((time.perf_counter() - start_inf) * 1000.0, 2)
+        if duration_ms > 1000.0:
+            logger.warning(
+                f"SLOW AI INFERENCE: provider {self.provider_name} took {duration_ms}ms (>1000ms threshold)",
+                extra={
+                    "provider": self.provider_name,
+                    "duration_ms": duration_ms,
+                    "performance_warning": True,
+                    "threshold_ms": 1000.0,
+                    "operation": "model_inference"
+                }
+            )
+
+        logger.info(
+            "AI model inference completed",
+            extra={
+                "provider": self.provider_name,
+                "duration_ms": duration_ms,
+                "response_chars": len(result_text),
+                "operation": "model_inference"
+            }
+        )
+
+        return result_text
 
     async def generate_structured(
         self,

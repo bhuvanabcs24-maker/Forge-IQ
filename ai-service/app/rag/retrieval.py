@@ -1,8 +1,12 @@
+import logging
+import time
 from typing import List, Optional
 from app.rag.embeddings import embedding_service
 from app.rag.vector_store import vector_store
 from app.models.schemas import RAGCitation
 from app.security.auth import TenantContext
+
+logger = logging.getLogger("forgeiq.rag")
 
 class RAGRetriever:
     def retrieve_context(
@@ -14,8 +18,20 @@ class RAGRetriever:
     ) -> List[RAGCitation]:
         """
         Retrieves relevant company and manufacturing knowledge strictly scoped
-        to the requesting tenant.
+        to the requesting tenant with structured observability.
         """
+        start_rag = time.perf_counter()
+        logger.info(
+            "RAG retrieval initiated",
+            extra={
+                "query": query,
+                "top_k": top_k,
+                "source_type": source_type,
+                "org_id": tenant.org_id,
+                "operation": "rag_retrieval"
+            }
+        )
+
         query_embedding = embedding_service.get_embedding(query)
         
         citations = vector_store.search(
@@ -27,6 +43,32 @@ class RAGRetriever:
             top_k=top_k,
             min_score=0.03
         )
+
+        duration_ms = round((time.perf_counter() - start_rag) * 1000.0, 2)
+        if duration_ms > 1000.0:
+            logger.warning(
+                f"SLOW RAG RETRIEVAL: search took {duration_ms}ms (>1000ms threshold)",
+                extra={
+                    "query": query,
+                    "duration_ms": duration_ms,
+                    "citations_count": len(citations),
+                    "performance_warning": True,
+                    "threshold_ms": 1000.0,
+                    "operation": "rag_retrieval"
+                }
+            )
+
+        logger.info(
+            "RAG retrieval completed",
+            extra={
+                "query": query,
+                "citations_count": len(citations),
+                "top_scores": [round(c.relevance_score, 3) for c in citations[:3]],
+                "duration_ms": duration_ms,
+                "operation": "rag_retrieval"
+            }
+        )
+
         return citations
 
     def format_context_prompt(self, citations: List[RAGCitation]) -> str:
