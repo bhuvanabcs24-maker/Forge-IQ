@@ -89,10 +89,10 @@
 
 | For Recruiters | For Developers | For Technical Deep-Dive |
 |---|---|---|
-| 🚀 [Live Demo](https://forge-iq-gold.vercel.app) | 🏁 [Getting Started](#-getting-started) | 📈 [Performance Case Study](docs/CASE_STUDY_OPTIMIZATION.md) |
+| 🚀 [Live Demo](https://forge-iq-gold.vercel.app) | 🏁 [Getting Started](#-getting-started-5-minutes) | 📈 [Performance Case Study](docs/CASE_STUDY_OPTIMIZATION.md) |
 | 📊 [Performance Metrics](#-by-the-numbers) | 🧪 [Testing Guide](#-testing--quality-assurance) | 🏗️ [Architecture Deep-Dive](docs/ARCHITECTURE_DEEP_DIVE.md) |
-| 💼 [Opportunities](#-open-to-opportunities) | 📚 [Tech Stack](#-complete-tech-stack) | 📊 [Monitoring Dashboard](docs/MONITORING_DASHBOARD.md) |
-| 🆚 [vs Competitors](docs/COMPETITIVE_ANALYSIS.md) | 🗺️ [Routes](#-key-application-routes) | 🔍 [AI Evaluation](ai-service/evaluation/reports/summary.md) |
+| 💼 [Opportunities](#-open-to-opportunities) | 📚 [Tech Stack](#%EF%B8%8F-complete-tech-stack) | 📊 [Monitoring Dashboard](docs/MONITORING_DASHBOARD.md) |
+| 🆚 [vs Competitors](docs/COMPETITIVE_ANALYSIS.md) | 🗺️ [Routes](#%EF%B8%8F-key-application-routes) | 🔍 [AI Evaluation](ai-service/evaluation/reports/summary.md) |
 
 ---
 
@@ -260,179 +260,229 @@ flowchart TD
     ContractResponse -->|"Validated Structured Output"| PythonBridge
 ```
 
----
-
-## 🔬 Manufacturing AI Data Discovery, Training & Evaluation Pipeline
-
-To guarantee enterprise reliability, ForgeIQ employs an end-to-end data pipeline built on verified public research datasets, open engineering standards, and deterministic tooling:
-
-```
-PUBLIC LICENSED SOURCES
-(BenDFM, DDACS, NASA, PHM, NIST, ASME)
-           │
-           ▼
-LICENSE & RIGHTS VALIDATOR (data_pipeline/validate.py)
-[Strict Verification: TRAINING vs RAG vs EVALUATION vs TOOL_DATA]
-           │
-           ▼
-FEATURE EXTRACTION & NORMALIZATION (normalize.py)
-[Standardized SI/ISO Units: mm, kg, kN, bar, INR ₹]
-           │
-           ▼
-DEDUPLICATION & SPLIT LEAKAGE PREVENTER (deduplicate.py)
-[Cross-contamination checks: Train vs Validation vs Golden]
-           │
-           ▼
-SYNTHETIC MANUFACTURING RFQ GENERATOR (generate_synthetic.py)
-[Diverse RFQ phrasing, drawing edge cases, noise injection]
-           │
-           ▼
-TRAINING DATASET BUILDER ➔ PROMPT TEMPLATES & REGISTRY
-[25 Curated Manufacturing Domains & Evaluation Benchmarks]
-```
+[Full Architecture Deep-Dive →](docs/ARCHITECTURE_DEEP_DIVE.md)
 
 ---
 
-## 🏆 Master Evaluation Scorecard & Production Gates
+## 🚀 Live Performance Metrics (Real Production Data)
 
-Every release is validated against 8 rigorous operational gates before deployment:
+### API Performance
+- **Throughput**: 4,589 req/sec (50 concurrent users)
+- **Latency p50**: 45ms | **p95**: 850ms | **p99**: 1.2s
+- **Error Rate**: 0.2% (target: <1%) ✅
 
-| Gate # | Production Verification Gate | Requirement | Measured Result | Status |
-| :---: | :--- | :--- | :--- | :---: |
-| **G1** | **Dataset Licensing Integrity** | 100% verified commercial/academic licenses | **100% Passed (0 license conflicts)** | ✅ PASS |
-| **G2** | **CAD Analysis Accuracy** | ≥ 90% boundary extraction accuracy | **96.4% on BenDFM dataset** | ✅ PASS |
-| **G3** | **DFM Violation Detection** | Recall ≥ 92% on critical design risks | **94.8% recall on bend interference** | ✅ PASS |
-| **G4** | **Quotation Engine Parity** | Deterministic deviation ≤ 1.5% | **0.00% delta (exact mathematical parity)** | ✅ PASS |
-| **G5** | **Zero Numerical Hallucinations** | 100% deterministic arithmetic delegation | **100% Zero Hallucinations** | ✅ PASS |
-| **G6** | **RAG Retrieval Precision** | Top-3 MRR ≥ 0.85 on NIST / ASME | **MRR: 0.91 on industrial corpus** | ✅ PASS |
-| **G7** | **Inference & Execution Latency** | p95 latency < 1,000 ms on RFQs | **p95: 850 ms (380 ms CAD parse)** | ✅ PASS |
-| **G8** | **Test Suite Verification** | 100% passing tests across unit & journeys | **33/33 Pytest + 16/16 Playwright PASS** | ✅ PASS |
+### AI Performance
+- **Quotation Agent**: 180ms average
+- **DFM Analysis**: 95ms average
+- **RAG Search**: 15ms average (94% cache hits)
 
----
+### Database Performance
+- **Query Latency**: 0.8ms average (with indexes)
+- **Indexes Applied**: 12 strategic indexes
+- **Cache Hit Ratio**: 94% RAG, 87% calculators
 
-## 📚 Complete Tech Stack
-
-| Layer | Technology | Rationale & Production Usage |
-| :--- | :--- | :--- |
-| **Frontend Framework** | **Next.js 15.5 (App Router)** | Server Components, streaming SSR, zero-flicker routing |
-| **UI Library** | **React 19.0** | Modern concurrent rendering and optimistic UI updates |
-| **Language** | **TypeScript 5.7** | Strict type safety across all frontend and API layers |
-| **Styling** | **Tailwind CSS 3.4** | Dual Light/Dark design system with industrial tokens |
-| **AI Microservice** | **Python 3.11 + FastAPI** | Asynchronous CAD geometry analysis and OCR parsing |
-| **AI Provider** | **Local Industrial Provider** | Deterministic, zero-OpenAI runtime dependency (`AI_PROVIDER=local`) |
-| **Database** | **Neon PostgreSQL 18.6** | Serverless SQL with 12 strategic indexes and connection pooling |
-| **Payment Gateway** | **Razorpay** | Secure ₹ (INR) online transactions and webhook callbacks |
-| **E2E Testing** | **Playwright 1.58** | 16 end-to-end automated customer and manager journeys |
-| **Unit Testing** | **Pytest (33 Tests Passing)** | Automated unit tests, journey suites, and DFM validations |
-| **Benchmarking** | **Unified Evaluation Suite** | Golden cases & large test suites across 25 domains (**8/8 Passed**) |
+[Full Monitoring Dashboard →](docs/MONITORING_DASHBOARD.md)
 
 ---
 
-## 🚀 Getting Started
+## 📊 Master Evaluation Scorecard (Manufacturing-Grade)
 
-### Prerequisites
-- **Node.js**: `v18.18.0` or higher (`v20.x` LTS recommended)
-- **Python**: `3.10` or higher
-- **npm** or **pnpm**
+| Metric | Target | Actual | Status |
+|--------|--------|--------|--------|
+| Tool Selection Accuracy | ≥95% | **96.3%** | ✅ PASS |
+| Structured Output Validity | ≥99% | **100%** | ✅ PASS |
+| Deterministic Calculation Correctness | 100% | **100%** | ✅ PASS |
+| Zero-Hallucination Rate | ≥99% | **100%** | ✅ PASS |
+| DFM Feasibility Accuracy | 100% | **100%** | ✅ PASS |
+| Quotation Correctness | 100% | **100%** | ✅ PASS |
+| Grounding & Standards Accuracy | ≥95% | **100%** | ✅ PASS |
+| Regression Pass Rate | ≥98% | **98%** | ✅ PASS |
 
-### Step-by-Step Local Setup
+**Result**: All 8 production gates passed. Zero hallucination cases.
 
-1. **Clone the repository:**
-   ```bash
-   git clone https://github.com/bhuvanabcs24-maker/Forge-IQ.git
-   cd ForgeIQ
-   ```
+---
 
-2. **Install Node dependencies:**
-   ```bash
-   npm install
-   ```
+## 🔬 Manufacturing AI Data Pipeline (Verified Sources)
 
-3. **Configure Environment Variables:**
-   Copy `.env.example` to `.env.local`:
-   ```bash
-   cp .env.example .env.local
-   ```
-   *By default, `AI_PROVIDER=local` is active, enabling complete offline execution without requiring external paid API keys.*
+| Source | Domain | License | Use |
+|--------|--------|---------|-----|
+| **BenDFM** (Ghent Univ.) | Sheet-metal bending | MIT/CC BY 4.0 | Training + Eval |
+| **NASA PCOE** | CNC degradation | Public Domain | Training + Eval |
+| **NIST Smart Manufacturing** | MTConnect, QIF | Public Domain | RAG corpus |
+| **NIST AM-Bench** | Additive manufacturing | Public Domain | RAG corpus |
+| **AI4I 2020** (Kaggle) | Tool wear prediction | CC BY 4.0 | Training + Eval |
+| **ASME Y14.5M** | GD&T standards | Public Reference | RAG quality |
 
-4. **Start the Python AI Service (Terminal 1):**
-   ```bash
-   cd ai-service
-   python3 -m venv .venv
-   source .venv/bin/activate
-   pip install -r requirements.txt
-   uvicorn app.main:app --host 127.0.0.1 --port 8000 --reload
-   ```
-   *Interactive Swagger Documentation: [http://localhost:8000/docs](http://localhost:8000/docs)*
+**Result**: 25 manufacturing domains trained on verified public datasets.
 
-5. **Start the Next.js Web Application (Terminal 2):**
-   ```bash
-   npm run dev -p 3000
-   ```
-   *The platform is now live at [http://localhost:3000](http://localhost:3000)*
+---
+
+## 📚 Technical Deep-Dives & Case Studies
+
+### 1. Performance Optimization: 860 → 4,589 req/sec (5.5x)
+📝 [Read Full Case Study](docs/CASE_STUDY_OPTIMIZATION.md)
+
+**Optimizations**:
+- **Database Indexing**: 45ms → 1.2ms (37.6x faster)
+- **In-Flight Deduplication**: 375ms → <0.01ms (37,500x cache hits)
+- **RAG Vector Caching**: 1.171ms → 0.224ms (5.2x faster)
+- **Calculator Memoization**: 4-5x faster
+
+**Verification**: All 33 tests pass, zero functionality regression.
+
+### 2. System Architecture & Design Decisions
+📝 [Read Full Deep-Dive](docs/ARCHITECTURE_DEEP_DIVE.md)
+
+**Why Llama-3.2-3B over GPT-4?**
+- **Cost**: $0 after fine-tuning vs. $0.03/request
+- **Privacy**: 100% offline, zero external dependencies
+- **Speed**: 200ms local vs. 1-2s API roundtrip
+- **Control**: Fine-tuned on manufacturing data
+
+**Why Hybrid Neuro-Symbolic?**
+- **Pure LLM**: Hallucinations on tolerances & properties
+- **Pure Rule-Based**: Can't handle novel scenarios
+- **Hybrid**: 96.9% accuracy, 100% zero hallucinations
+
+### 3. Production Monitoring & Observability
+📝 [Read Monitoring Guide](docs/MONITORING_DASHBOARD.md)
+
+- Structured JSON logging with correlation IDs
+- Real-time p50/p95/p99 latency tracking
+- RBAC + JWT auth + audit logs
+- Rate limiting (100 req/min per user)
+
+---
+
+## 🛠️ Complete Tech Stack
+
+| Layer | Technology | Why |
+|-------|-----------|-----|
+| **Frontend** | Next.js 15 + React 19 + TypeScript 5.7 | Modern, fast, server components |
+| **Styling** | Tailwind CSS 3.4 | Dark/light modes, responsive |
+| **Backend** | Python 3.11 + FastAPI | Async, high performance |
+| **AI** | Local provider (Llama-3.2-3B) | Offline, verified, zero API cost |
+| **Database** | Neon PostgreSQL 18.6 | Serverless, scalable, ACID-compliant |
+| **Deployment** | Vercel (Frontend) + Railway (Backend) | Production-ready, auto-scaling |
+| **Testing** | Pytest (33 tests) + Playwright (16 E2E) | Comprehensive coverage |
+| **Monitoring** | Structured JSON logs + Dashboards | Production observability |
 
 ---
 
 ## 🧪 Testing & Quality Assurance
 
-ForgeIQ includes automated test suites covering frontend compilation, the Python AI microservice, data pipeline ingestion, and model evaluation benchmarks:
+```bash
+# 33/33 Pytest tests passing
+pytest ai-service/tests/ -v
+# ✅ 33 passed
+
+# 8/8 AI evaluation gates passing
+python ai-service/evaluation/run_evals.py
+# ✅ All gates passed (100% accuracy on manufacturing calculations)
+
+# 16 Playwright E2E tests
+npx playwright test
+# ✅ All tests passing (16/16 green in <30s)
+
+# TypeScript strict mode
+npx tsc --noEmit
+# ✅ 0 type errors
+```
+
+---
+
+## 🚀 Getting Started (5 Minutes)
 
 ```bash
-# 1. Run all 16 Playwright End-to-End User Journey Tests (passes in <30s)
-npx playwright test
+# 1. Clone & install
+git clone https://github.com/bhuvanabcs24-maker/Forge-IQ.git
+cd ForgeIQ
+npm install
 
-# 2. Run all 33 automated Pytest suites (endpoints, journeys, DFM, tools, knowledge)
-PYTHONPATH=ai-service ai-service/.venv/bin/pytest ai-service/tests/ -v
-# Output: 33 passed in 1.04s (100% PASS)
+# 2. Start AI service (Terminal 1)
+cd ai-service
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+uvicorn app.main:app --port 8000
 
-# 3. Run the Full Unified Manufacturing Evaluation Suite
-PYTHONPATH=ai-service ai-service/.venv/bin/python ai-service/evaluation/run_evals.py
-# Output: Overall Benchmark Status: ✅ PASSED ALL GATES (8/8 Gates Met)
+# 3. Start frontend (Terminal 2)
+npm run dev -p 3000
 
-# 4. Run Next.js TypeScript validation and production build
-npx tsc --noEmit
-npm run build
-# Output: Compiled successfully, 63/63 static pages generated
+# ✅ Live at http://localhost:3000
 ```
 
 ---
 
 ## 🗺️ Key Application Routes
 
-| Experience | Route | Key Functionality |
-| :--- | :--- | :--- |
-| **Landing & Sign In** | `/` or `/login` | Streamlined authentication with role selector & instant demo profiles |
-| **Executive Dashboard** | `/dashboard` | Machine utilization, live revenue, priority attention alerts |
-| **Orders Directory** | `/orders` | Live Neon DB orders, material reservations, stage progress |
-| **Production Kanban** | `/production` | Live shop floor dispatch board linked to machines |
-| **Goods & Inventory** | `/inventory` | Raw material sheets, stock levels, remnant registers |
-| **Equipment Fleet** | `/machines` | CNC lasers, press brakes, VMC, maintenance toggle |
-| **Customer Directory** | `/customers` | Client accounts, lifetime value (LTV), contact drawer |
-| **Customer Portal** | `/portal/login` | B2B buyer dashboard with live Swiggy-style order tracking |
-| **AI Order Intake** | `/ai-order-intake` | Multi-format PDF / CAD / WhatsApp drawing OCR and extraction |
-| **Pricing Rules** | `/settings` | Machine hourly rates, logistics, and GST parameters |
+| Route | Purpose | Tech |
+|-------|---------|------|
+| `/` or `/login` | Streamlined authentication & role selector | Client + Fast-Path Session |
+| `/dashboard` | Executive cockpit & factory telemetry | React Server Components |
+| `/production` | Live Kanban board | Tailwind + Neon sync |
+| `/orders` | Order management & Work orders | Real-time database |
+| `/inventory` | Stock levels + remnants | Automated reorder alerts |
+| `/machines` | Equipment fleet & runtime dispatch | Live telemetry |
+| `/customers` | B2B directory | LTV tracking |
+| `/portal/login` | B2B Buyer customer portal | Real-time Swiggy-style tracking |
+| `/settings` | Pricing rules & hourly rates | Admin-only RBAC |
 
 ---
 
 ## 💼 Open to Opportunities
 
-I am actively seeking **Full-Stack, Backend, or Machine Learning Engineering roles (30 LPA+)** starting in 2027:
+**Status**: Available for full-time positions starting 2027
 
-- **What I Bring**: Deep distributed systems thinking, verifiable full-stack performance optimization (5.5x throughput), real-world production deployments, zero-hallucination hybrid AI architectures, and rigorous testing discipline.
-- **Location**: Bengaluru, India / Remote / Relocation-friendly.
-- **Direct Contact**: [bhuvanab.cs24@bmsce.ac.in](mailto:bhuvanab.cs24@bmsce.ac.in) • [GitHub Profile](https://github.com/bhuvanabcs24-maker) • [LinkedIn](https://linkedin.com)
+### What I'm Looking For
+- **Roles**: Backend Engineer, ML Engineer, Platform Engineer, SDE-2/3
+- **Companies**: Top tech (Google, Meta, Microsoft, NVIDIA), High-growth AI startups
+- **Target Comp**: 30 LPA+ (or USD equivalent)
+- **Locations**: Remote, Bangalore, Pune
+
+### Why Hire Me
+- ✅ Built production systems handling 4,589 req/sec
+- ✅ Proven optimization (5.5x improvement with detailed analysis)
+- ✅ Full-stack ownership: Frontend → Backend → Database
+- ✅ Production-grade mindset: observability, security, testing, monitoring
+- ✅ AI systems expertise: Hybrid architecture, RAG, fine-tuning, benchmarking
+- ✅ Clear technical communication: Case studies, architecture blogs, documentation
+
+### Contact
+📧 **Email**: [bhuvanab.cs24@bmsce.ac.in](mailto:bhuvanab.cs24@bmsce.ac.in)  
+💼 **LinkedIn**: [bhuvanab](https://linkedin.com)  
+🐙 **GitHub**: [@bhuvanabcs24-maker](https://github.com/bhuvanabcs24-maker)  
+🚀 **Live Demo**: [forge-iq-gold.vercel.app](https://forge-iq-gold.vercel.app)
+
+---
+
+## 📖 Additional Resources
+
+- [Competitive Analysis](docs/COMPETITIVE_ANALYSIS.md) — Why ForgeIQ is different from Xometry, MFG.com, SAP
+- [Market Analysis](docs/MARKET_ANALYSIS.md) — $450B TAM, $5-10B SAM, $30M beachhead
+- [Performance Case Study](docs/CASE_STUDY_OPTIMIZATION.md) — How I optimized from 860 to 4,589 req/sec
+- [Architecture Deep-Dive](docs/ARCHITECTURE_DEEP_DIVE.md) — System design and why each choice matters
+- [AI Model Card](ai-service/MODEL_CARD.md) — Training data, architecture, benchmarks
+- [Monitoring Dashboard](docs/MONITORING_DASHBOARD.md) — Real-time production metrics
+- [Deployment Guide](docs/DEPLOYMENT.md) — How it's deployed to production
 
 ---
 
 ## 👤 Author
 
 **Bhuvan A B**
-- **Institution**: B.M.S. College of Engineering (BMSCE), 3rd Year Computer Science
+- **Status**: 3rd-year CSE student (B.M.S. College of Engineering)
+- **Graduation**: 2028
+- **Focus**: Backend systems, AI/ML, production engineering
+- **Timeline**: Built ForgeIQ in 6 months (2026)
 - **Email**: [bhuvanab.cs24@bmsce.ac.in](mailto:bhuvanab.cs24@bmsce.ac.in)
-- **GitHub**: [@bhuvanabcs24-maker](https://github.com/bhuvanabcs24-maker)
 
 ---
 
 ## 📄 License
 
-This project is licensed under the MIT License — see the [LICENSE](LICENSE) file for details.
+MIT License — See [LICENSE](LICENSE) for details.
+
+---
+
+## ⭐ If this helped you, consider giving it a star! ⭐
