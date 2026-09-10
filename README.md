@@ -141,7 +141,7 @@ flowchart TD
     end
 
     subgraph AIService["🤖 Python AI Microservice (FastAPI :8000)"]
-        AsyncOpenAI["Native AsyncOpenAI Client\n(gpt-4o-mini Backend Only)"]
+        AsyncAI["Native AsyncAI Client\n"]
         DFMAgent["Autonomous DFM Agent\n(Tolerances, Flanges, Hardox Validation)"]
         Calculators["Deterministic Calculation Engines\n(Material, Laser Speed, Bending V~8T, Quotes)"]
         KnowledgeResolver["Source Priority Resolver\n(Hierarchy & Staleness Tracking)"]
