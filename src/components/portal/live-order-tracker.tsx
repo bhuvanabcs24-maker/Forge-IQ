@@ -138,7 +138,7 @@ export function LiveOrderTracker({ order }: { order: CustomerOrderView }) {
       </div>
 
       {/* Live Manufacturing Pulse Banner */}
-      <div className="p-4 rounded-2xl border border-brand-500/30 bg-gradient-to-r from-brand-950/40 via-brand-900/20 to-purple-950/30 space-y-3">
+      <div className="p-4 rounded-2xl border border-blue-200 dark:border-brand-500/30 bg-gradient-to-r from-blue-50/90 via-indigo-50/50 to-purple-50/70 dark:from-brand-950/40 dark:via-brand-900/20 dark:to-purple-950/30 space-y-3">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
           <div className="flex items-center gap-2.5">
             <span className="relative flex h-3 w-3">
@@ -149,28 +149,28 @@ export function LiveOrderTracker({ order }: { order: CustomerOrderView }) {
               <span className="font-black text-slate-900 dark:text-slate-100 text-sm">
                 Current Stage: {UNIFIED_JOURNEY_STAGES[activeStageIndex].name}
               </span>
-              <span className="text-slate-400 text-xs ml-2 font-mono font-bold">
+              <span className="text-slate-500 dark:text-slate-400 text-xs ml-2 font-mono font-bold">
                 ({isDeliveryConfirmed ? 100 : 78}% Overall Progress)
               </span>
             </div>
           </div>
 
           <div className="flex items-center gap-3 text-xs">
-            <span className="flex items-center gap-1.5 font-semibold text-slate-200">
-              <Cpu className="h-3.5 w-3.5 text-brand-400" /> KUKA Robotic TIG Cell 02
+            <span className="flex items-center gap-1.5 font-semibold text-slate-700 dark:text-slate-200">
+              <Cpu className="h-3.5 w-3.5 text-brand-600 dark:text-brand-400" /> KUKA Robotic TIG Cell 02
             </span>
-            <span className="flex items-center gap-1.5 font-semibold text-emerald-400">
+            <span className="flex items-center gap-1.5 font-semibold text-emerald-600 dark:text-emerald-400">
               <UserCheck className="h-3.5 w-3.5" /> Priya Sharma (Certified Welder)
             </span>
           </div>
         </div>
 
-        <div className="text-[11px] text-slate-300 pt-2 border-t border-brand-500/20 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+        <div className="text-[11px] text-slate-600 dark:text-slate-300 pt-2 border-t border-blue-200/60 dark:border-brand-500/20 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
           <span>Started: Today @ 01:15 PM • Est Stage Finish: Today @ 03:45 PM</span>
           <div className="flex items-center gap-2">
-            <span className="font-bold text-emerald-400">AI Confidence: 96%</span>
-            <span className="text-slate-500">•</span>
-            <span className="text-slate-300">Target Delivery: <strong>Tomorrow · 3:00 PM</strong></span>
+            <span className="font-bold text-emerald-600 dark:text-emerald-400">AI Confidence: 96%</span>
+            <span className="text-slate-400 dark:text-slate-500">•</span>
+            <span className="text-slate-600 dark:text-slate-300">Target Delivery: <strong className="text-slate-900 dark:text-slate-100">Tomorrow · 3:00 PM</strong></span>
           </div>
         </div>
       </div>
@@ -262,64 +262,64 @@ export function LiveOrderTracker({ order }: { order: CustomerOrderView }) {
       </div>
 
       {/* STEP 6 — DELIVER: Live Courier Transit Telemetry */}
-      <div className="p-5 rounded-2xl border border-blue-500/30 bg-gradient-to-br from-blue-950/30 via-steel-900 to-slate-950 space-y-4">
+      <div className="p-5 rounded-2xl border border-blue-200 dark:border-blue-500/30 bg-gradient-to-br from-blue-50/80 via-slate-50/90 to-white dark:from-blue-950/30 dark:via-steel-900 dark:to-slate-950 space-y-4 shadow-sm">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-blue-500/20 text-blue-400 font-bold shrink-0">
+            <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-blue-100 dark:bg-blue-500/20 text-blue-600 dark:text-blue-400 font-bold shrink-0">
               <Truck className="h-5 w-5" />
             </div>
             <div>
               <div className="flex items-center gap-2 flex-wrap">
-                <h5 className="font-bold text-sm text-slate-100">Live Logistics & Dispatch Telematics</h5>
-                <Badge className="bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 text-[10px] font-bold flex items-center gap-1">
-                  <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-ping" />
+                <h5 className="font-bold text-sm text-slate-900 dark:text-slate-100">Live Logistics & Dispatch Telematics</h5>
+                <Badge className="bg-emerald-100 text-emerald-800 border-emerald-200 dark:bg-emerald-500/20 dark:text-emerald-300 dark:border-emerald-500/30 text-[10px] font-bold flex items-center gap-1">
+                  <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 dark:bg-emerald-400 animate-ping" />
                   LIVE IOT TELEMETRY
                 </Badge>
-                <Badge className="bg-blue-500/20 text-blue-300 border-blue-500/30 text-[10px]">
+                <Badge className="bg-blue-100 text-blue-800 border-blue-200 dark:bg-blue-500/20 dark:text-blue-300 dark:border-blue-500/30 text-[10px]">
                   Carrier: BlueDart Industrial Express (Fleet #MH-12-RN-8821)
                 </Badge>
               </div>
-              <p className="text-slate-400 text-xs font-mono mt-0.5">
+              <p className="text-slate-600 dark:text-slate-400 text-xs font-mono mt-0.5">
                 Tracking Number: BDA-2026-98124 • Dispatch Pallet ID: #PLT-098 • IoT Shock & Tilt Sensors: Nominal
               </p>
             </div>
           </div>
 
           <div className="text-right">
-            <span className="text-[10px] text-slate-400 block uppercase font-bold">Estimated Arrival</span>
-            <span className="text-base font-extrabold text-blue-400">Tomorrow · 3:00 PM (14 Mins Away)</span>
+            <span className="text-[10px] text-slate-500 dark:text-slate-400 block uppercase font-bold">Estimated Arrival</span>
+            <span className="text-base font-extrabold text-blue-600 dark:text-blue-400">Tomorrow · 3:00 PM (14 Mins Away)</span>
           </div>
         </div>
 
         {/* Live Delivery Progress Steps: Picked Up -> In Transit -> 2 km Away -> Estimated Arrival */}
-        <div className="p-3 rounded-xl bg-steel-950/80 border border-steel-800 grid grid-cols-4 gap-2 text-center text-[11px]">
-          <div className="p-2 rounded-lg bg-emerald-500/10 text-emerald-400 font-bold flex flex-col items-center">
-            <CheckCircle2 className="h-4 w-4 mb-1" />
+        <div className="p-3 rounded-xl bg-white dark:bg-steel-950/80 border border-slate-200 dark:border-steel-800 grid grid-cols-4 gap-2 text-center text-[11px] shadow-2xs">
+          <div className="p-2 rounded-lg bg-emerald-50 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border border-emerald-200/80 dark:border-transparent font-bold flex flex-col items-center">
+            <CheckCircle2 className="h-4 w-4 mb-1 text-emerald-600 dark:text-emerald-400" />
             <span>1. Picked Up</span>
             <span className="text-[9px] text-slate-500 font-normal">Factory Gate 3</span>
           </div>
-          <div className="p-2 rounded-lg bg-emerald-500/10 text-emerald-400 font-bold flex flex-col items-center">
-            <CheckCircle2 className="h-4 w-4 mb-1" />
+          <div className="p-2 rounded-lg bg-emerald-50 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border border-emerald-200/80 dark:border-transparent font-bold flex flex-col items-center">
+            <CheckCircle2 className="h-4 w-4 mb-1 text-emerald-600 dark:text-emerald-400" />
             <span>2. In Transit</span>
             <span className="text-[9px] text-slate-500 font-normal">Highway Route 9</span>
           </div>
-          <div className={`p-2 rounded-lg font-bold flex flex-col items-center ${isDeliveryConfirmed ? 'bg-emerald-500/10 text-emerald-400' : 'bg-blue-500/20 text-blue-300 ring-1 ring-blue-500/40'}`}>
-            <MapPin className="h-4 w-4 mb-1 animate-bounce" />
+          <div className={`p-2 rounded-lg font-bold flex flex-col items-center ${isDeliveryConfirmed ? 'bg-emerald-50 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border border-emerald-200/80' : 'bg-blue-50 dark:bg-blue-500/20 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-transparent ring-1 ring-blue-500/30'}`}>
+            <MapPin className="h-4 w-4 mb-1 animate-bounce text-blue-600 dark:text-blue-400" />
             <span>3. 2 km Away</span>
-            <span className="text-[9px] text-slate-400 font-normal">Express Van #8</span>
+            <span className="text-[9px] text-slate-600 dark:text-slate-400 font-normal">Express Van #8</span>
           </div>
-          <div className={`p-2 rounded-lg font-bold flex flex-col items-center ${isDeliveryConfirmed ? 'bg-emerald-500/20 text-emerald-300' : 'bg-steel-900 text-slate-500'}`}>
+          <div className={`p-2 rounded-lg font-bold flex flex-col items-center ${isDeliveryConfirmed ? 'bg-emerald-100 dark:bg-emerald-500/20 text-emerald-800 dark:text-emerald-300' : 'bg-slate-50 dark:bg-steel-900 text-slate-400 dark:text-slate-500 border border-slate-200 dark:border-transparent'}`}>
             <PackageCheck className="h-4 w-4 mb-1" />
             <span>4. Arrived</span>
-            <span className="text-[9px] text-slate-500 font-normal">Buyer Dock</span>
+            <span className="text-[9px] text-slate-400 dark:text-slate-500 font-normal">Buyer Dock</span>
           </div>
         </div>
 
         {/* Post-Delivery Confirmation & Escrow Release Action */}
-        <div className="pt-2 flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-t border-steel-800">
-          <div className="text-[11px] text-slate-400">
+        <div className="pt-2 flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-t border-slate-200 dark:border-steel-800">
+          <div className="text-[11px] text-slate-600 dark:text-slate-400">
             {isDeliveryConfirmed ? (
-              <span className="text-emerald-400 font-bold flex items-center gap-1">
+              <span className="text-emerald-600 dark:text-emerald-400 font-bold flex items-center gap-1">
                 <CheckCircle2 className="h-4 w-4" /> Delivery confirmed. Escrow payment released to manufacturer.
               </span>
             ) : (
@@ -331,7 +331,7 @@ export function LiveOrderTracker({ order }: { order: CustomerOrderView }) {
             <Button
               size="sm"
               onClick={handleConfirmDelivery}
-              className="bg-emerald-600 hover:bg-emerald-500 text-white font-bold"
+              className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold shadow-sm"
             >
               <PackageCheck className="h-3.5 w-3.5 mr-1" /> Confirm Delivery & Release Payout
             </Button>
@@ -341,14 +341,14 @@ export function LiveOrderTracker({ order }: { order: CustomerOrderView }) {
                 size="sm"
                 variant="outline"
                 onClick={() => setIsFeedbackOpen(true)}
-                className="border-amber-500/40 text-amber-300"
+                className="border-amber-400 text-amber-600 dark:text-amber-300 hover:bg-amber-50 dark:hover:bg-amber-950/20"
               >
-                <Star className="h-3.5 w-3.5 mr-1 fill-current" /> Submit 5-Star Rating
+                <Star className="h-3.5 w-3.5 mr-1 fill-current text-amber-500" /> Submit 5-Star Rating
               </Button>
               <Button
                 size="sm"
                 onClick={() => router.push('/marketplace?reorder=FG-2042')}
-                className="bg-purple-600 hover:bg-purple-500 text-white font-bold"
+                className="bg-purple-600 hover:bg-purple-700 text-white font-bold shadow-sm"
               >
                 <RotateCcw className="h-3.5 w-3.5 mr-1" /> 1-Click Reorder Batch
               </Button>
