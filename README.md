@@ -126,6 +126,51 @@ Precision contract manufacturing (sheet metal fabrication, CNC milling, additive
 
 ForgeIQ operates on an industrial, multi-tier architecture separating deterministic calculation tools, vector-indexed RAG standards, and model inference from volatile shop-floor transactional databases:
 
+```mermaid
+flowchart TD
+    subgraph ClientLayer["🖥️ Frontend & Client Layer"]
+        Browser["Next.js 15 App Router\n(React 19 + Tailwind CSS 3.4)"]
+        Dashboard["Executive Cockpit & Kanban\n(/dashboard, /production)"]
+        CommandPalette["Global Command Palette\n(⌘K Quick Dispatch)"]
+    end
+
+    subgraph AppServer["⚡ Next.js Backend & API Routes"]
+        Middleware["Role-Based Middleware\n(Owner | Manager | Operator | QA | Customer)"]
+        ServerActions["Server Actions & Route Handlers\n(/api/orders, /api/inventory, /api/machines)"]
+        PythonBridge["Strongly-Typed AI Bridge\n(python-client.ts with Tenant Isolation)"]
+    end
+
+    subgraph AIService["🤖 Python AI Microservice (FastAPI :8000)"]
+        AsyncAI["Native AsyncAI Client\n"]
+        DFMAgent["Autonomous DFM Agent\n(Tolerances, Flanges, Hardox Validation)"]
+        Calculators["Deterministic Calculation Engines\n(Material, Laser Speed, Bending V~8T, Quotes)"]
+        KnowledgeResolver["Source Priority Resolver\n(Hierarchy & Staleness Tracking)"]
+        VectorStore["Industrial RAG Knowledge Base\n(pgvector / In-Memory Vector Store)"]
+    end
+
+    subgraph DatabaseLayer["🗄️ Persistence & Cloud Infrastructure"]
+        NeonDB[("Neon Serverless PostgreSQL\n(Orders, Inventory, Machines, Customers, Jobs)")]
+        Razorpay["Razorpay Payment Gateway\n(INR ₹ Escrow Orders & Webhooks)"]
+    end
+
+    Browser --> Middleware
+    Dashboard --> Middleware
+    CommandPalette --> Middleware
+    Middleware --> ServerActions
+
+    ServerActions <--> NeonDB
+    ServerActions --> PythonBridge
+    PythonBridge <-->|"Internal HTTP / JSON"| AIService
+
+    AIService --> AsyncOpenAI
+    AIService --> DFMAgent
+    AIService --> Calculators
+    AIService --> KnowledgeResolver
+    AIService --> VectorStore
+
+    ServerActions <--> Razorpay
+```
+
 ```
                       ┌──────────────────────────────────────────────┐
                       │          CLIENT & APPLICATION LAYER          │
@@ -164,6 +209,8 @@ ForgeIQ operates on an industrial, multi-tier architecture separating determinis
                       │  Neon Serverless PostgreSQL (18.6 Pooled)    │
                       │  Orders • Remnants • Equipment • Razorpay ₹  │
                       └──────────────────────────────────────────────┘
+```
+
 ```
 
 ---
