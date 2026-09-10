@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, Suspense } from 'react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useCustomerPortal } from '@/context/customer-portal-context';
@@ -9,7 +9,7 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { ShieldCheck, Lock, Mail, ArrowRight, ArrowLeft, Sparkles, CheckCircle2, Eye, EyeOff } from 'lucide-react';
 
-export default function CustomerPortalLoginPage() {
+function CustomerPortalLoginContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const redirectTarget = searchParams.get('redirect') || '/portal/dashboard';
@@ -207,5 +207,19 @@ export default function CustomerPortalLoginPage() {
         </div>
       </footer>
     </div>
+  );
+}
+
+export default function CustomerPortalLoginPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-screen bg-slate-50 dark:bg-[#0B0F15] flex items-center justify-center text-xs text-[#667085]">
+          Loading Customer Portal...
+        </div>
+      }
+    >
+      <CustomerPortalLoginContent />
+    </Suspense>
   );
 }
