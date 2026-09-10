@@ -223,3 +223,54 @@ class ConflictResolutionResult(BaseModel):
     status: str  # verified | stale | conflicting | unknown
     competing_sources: List[Dict[str, Any]] = Field(default_factory=list)
 
+# ==========================================================
+# PHASE 5 & 8: FORGEIQ AI CONTRACT & TOOL CALLING SCHEMAS
+# ==========================================================
+
+class ToolCallRequest(BaseModel):
+    tool_name: str
+    arguments: Dict[str, Any] = Field(default_factory=dict)
+
+class ToolCallResult(BaseModel):
+    tool_name: str
+    arguments: Dict[str, Any]
+    output: Any
+    success: bool = True
+    error_message: Optional[str] = None
+    execution_time_ms: float = 0.0
+
+class ForgeIQContractResponse(BaseModel):
+    """
+    Strict internal response schema for ForgeIQ AI decisions.
+    Machine-critical operations require this contract.
+    """
+    answer: str
+    intent: str
+    confidence: float = Field(..., ge=0.0, le=1.0)
+    tools_used: List[str] = Field(default_factory=list)
+    sources: List[str] = Field(default_factory=list)
+    assumptions: List[str] = Field(default_factory=list)
+    warnings: List[str] = Field(default_factory=list)
+    data_freshness: str = "LIVE"  # LIVE | STALE | UNKNOWN
+    requires_human_review: bool = False
+    structured_payload: Optional[Dict[str, Any]] = None
+
+class ShadowComparisonRecord(BaseModel):
+    request_id: str
+    query: str
+    tenant_org: str
+    timestamp: str = Field(default_factory=lambda: datetime.utcnow().isoformat())
+    model_a_name: str
+    model_a_answer: str
+    model_a_tools: List[str]
+    model_a_latency_ms: float
+    model_b_name: str
+    model_b_answer: str
+    model_b_tools: List[str]
+    model_b_latency_ms: float
+    tools_matched: bool
+    intent_matched: bool
+    hallucination_detected_in_b: bool
+    latency_delta_ms: float
+
+

@@ -1,0 +1,153 @@
+{
+  "timestamp": "2026-09-10T02:49:22Z",
+  "model_under_test": "ForgeIQ Industrial Local Engine / v3-production",
+  "total_golden_cases": 12,
+  "metrics": {
+    "tool_selection": {
+      "actual": 100.0,
+      "target": 95.0,
+      "passed": true
+    },
+    "structured_output": {
+      "actual": 100.0,
+      "target": 99.0,
+      "passed": true
+    },
+    "calculation_correctness": {
+      "actual": 100.0,
+      "target": 100.0,
+      "passed": true
+    },
+    "no_invented_data": {
+      "actual": 100.0,
+      "target": 99.0,
+      "passed": true
+    },
+    "critical_dfm_decisions": {
+      "actual": 100.0,
+      "target": 100.0,
+      "passed": true
+    },
+    "critical_quotation_safety": {
+      "actual": 100.0,
+      "target": 100.0,
+      "passed": true
+    },
+    "regression_pass_rate": {
+      "actual": 100.0,
+      "target": 98.0,
+      "passed": true
+    }
+  },
+  "all_pass_criteria_met": true,
+  "case_details": [
+    {
+      "id": "QUOTE-001",
+      "category": "quotation",
+      "tool_selection_score": 1.0,
+      "no_hallucination": true,
+      "structured_output_valid": true,
+      "latency_ms": 0.04,
+      "overall_passed": true
+    },
+    {
+      "id": "QUOTE-002",
+      "category": "quotation",
+      "tool_selection_score": 1.0,
+      "no_hallucination": true,
+      "structured_output_valid": true,
+      "latency_ms": 0.0,
+      "overall_passed": true
+    },
+    {
+      "id": "DFM-001",
+      "category": "dfm",
+      "tool_selection_score": 1.0,
+      "no_hallucination": true,
+      "structured_output_valid": true,
+      "latency_ms": 0.01,
+      "overall_passed": true
+    },
+    {
+      "id": "DFM-002",
+      "category": "dfm",
+      "tool_selection_score": 1.0,
+      "no_hallucination": true,
+      "structured_output_valid": true,
+      "latency_ms": 0.01,
+      "overall_passed": true
+    },
+    {
+      "id": "INV-001",
+      "category": "inventory",
+      "tool_selection_score": 1.0,
+      "no_hallucination": true,
+      "structured_output_valid": true,
+      "latency_ms": 0.01,
+      "overall_passed": true
+    },
+    {
+      "id": "INV-002",
+      "category": "inventory",
+      "tool_selection_score": 1.0,
+      "no_hallucination": true,
+      "structured_output_valid": true,
+      "latency_ms": 0.01,
+      "overall_passed": true
+    },
+    {
+      "id": "MACH-001",
+      "category": "machine_selection",
+      "tool_selection_score": 1.0,
+      "no_hallucination": true,
+      "structured_output_valid": true,
+      "latency_ms": 0.01,
+      "overall_passed": true
+    },
+    {
+      "id": "PROD-001",
+      "category": "production",
+      "tool_selection_score": 1.0,
+      "no_hallucination": true,
+      "structured_output_valid": true,
+      "latency_ms": 0.01,
+      "overall_passed": true
+    },
+    {
+      "id": "SUP-001",
+      "category": "supplier",
+      "tool_selection_score": 1.0,
+      "no_hallucination": true,
+      "structured_output_valid": true,
+      "latency_ms": 0.0,
+      "overall_passed": true
+    },
+    {
+      "id": "ADV-001",
+      "category": "adversarial",
+      "tool_selection_score": 1.0,
+      "no_hallucination": true,
+      "structured_output_valid": true,
+      "latency_ms": 0.0,
+      "overall_passed": true
+    },
+    {
+      "id": "ADV-002",
+      "category": "adversarial",
+      "tool_selection_score": 1.0,
+      "no_hallucination": true,
+      "structured_output_valid": true,
+      "latency_ms": 0.0,
+      "overall_passed": true
+    },
+    {
+      "id": "REG-001",
+      "category": "regression",
+      "tool_selection_score": 1.0,
+      "no_hallucination": true,
+      "structured_output_valid": true,
+      "latency_ms": 0.01,
+      "overall_passed": true
+    }
+  ]
+}

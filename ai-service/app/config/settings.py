@@ -6,8 +6,8 @@ _SERVICE_ENV = Path(__file__).resolve().parent.parent.parent / '.env'
 _ROOT_ENV = Path(__file__).resolve().parent.parent.parent.parent / '.env.local'
 
 class Settings(BaseSettings):
-    # Provider: openai | gemini | anthropic | ollama | mock
-    AI_PROVIDER: Literal['openai', 'gemini', 'anthropic', 'ollama', 'mock'] = 'mock'
+    # Provider: openai | gemini | anthropic | ollama | mock | local
+    AI_PROVIDER: Literal['openai', 'gemini', 'anthropic', 'ollama', 'mock', 'local'] = 'local'
     
     # Provider Keys
     OPENAI_API_KEY: str = ''
