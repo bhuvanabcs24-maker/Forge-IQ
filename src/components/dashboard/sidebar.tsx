@@ -186,12 +186,12 @@ export function Sidebar({
                       {!collapsed && item.badge && (
                         <span
                           className={cn(
-                            'ml-auto rounded-full px-2 py-0.5 text-[11px] font-medium tracking-tight',
+                            'ml-auto rounded-full px-2 py-0.5 text-[11px] font-medium tracking-tight transition-colors',
                             item.badge === 'Low Stock'
-                              ? 'bg-[#FFFAEB] text-[#B54708] border border-[#FEDF89]'
+                              ? 'bg-[#FFFAEB] text-[#B54708] border border-[#FEDF89] dark:bg-[#7A2E0E]/40 dark:text-[#FDB022] dark:border-[#B54708]/50'
                               : item.badge === 'AI'
-                              ? 'bg-[#EFF4FF] text-[#175CD3] border border-[#B2DDFF]'
-                              : 'bg-[#F2F4F7] text-[#344054] border border-[#E4E7EC]'
+                              ? 'bg-[#EFF4FF] text-[#175CD3] border border-[#B2DDFF] dark:bg-[#155EEF]/20 dark:text-[#84ADFF] dark:border-[#155EEF]/40'
+                              : 'bg-[#F2F4F7] text-[#344054] border border-[#E4E7EC] dark:bg-[#18202A] dark:text-[#F2F4F7] dark:border-[#252B33]'
                           )}
                         >
                           {item.badge}
