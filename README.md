@@ -129,88 +129,65 @@ ForgeIQ operates on an industrial, multi-tier architecture separating determinis
 ```mermaid
 flowchart TD
     subgraph ClientLayer["🖥️ Frontend & Client Layer"]
-        Browser["Next.js 15 App Router\n(React 19 + Tailwind CSS 3.4)"]
-        Dashboard["Executive Cockpit & Kanban\n(/dashboard, /production)"]
-        CommandPalette["Global Command Palette\n(⌘K Quick Dispatch)"]
+        Browser["Next.js 15 App Router<br/>(React 19 + Tailwind CSS 3.4)"]
+        Dashboard["Executive Cockpit & Kanban<br/>(/dashboard, /production)"]
+        CommandPalette["Global Command Palette<br/>(⌘K Quick Dispatch)"]
     end
 
     subgraph AppServer["⚡ Next.js Backend & API Routes"]
-        Middleware["Role-Based Middleware\n(Owner | Manager | Operator | QA | Customer)"]
-        ServerActions["Server Actions & Route Handlers\n(/api/orders, /api/inventory, /api/machines)"]
-        PythonBridge["Strongly-Typed AI Bridge\n(python-client.ts with Tenant Isolation)"]
+        Middleware["Role-Based Middleware<br/>(Owner | Manager | Operator | QA | Customer)"]
+        ServerActions["Server Actions & Route Handlers<br/>(/api/orders, /api/inventory, /api/machines)"]
+        PythonBridge["Strongly-Typed AI Bridge<br/>(python-client.ts)"]
     end
 
     subgraph AIService["🤖 Python AI Microservice (FastAPI :8000)"]
-        AsyncAI["Native AsyncAI Client\n"]
-        DFMAgent["Autonomous DFM Agent\n(Tolerances, Flanges, Hardox Validation)"]
-        Calculators["Deterministic Calculation Engines\n(Material, Laser Speed, Bending V~8T, Quotes)"]
-        KnowledgeResolver["Source Priority Resolver\n(Hierarchy & Staleness Tracking)"]
-        VectorStore["Industrial RAG Knowledge Base\n(pgvector / In-Memory Vector Store)"]
+        Orchestrator["AI Orchestrator & Router<br/>(app/services/orchestrator.py)"]
+        
+        subgraph CoreEngines["Core Manufacturing Intelligence Engines"]
+            LocalProvider["ForgeIQ Local Provider<br/>(25-Domain Manufacturing Model)"]
+            DFMAgent["Autonomous DFM Agent<br/>(BenDFM Bending & Proximity Rules)"]
+            Calculators["19 Deterministic Calculators<br/>(Laser, Bending V~8T, Quotation)"]
+            RAGStore["Authoritative RAG Hub<br/>(NIST SMS, AM-Bench, ASME Y14.5)"]
+        end
+        
+        ContractResponse["ForgeIQ Response Contract<br/>(Strict Schemas, Confidence, Warnings)"]
     end
 
     subgraph DatabaseLayer["🗄️ Persistence & Cloud Infrastructure"]
-        NeonDB[("Neon Serverless PostgreSQL\n(Orders, Inventory, Machines, Customers, Jobs)")]
-        Razorpay["Razorpay Payment Gateway\n(INR ₹ Escrow Orders & Webhooks)"]
+        NeonDB[("Neon Serverless PostgreSQL 18.6<br/>(Orders, Inventory, Remnants, Machines)")]
+        Razorpay["Razorpay Payment Gateway<br/>(INR ₹ Escrow Orders & Webhooks)"]
     end
 
+    %% Client Interactions
     Browser --> Middleware
     Dashboard --> Middleware
     CommandPalette --> Middleware
+
+    %% Middleware Routing
     Middleware --> ServerActions
 
-    ServerActions <--> NeonDB
-    ServerActions --> PythonBridge
-    PythonBridge <-->|"Internal HTTP / JSON"| AIService
+    %% Backend Integrations
+    ServerActions <-->|"SQL Queries / Connection Pool"| NeonDB
+    ServerActions <-->|"Checkout & Webhooks"| Razorpay
+    ServerActions -->|"Internal HTTP / JSON"| PythonBridge
 
-    AIService --> AsyncOpenAI
-    AIService --> DFMAgent
-    AIService --> Calculators
-    AIService --> KnowledgeResolver
-    AIService --> VectorStore
+    %% AI Service Flow
+    PythonBridge <-->|"Dispatches Inquiries & RFQs"| Orchestrator
 
-    ServerActions <--> Razorpay
-```
+    %% Orchestrator Dispatches to Engines
+    Orchestrator -->|"Inference & Intent"| LocalProvider
+    Orchestrator -->|"Feasibility Rules"| DFMAgent
+    Orchestrator -->|"Deterministic Calculations"| Calculators
+    Orchestrator -->|"Standards Retrieval"| RAGStore
 
-```
-                      ┌──────────────────────────────────────────────┐
-                      │          CLIENT & APPLICATION LAYER          │
-                      │   Next.js 15 App Router (React 19 + TS)      │
-                      │   Executive Cockpit • Buyer Portal • Kanban   │
-                      └──────────────────────┬───────────────────────┘
-                                             │
-                                             ▼
-                      ┌──────────────────────────────────────────────┐
-                      │          AI ORCHESTRATOR & ROUTER            │
-                      │    FastAPI :8000 (app/services/orchestrator)  │
-                      │    Intent Classification • Tool Dispatch      │
-                      └──────┬───────────────┼───────────────┬───────┘
-                             │               │               │
-             ┌───────────────┘               │               └───────────────┐
-             ▼                               ▼                               ▼
-┌─────────────────────────┐     ┌─────────────────────────┐     ┌─────────────────────────┐
-│  AI INFERENCE ENGINE    │     │  AUTHORITATIVE RAG HUB  │     │   DETERMINISTIC TOOLS   │
-│ ForgeIQ Local Provider  │     │ NIST SMS • AM-Bench     │     │ 19 Verified Calculators │
-│  (Zero-OpenAI Runtime)  │     │ ASME Y14.5 GD&T Standards│    │ Laser • Bending • Stock │
-│ 25 Domain Fine-Tuning   │     │ Semantic Document Chunks │    │ Quotes • DFM Rules Engine│
-└────────────┬────────────┘     └────────────┬────────────┘     └────────────┬────────────┘
-             │                               │                               │
-             └───────────────────────────────┼───────────────────────────────┘
-                                             │
-                                             ▼
-                      ┌──────────────────────────────────────────────┐
-                      │          FORGEIQ AI RESPONSE CONTRACT        │
-                      │   Strict Schema • Confidence • Assumptions   │
-                      │   Traceable Sources • Warnings Flag          │
-                      └──────────────────────┬───────────────────────┘
-                                             │
-                                             ▼
-                      ┌──────────────────────────────────────────────┐
-                      │         PERSISTENCE & COMMERCE LAYER         │
-                      │  Neon Serverless PostgreSQL (18.6 Pooled)    │
-                      │  Orders • Remnants • Equipment • Razorpay ₹  │
-                      └──────────────────────────────────────────────┘
-```
+    %% Engines Converge on Contract Response
+    LocalProvider --> ContractResponse
+    DFMAgent --> ContractResponse
+    Calculators --> ContractResponse
+    RAGStore --> ContractResponse
 
+    %% Return Contract Response to Backend
+    ContractResponse -->|"Validated Structured Output"| PythonBridge
 ```
 
 ---
