@@ -17,21 +17,27 @@
 
 **A full-stack, enterprise-grade Autonomous Manufacturing Intelligence Platform that powers the entire B2B fabrication lifecycle: multimodal RFQ intake, vector-retrieval RAG industrial reasoning, deterministic CAD geometry and BOM costing, autonomous DFM risk analysis, shop-floor remnant inventory tracking, machine scheduling, and Razorpay milestone escrow payments.**
 
-[Feature Showcase](#-feature-showcase--compact-screenshots) • [System Architecture](#-system-architecture) • [Manufacturing Data Discovery & Training](#-manufacturing-ai-data-discovery-training--evaluation-pipeline) • [Evaluation Benchmark](#-master-evaluation-scorecard--production-gates) • [Database Architecture](#-real-world-database-integration) • [Getting Started](#-getting-started) • [Testing & Quality Assurance](#-testing--quality-assurance)
+[Feature Showcase](#-feature-showcase--compact-screenshots) • [System Architecture](#-system-architecture) • [Competitive Analysis](docs/COMPETITIVE_ANALYSIS.md) • [Market Sizing](docs/MARKET_ANALYSIS.md) • [Positioning](docs/POSITIONING.md) • [Data & Training](#-manufacturing-ai-data-discovery-training--evaluation-pipeline) • [Evaluation](#-master-evaluation-scorecard--production-gates) • [Database](#-real-world-database-integration) • [Testing](#-testing--quality-assurance)
 
 </div>
 
 ---
 
-## 🌟 Executive Summary & Problem Space
+## 🌟 Executive Summary & Strategic Positioning
 
 Precision contract manufacturing (sheet metal fabrication, CNC milling, additive printing) is a **$450B+ global industry** burdened by manual friction:
 - **Quotation Bottleneck**: Estimators spend hours to days manually calculating laser piercing times, bend deductions, scrap rates, and tooling allowances from engineering drawings.
 - **Unstructured RFQ Chaos**: Customer purchase requests arrive fragmented across WhatsApp chats, hand-drawn sketches, unstructured PDFs, and legacy CAD drawings.
 - **Shop Floor Blindspots**: Job shops manage million-dollar fiber lasers and press brakes using dry-erase whiteboards and disconnected Excel spreadsheets, leading to delayed milestones and idle machine capacity.
+- **Aggregator Margin Pressure**: Brokers like Xometry and MFG.com take 20–35% margin cuts from machine shops and hide direct customer relationships.
 - **AI Hallucination Risk**: Standard commercial LLMs hallucinate prices, invent tolerances, and fail basic engineering physics.
 
-**ForgeIQ solves this end-to-end.** Combining a Next.js 15 App Router frontend with a Python FastAPI AI microservice, vector-indexed industrial RAG knowledge base, deterministic calculation engines, verified training datasets across 25 manufacturing domains, and live serverless Neon PostgreSQL database, ForgeIQ transforms factory operations into an autonomous, transparent, and high-margin workflow.
+**ForgeIQ solves this end-to-end.** *We are not an aggregator or broker like Xometry; we are the AI operating system that runs inside the job shop.* Combining a Next.js 15 App Router frontend with a Python FastAPI AI microservice, vector-indexed industrial RAG knowledge base, deterministic calculation engines, verified training datasets across 25 manufacturing domains, and live serverless Neon PostgreSQL database, ForgeIQ transforms factory operations into an autonomous, transparent, and high-margin workflow.
+
+> 📚 **Strategic Deep Dives:**
+> - [Competitive Analysis (Xometry vs. MFG.com vs. SAP vs. ForgeIQ)](docs/COMPETITIVE_ANALYSIS.md)
+> - [Market Opportunity & Unit Economics (TAM/SAM/SOM & 30x ROI)](docs/MARKET_ANALYSIS.md)
+> - [1-Page Executive Pitch & Product Roadmap](docs/POSITIONING.md)
 
 ---
 
