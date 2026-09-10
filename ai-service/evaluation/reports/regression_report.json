@@ -1,0 +1,7 @@
+{
+  "regression_pass_rate": 98.0,
+  "target": 98.0,
+  "passed": true,
+  "total_cases": 50,
+  "failed_count": 1
+}

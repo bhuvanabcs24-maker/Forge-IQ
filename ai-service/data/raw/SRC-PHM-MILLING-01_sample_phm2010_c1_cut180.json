@@ -1,0 +1,16 @@
+{
+  "run_id": "phm2010_c1_cut180",
+  "machine": "R\u00f6ders Tech 3-Axis High Speed CNC Milling Center",
+  "workpiece": "Inconel 718",
+  "spindle_rpm": 10400,
+  "feed_mm_min": 1555.0,
+  "flute_wear_microns": [
+    112.5,
+    128.0,
+    119.4
+  ],
+  "max_cutting_force_fx_n": 842.0,
+  "max_cutting_force_fz_n": 1240.0,
+  "tool_condition": "SEVERE_ACCELERATED_WEAR",
+  "source_ref": "PHM Society 2010 Prognostics Dataset"
+}

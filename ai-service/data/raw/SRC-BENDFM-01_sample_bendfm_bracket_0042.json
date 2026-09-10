@@ -1,0 +1,15 @@
+{
+  "part_id": "bendfm_bracket_0042",
+  "material": "AL6061-T6",
+  "thickness_mm": 3.0,
+  "bends_count": 4,
+  "min_flange_length_mm": 8.0,
+  "min_hole_distance_to_bend_mm": 3.2,
+  "manufacturable": false,
+  "feasibility_category": "COLLISION_AND_HOLE_DISTORTION_FAIL",
+  "complexity_score": 0.88,
+  "failure_reasons": [
+    "Hole too close to bend line tangent (3.2mm < 10.0mm minimum allowance)"
+  ],
+  "source_ref": "BenDFM UGent-CVAMO"
+}

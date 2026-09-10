@@ -1,0 +1,13 @@
+{
+  "test_case_id": "nasa_pcoe_mill_case01",
+  "machine": "CNC Vertical Knee Mill",
+  "tool_type": "6-flute 19mm High Speed Steel End Mill",
+  "workpiece_material": "Cast Iron",
+  "spindle_rpm": 826,
+  "feed_rate_mm_min": 150.0,
+  "cut_depth_mm": 1.5,
+  "flank_wear_vb_mm": 0.45,
+  "wear_state": "CRITICAL_TOOL_CHANGE_REQUIRED",
+  "vibration_rms_g": 3.8,
+  "source_ref": "NASA Prognostics Center of Excellence"
+}

@@ -1,0 +1,12 @@
+{
+  "machine_record_id": "ai4i_udiset_2480",
+  "machine_type": "Milling Machine (H-Type Heavy)",
+  "air_temperature_k": 298.2,
+  "process_temperature_k": 308.7,
+  "rotational_speed_rpm": 1380,
+  "torque_nm": 64.2,
+  "tool_wear_min": 215,
+  "machine_failure": 1,
+  "failure_type": "Tool Wear Failure (TWF)",
+  "source_ref": "AI4I 2020 Predictive Maintenance Dataset"
+}

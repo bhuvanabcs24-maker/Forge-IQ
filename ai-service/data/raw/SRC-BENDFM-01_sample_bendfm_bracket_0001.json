@@ -1,0 +1,12 @@
+{
+  "part_id": "bendfm_bracket_0001",
+  "material": "SS304",
+  "thickness_mm": 2.0,
+  "bends_count": 3,
+  "min_flange_length_mm": 12.0,
+  "min_hole_distance_to_bend_mm": 8.5,
+  "manufacturable": true,
+  "feasibility_category": "GEOMETRIC_AND_CONFIGURATIONAL_PASS",
+  "complexity_score": 0.32,
+  "source_ref": "BenDFM UGent-CVAMO"
+}

@@ -1,0 +1,120 @@
+[
+  {
+    "source_id": "SRC-BENDFM-01",
+    "source_title": "BenDFM: Taxonomy and CAD Dataset for Sheet Metal Bending Manufacturability",
+    "license": "MIT License",
+    "domain": "01_conversation",
+    "data": {
+      "part_id": "bendfm_bracket_0001",
+      "material": "SS304",
+      "thickness_mm": 2.0,
+      "bends_count": 3,
+      "min_flange_length_mm": 12.0,
+      "min_hole_distance_to_bend_mm": 8.5,
+      "manufacturable": true,
+      "feasibility_category": "GEOMETRIC_AND_CONFIGURATIONAL_PASS",
+      "complexity_score": 0.32,
+      "source_ref": "BenDFM UGent-CVAMO"
+    }
+  },
+  {
+    "source_id": "SRC-BENDFM-01",
+    "source_title": "BenDFM: Taxonomy and CAD Dataset for Sheet Metal Bending Manufacturability",
+    "license": "MIT License",
+    "domain": "01_conversation",
+    "data": {
+      "part_id": "bendfm_bracket_0042",
+      "material": "AL6061-T6",
+      "thickness_mm": 3.0,
+      "bends_count": 4,
+      "min_flange_length_mm": 8.0,
+      "min_hole_distance_to_bend_mm": 3.2,
+      "manufacturable": false,
+      "feasibility_category": "COLLISION_AND_HOLE_DISTORTION_FAIL",
+      "complexity_score": 0.88,
+      "failure_reasons": [
+        "Hole too close to bend line tangent (3.2mm < 10.0mm minimum allowance)"
+      ],
+      "source_ref": "BenDFM UGent-CVAMO"
+    }
+  },
+  {
+    "source_id": "SRC-DDACS-01",
+    "source_title": "DDACS: Deep Drawing and Cutting Simulations",
+    "license": "CC BY 4.0 (Dataset) / MIT (Code)",
+    "domain": "01_conversation",
+    "data": {
+      "simulation_id": "ddacs_dp600_0182",
+      "process": "deep_drawing",
+      "blank_material": "DP600",
+      "initial_thickness_mm": 1.5,
+      "draw_depth_mm": 45.0,
+      "binder_force_kn": 120.0,
+      "die_radius_mm": 8.0,
+      "punch_radius_mm": 6.0,
+      "max_thinning_percentage": 14.2,
+      "springback_angle_deg": 2.8,
+      "crack_risk": "LOW",
+      "source_ref": "DDACS DaRUS University of Stuttgart"
+    }
+  },
+  {
+    "source_id": "SRC-NASA-PCOE-01",
+    "source_title": "NASA Prognostics Center of Excellence Machine Milling Dataset",
+    "license": "NASA Open Data Policy (US Government Public Domain)",
+    "domain": "01_conversation",
+    "data": {
+      "test_case_id": "nasa_pcoe_mill_case01",
+      "machine": "CNC Vertical Knee Mill",
+      "tool_type": "6-flute 19mm High Speed Steel End Mill",
+      "workpiece_material": "Cast Iron",
+      "spindle_rpm": 826,
+      "feed_rate_mm_min": 150.0,
+      "cut_depth_mm": 1.5,
+      "flank_wear_vb_mm": 0.45,
+      "wear_state": "CRITICAL_TOOL_CHANGE_REQUIRED",
+      "vibration_rms_g": 3.8,
+      "source_ref": "NASA Prognostics Center of Excellence"
+    }
+  },
+  {
+    "source_id": "SRC-PHM-MILLING-01",
+    "source_title": "PHM Society 2010 CNC Milling Tool Wear Prognostics Dataset",
+    "license": "PHM Open Research License with Attribution",
+    "domain": "01_conversation",
+    "data": {
+      "run_id": "phm2010_c1_cut180",
+      "machine": "R\u00f6ders Tech 3-Axis High Speed CNC Milling Center",
+      "workpiece": "Inconel 718",
+      "spindle_rpm": 10400,
+      "feed_mm_min": 1555.0,
+      "flute_wear_microns": [
+        112.5,
+        128.0,
+        119.4
+      ],
+      "max_cutting_force_fx_n": 842.0,
+      "max_cutting_force_fz_n": 1240.0,
+      "tool_condition": "SEVERE_ACCELERATED_WEAR",
+      "source_ref": "PHM Society 2010 Prognostics Dataset"
+    }
+  },
+  {
+    "source_id": "SRC-KAGGLE-PRED-MAINT-01",
+    "source_title": "AI4I 2020 Predictive Maintenance Dataset",
+    "license": "CC BY 4.0",
+    "domain": "15_maintenance",
+    "data": {
+      "machine_record_id": "ai4i_udiset_2480",
+      "machine_type": "Milling Machine (H-Type Heavy)",
+      "air_temperature_k": 298.2,
+      "process_temperature_k": 308.7,
+      "rotational_speed_rpm": 1380,
+      "torque_nm": 64.2,
+      "tool_wear_min": 215,
+      "machine_failure": 1,
+      "failure_type": "Tool Wear Failure (TWF)",
+      "source_ref": "AI4I 2020 Predictive Maintenance Dataset"
+    }
+  }
+]

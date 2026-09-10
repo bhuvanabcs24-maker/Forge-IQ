@@ -1,0 +1,14 @@
+{
+  "simulation_id": "ddacs_dp600_0182",
+  "process": "deep_drawing",
+  "blank_material": "DP600",
+  "initial_thickness_mm": 1.5,
+  "draw_depth_mm": 45.0,
+  "binder_force_kn": 120.0,
+  "die_radius_mm": 8.0,
+  "punch_radius_mm": 6.0,
+  "max_thinning_percentage": 14.2,
+  "springback_angle_deg": 2.8,
+  "crack_risk": "LOW",
+  "source_ref": "DDACS DaRUS University of Stuttgart"
+}

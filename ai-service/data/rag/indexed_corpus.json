@@ -1,0 +1,79 @@
+[
+  {
+    "chunk_id": "SRC-NIST-SMARTMFG-01_c001",
+    "doc_id": "SRC-NIST-SMARTMFG-01",
+    "source_title": "NIST Smart Manufacturing & Operational Technology Framework",
+    "source_type": "engineering_standard",
+    "section": "General",
+    "text": "NIST Smart Manufacturing Systems Framework\n\nThe NIST Smart Manufacturing Systems (SMS) framework defines digital thread integration across design, production, and quality inspection. Key requirements include semantic interoperability using standardized open schemas (MTConnect for CNC telemetry, QIF for quality inspection, STEP AP242 for CAD/CAM).\n\nTrustworthy AI in Manufacturing\n\nDeterministic real-time closed-loop control must be separated from cloud analytics. AI recommendations in manufacturing execution systems (MES) must provide traceable provenance, explicit uncertainty estimates, and human-in-the-loop overrides for safety-critical machine operations.",
+    "token_estimate": 78,
+    "source_license": "US Federal Public Domain (17 U.S.C. \u00a7 105)",
+    "author": "National Institute of Standards and Technology (NIST)"
+  },
+  {
+    "chunk_id": "SRC-ASME-GDNT-01_c001",
+    "doc_id": "SRC-ASME-GDNT-01",
+    "source_title": "ASME Y14.5M Geometric Dimensioning and Tolerancing Reference",
+    "source_type": "engineering_standard",
+    "section": "General",
+    "text": "ASME Y14.5 Standard Rules\n\nRule #1 (Taylor Principle / Envelope Principle): Where only a size tolerance is specified, the surface of an individual feature shall not extend beyond the boundary of perfect form at maximum material condition (MMC).\n\nTrue Position and Material Condition Modifiers",
+    "token_estimate": 44,
+    "source_license": "Public Reference Summaries (Non-copyrighted engineering rules)",
+    "author": "American Society of Mechanical Engineers (ASME)"
+  },
+  {
+    "chunk_id": "SRC-ASME-GDNT-01_c002",
+    "doc_id": "SRC-ASME-GDNT-01",
+    "source_title": "ASME Y14.5M Geometric Dimensioning and Tolerancing Reference",
+    "source_type": "engineering_standard",
+    "section": "General",
+    "text": "True Position specifies the allowable variation in feature location relative to a Datum Reference Frame. The tolerance zone is typically cylindrical (\u2300). MMC Modifier (\u24c2) provides bonus tolerance as the actual produced feature departs from maximum material condition toward least material condition (LMC). Profile of a Surface controls size, form, orientation, and location simultaneously within a bilateral or unilateral tolerance zone.",
+    "token_estimate": 61,
+    "source_license": "Public Reference Summaries (Non-copyrighted engineering rules)",
+    "author": "American Society of Mechanical Engineers (ASME)"
+  },
+  {
+    "chunk_id": "SRC-BENDFM-01_c001",
+    "doc_id": "SRC-BENDFM-01",
+    "source_title": "BenDFM Sheet Metal Air Bending & Collision Avoidance Principles",
+    "source_type": "engineering_standard",
+    "section": "General",
+    "text": "Hole-to-Bend Plastic Deformation Limits\n\nSheet-metal air bending feasibility is governed by geometric and tool clearance constraints: Holes situated closer than 2.5 * Thickness + Inside_Radius to the bend line undergo severe plastic deformation into elliptical shapes.\n\nFlange Length and Tooling Collisions",
+    "token_estimate": 41,
+    "source_license": "MIT License",
+    "author": "Ghent University CVAMO"
+  },
+  {
+    "chunk_id": "SRC-BENDFM-01_c002",
+    "doc_id": "SRC-BENDFM-01",
+    "source_title": "BenDFM Sheet Metal Air Bending & Collision Avoidance Principles",
+    "source_type": "engineering_standard",
+    "section": "General",
+    "text": "To span the die shoulders stably, the outside flange length must be b_min >= 0.7 * V_die_opening. For standard 8xT die opening, b_min >= 5.6 * T. Bend Sequence Feasibility: Parts with return flanges (channel bends, box folds) must be checked for collision against the punch holder, upper clamp, and lower bed.",
+    "token_estimate": 52,
+    "source_license": "MIT License",
+    "author": "Ghent University CVAMO"
+  },
+  {
+    "chunk_id": "SRC-KAGGLE-PRED-MAINT-01_c001",
+    "doc_id": "SRC-KAGGLE-PRED-MAINT-01",
+    "source_title": "Industrial CNC Spindle Predictive Maintenance Guidelines",
+    "source_type": "engineering_standard",
+    "section": "General",
+    "text": "Tool Wear Failure TWF\n\nCutting tool wear accumulates as a function of in-cut minutes and workpiece hardness. When cumulative tool contact time exceeds 200 minutes for hardened alloys (or 240 min for structural steel), tool replacement must be scheduled.\n\nThermal Drift and Overstrain Failure",
+    "token_estimate": 44,
+    "source_license": "CC BY 4.0",
+    "author": "Factory Maintenance Engineering Division"
+  },
+  {
+    "chunk_id": "SRC-KAGGLE-PRED-MAINT-01_c002",
+    "doc_id": "SRC-KAGGLE-PRED-MAINT-01",
+    "source_title": "Industrial CNC Spindle Predictive Maintenance Guidelines",
+    "source_type": "engineering_standard",
+    "section": "General",
+    "text": "If difference between process temperature and ambient temperature is less than 8.6 K while spindle rotational speed is below 1380 RPM, convective cooling is inadequate, causing thermal expansion and dimensional drift. Overstrain occurs when the product of cutting tool torque (Nm) and tool wear (min) exceeds 11,000 Nm*min, leading to catastrophic tool shank fracture.",
+    "token_estimate": 54,
+    "source_license": "CC BY 4.0",
+    "author": "Factory Maintenance Engineering Division"
+  }
+]
