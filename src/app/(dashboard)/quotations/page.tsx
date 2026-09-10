@@ -139,16 +139,17 @@ export default function QuotationsPage() {
 
             <Button
               size="sm"
-              className="bg-emerald-600 hover:bg-emerald-700 text-white"
+              className="bg-emerald-600 hover:bg-emerald-700 text-white flex items-center gap-1"
               onClick={() => {
                 setQuotations((prev) =>
                   prev.map((q) => (q.id === row.original.id ? { ...q, status: 'Approved' } : q))
                 );
-                router.push('/orders');
+                window.location.href = '/orders';
               }}
-              title="1-Click Convert to Work Order"
+              title="Convert to Work Order"
             >
               <ShoppingBag className="h-3.5 w-3.5" />
+              <span>Convert</span>
             </Button>
           </div>
         );

@@ -18,6 +18,14 @@ export async function middleware(request: NextRequest) {
     }
   }
 
+  // Prevent customer portal users from accessing internal manager settings
+  if (pathname.startsWith('/settings')) {
+    const customerSession = request.cookies.get('forgeiq_customer_session');
+    if (customerSession?.value === 'true') {
+      return NextResponse.redirect(new URL('/portal/dashboard', request.url));
+    }
+  }
+
   return await updateSession(request);
 }
 

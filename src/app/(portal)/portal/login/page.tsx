@@ -31,9 +31,7 @@ function CustomerPortalLoginContent() {
     }
     setIsSubmitting(true);
     login(email, selectedCustomerId);
-    setTimeout(() => {
-      router.push(redirectTarget);
-    }, 300);
+    window.location.href = redirectTarget;
   };
 
   const handleSelectClient = (cust: (typeof MOCK_CUSTOMERS)[0]) => {
@@ -42,9 +40,7 @@ function CustomerPortalLoginContent() {
     setPassword('demo_pass_123');
     setIsSubmitting(true);
     login(cust.email, cust.id);
-    setTimeout(() => {
-      router.push(redirectTarget);
-    }, 300);
+    window.location.href = redirectTarget;
   };
 
   return (
@@ -161,6 +157,7 @@ function CustomerPortalLoginContent() {
                   rightElement={
                     <button
                       type="button"
+                      tabIndex={-1}
                       onClick={() => setShowPassword(!showPassword)}
                       className="text-[#667085] hover:text-[#111827] dark:hover:text-white p-1 cursor-pointer"
                     >

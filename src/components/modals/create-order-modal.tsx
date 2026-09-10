@@ -271,7 +271,7 @@ export function CreateOrderModal({
             Cancel
           </Button>
           <Button type="submit" disabled={isSubmittingToDb}>
-            {isSubmittingToDb ? 'Creating in Database...' : 'Create & Dispatch Order'}
+            {isSubmittingToDb ? 'Creating in Database...' : 'Create Work Order'}
           </Button>
         </div>
       </form>

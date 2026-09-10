@@ -7,7 +7,7 @@ test.describe('Journey A: Customer & Role Authentication Flow', () => {
   test('Customer logs in -> Views Dashboard -> Sees Active Orders', async ({ page }) => {
     // 1. Navigate to Customer Portal Login
     await page.goto('/portal/login');
-    await expect(page.getByText('ForgeIQ Customer Portal')).toBeVisible();
+    await expect(page.getByText('ForgeIQ Customer Portal').first()).toBeVisible();
 
     // 2. Perform Customer Login
     await loginAsCustomer(page);
@@ -26,13 +26,13 @@ test.describe('Journey A: Customer & Role Authentication Flow', () => {
 
   test('Enterprise Manager Login -> Redirects to Management Dashboard', async ({ page }) => {
     await page.goto('/login');
-    await expect(page.getByText(/Sign in to your account|ForgeIQ/i).first()).toBeVisible();
+    await expect(page.getByText(/Sign in to your account|ForgeIQ|Manufacturing Intelligence/i).first()).toBeVisible();
 
     // Fill credentials
     await page.locator('input[type="email"]').fill(TEST_USERS.manager.email);
     await page.locator('input[type="password"]').fill(TEST_USERS.manager.password);
 
-    const submitBtn = page.getByRole('button', { name: /Sign in|Continue to Dashboard/i });
+    const submitBtn = page.getByRole('button', { name: /Access Workspace|Sign in|Continue to Dashboard/i }).first();
     await submitBtn.click();
 
     // Expect navigation to dashboard or management panel
@@ -98,7 +98,7 @@ test.describe('Journey A: Customer & Role Authentication Flow', () => {
 
     // Tab to Submit button
     await page.keyboard.press('Tab');
-    const submitBtn = page.getByRole('button', { name: /Sign In/i });
+    const submitBtn = page.getByRole('button', { name: /Sign In to Customer Portal/i });
     await expect(submitBtn).toBeFocused();
 
     // Check button has accessible text name

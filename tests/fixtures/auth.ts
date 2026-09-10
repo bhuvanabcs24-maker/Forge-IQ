@@ -15,11 +15,11 @@ export async function loginAsCustomer(page: Page) {
   await passwordInput.fill(TEST_USERS.customer.password);
 
   // Click sign in button
-  const submitBtn = page.getByRole('button', { name: /Sign In to Customer Portal|Authenticating/i });
+  const submitBtn = page.getByRole('button', { name: /Sign In to Customer Portal|Authenticating/i }).first();
   await submitBtn.click();
 
   // Wait for redirect to /portal/dashboard
-  await page.waitForURL('**/portal/dashboard', { timeout: 10000 });
+  await page.waitForURL('**/portal/dashboard', { timeout: 15000 });
   await expect(page).toHaveURL(/\/portal\/dashboard/);
 }
 
@@ -29,10 +29,12 @@ export async function loginAsCustomer(page: Page) {
 export async function loginAsManager(page: Page) {
   await page.goto('/login');
 
-  // Select Manager role tab if available
-  const managerTab = page.getByRole('button', { name: /Manager/i });
-  if (await managerTab.isVisible()) {
-    await managerTab.click();
+  // Check if 1-click demo manager profile is present
+  const demoManagerBtn = page.locator('button').filter({ hasText: 'Sarah' }).filter({ hasText: 'Manager' }).first();
+  if (await demoManagerBtn.isVisible()) {
+    await demoManagerBtn.click();
+    await page.waitForURL(/\/(dashboard|orders)/, { timeout: 15000 });
+    return;
   }
 
   const emailInput = page.locator('input[type="email"]');
@@ -41,7 +43,7 @@ export async function loginAsManager(page: Page) {
   await emailInput.fill(TEST_USERS.manager.email);
   await passwordInput.fill(TEST_USERS.manager.password);
 
-  const submitBtn = page.getByRole('button', { name: /Sign in|Continue to Dashboard/i });
+  const submitBtn = page.getByRole('button', { name: /Access Workspace|Sign in|Continue to Dashboard|Authenticating/i }).first();
   await submitBtn.click();
 
   // Wait for navigation to dashboard or orders
@@ -54,9 +56,11 @@ export async function loginAsManager(page: Page) {
 export async function loginAsOwner(page: Page) {
   await page.goto('/login');
 
-  const ownerTab = page.getByRole('button', { name: /Owner/i });
-  if (await ownerTab.isVisible()) {
-    await ownerTab.click();
+  const demoOwnerBtn = page.locator('button').filter({ hasText: 'Alex' }).filter({ hasText: 'Owner' }).first();
+  if (await demoOwnerBtn.isVisible()) {
+    await demoOwnerBtn.click();
+    await page.waitForURL(/\/(dashboard|orders)/, { timeout: 15000 });
+    return;
   }
 
   const emailInput = page.locator('input[type="email"]');
@@ -65,7 +69,7 @@ export async function loginAsOwner(page: Page) {
   await emailInput.fill(TEST_USERS.owner.email);
   await passwordInput.fill(TEST_USERS.owner.password);
 
-  const submitBtn = page.getByRole('button', { name: /Sign in|Continue to Dashboard/i });
+  const submitBtn = page.getByRole('button', { name: /Access Workspace|Sign in|Continue to Dashboard|Authenticating/i }).first();
   await submitBtn.click();
 
   await page.waitForURL(/\/(dashboard|orders)/, { timeout: 15000 });

@@ -11,7 +11,7 @@ test.describe('Journey B: Manager Reviews & Approves Quote / Work Order Flow', (
     // 2. Navigate to Work Orders page
     await page.goto('/orders');
     await expect(page).toHaveURL(/\/orders/);
-    await expect(page.getByText(/Active Manufacturing Orders|Production Pipeline/i).first()).toBeVisible();
+    await expect(page.getByText(/Work Orders|Sales Orders|Production Pipeline/i).first()).toBeVisible();
 
     // 3. Assert orders table renders
     const table = page.locator('table, [role="table"]');
@@ -31,7 +31,7 @@ test.describe('Journey B: Manager Reviews & Approves Quote / Work Order Flow', (
     await expect(page.getByText(/Quotation & RFQ Management/i)).toBeVisible();
 
     // Assert pending quote exists in table
-    const quoteRow = page.locator('tr').filter({ hasText: /RFQ|Apex Aerospace|Precision/i }).first();
+    const quoteRow = page.locator('tbody tr').filter({ hasText: /Apex Aerospace|RFQ/i }).first();
     await expect(quoteRow).toBeVisible();
 
     // Click PDF / Details preview button
@@ -40,15 +40,13 @@ test.describe('Journey B: Manager Reviews & Approves Quote / Work Order Flow', (
       await previewBtn.click();
       // Assert quotation modal/sheet details show
       await expect(page.getByText(/Detailed Line Items|Fabrication Breakdown|Quotation/i).first()).toBeVisible();
-      // Close modal
-      const closeBtn = page.getByRole('button', { name: /Close|Dismiss/i }).or(page.locator('button[aria-label="Close"]'));
-      if (await closeBtn.isVisible()) {
-        await closeBtn.click();
-      }
+      // Close modal cleanly with Escape key
+      await page.keyboard.press('Escape');
+      await page.waitForTimeout(500);
     }
 
     // Convert / Approve Quote to Work Order
-    const approveBtn = quoteRow.locator('button[title*="Convert"], button:has-text("Convert")').or(quoteRow.getByRole('button').last());
+    const approveBtn = quoteRow.getByRole('button', { name: /Convert/i });
     await approveBtn.click();
 
     // Should redirect or update to Orders page

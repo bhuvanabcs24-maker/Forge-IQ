@@ -79,6 +79,7 @@ export function Dialog({
             </div>
             <button
               onClick={onClose}
+              aria-label="Close"
               className="rounded-lg p-1.5 text-[#667085] hover:text-[#111827] dark:hover:text-[#F2F4F7] hover:bg-[#F2F4F7] dark:hover:bg-[#18202A] transition-colors cursor-pointer"
             >
               <X className="h-5 w-5" />
