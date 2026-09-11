@@ -8,6 +8,36 @@ export interface CadAnnotation {
   color: string;
 }
 
+export interface VectorEntity {
+  id: string;
+  type: 'outer_cut' | 'hole' | 'bend' | 'weld' | 'annotation';
+  geometry_type: 'polygon' | 'circle' | 'line';
+  points?: number[][];
+  center?: number[];
+  radius?: number;
+  diameter?: number;
+  start?: number[];
+  end?: number[];
+  angle_deg?: number;
+  color: string;
+  perimeter_mm?: number;
+}
+
+export interface AnalysisDetails {
+  totalEntities: number;
+  cut_entities: number;
+  hole_entities: number;
+  bend_entities: number;
+  weld_entities: number;
+  annotation_entities: number;
+  ignored_entities: number;
+  units: string;
+  material: string;
+  thickness: string;
+  warnings: string[];
+  densityUsed: string;
+}
+
 export interface ExtractedCadGeometry {
   partName: string;
   drawingNumber: string;
@@ -16,11 +46,16 @@ export interface ExtractedCadGeometry {
   dimensions: { lengthMm: number; widthMm: number; thicknessMm: number };
   materialGrade: string;
   holeCount: number;
+  holeDiameters?: Record<string, number>;
   bendCount: number;
+  weldCount: number;
   cutLengthMm: number;
   weldLengthMm: number;
   surfaceAreaSqFt: number;
+  grossAreaMm2?: number;
+  netAreaMm2?: number;
   estimatedWeightKg: number;
+  grossWeightKg?: number;
   complexityScore: 'Low' | 'Medium' | 'High' | 'Extreme';
   confidenceScores: {
     dimensions: number;
@@ -28,8 +63,12 @@ export interface ExtractedCadGeometry {
     holeCount: number;
     bendCount: number;
     cutLength: number;
+    weight?: number;
   };
   annotations: CadAnnotation[];
+  vectorEntities?: VectorEntity[];
+  analysisDetails?: AnalysisDetails;
+  featureConfidenceDetails?: Record<string, any>;
 }
 
 export interface CadFeatureEstimate {

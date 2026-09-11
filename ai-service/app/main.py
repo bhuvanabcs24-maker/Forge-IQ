@@ -24,6 +24,7 @@ from app.api.recommendations import router as recommendations_router
 from app.api.documents import router as documents_router
 from app.api.rag import router as rag_router
 from app.api.telemetry import router as telemetry_router
+from app.api.cad import router as cad_router
 
 # Initialize production-grade structured JSON logging
 setup_structured_logging(settings.LOG_LEVEL)
@@ -249,3 +250,4 @@ app.include_router(recommendations_router)
 app.include_router(documents_router)
 app.include_router(rag_router)
 app.include_router(telemetry_router)
+app.include_router(cad_router)

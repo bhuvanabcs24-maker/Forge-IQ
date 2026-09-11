@@ -9,19 +9,20 @@ import { UploadCloud, FileCode, CheckCircle2, Sparkles, FileText, ArrowUpRight }
 import { cn } from '@/lib/utils';
 
 interface CadUploaderProps {
-  onFileSelect: (fileName: string, fileType: CadFileType, fileSize: number) => void;
+  onFileSelect: (fileName: string, fileType: CadFileType, fileSize: number, fileContent?: string) => void;
 }
 
 export function CadUploader({ onFileSelect }: CadUploaderProps) {
-  const [selectedFile, setSelectedFile] = useState<string>('Avionics_HeatSink_Flange.dxf');
+  const [selectedFile, setSelectedFile] = useState<string>('ForgeIQ_Sample_SheetMetal_Part.dxf');
   const [isDragging, setIsDragging] = useState(false);
-  const [fileSizeText, setFileSizeText] = useState<string>('480 KB');
+  const [fileSizeText, setFileSizeText] = useState<string>('1.16 KB');
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const presets = [
-    { name: 'Avionics_HeatSink_Flange.dxf', type: 'dxf' as CadFileType, size: 1024 * 480 },
-    { name: 'NEMA_4X_Enclosure_Bracket.step', type: 'step' as CadFileType, size: 1024 * 1850 },
-    { name: 'Excavator_Bucket_Liner.dwg', type: 'dwg' as CadFileType, size: 1024 * 920 },
+    { name: 'ForgeIQ_Sample_SheetMetal_Part.dxf', label: 'ForgeIQ Sample (400×300mm)', type: 'dxf' as CadFileType, size: 1162 },
+    { name: 'Avionics_HeatSink_Flange.dxf', label: 'Avionics Flange.dxf', type: 'dxf' as CadFileType, size: 1024 * 480 },
+    { name: 'NEMA_4X_Enclosure_Bracket.step', label: 'NEMA Bracket.step', type: 'step' as CadFileType, size: 1024 * 1850 },
+    { name: 'Excavator_Bucket_Liner.dwg', label: 'Bucket Liner.dwg', type: 'dwg' as CadFileType, size: 1024 * 920 },
   ];
 
   const detectFileType = (fileName: string): CadFileType => {
@@ -40,11 +41,12 @@ export function CadUploader({ onFileSelect }: CadUploaderProps) {
     return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
   };
 
-  const processFile = (file: File) => {
+  const processFile = async (file: File) => {
     const fileType = detectFileType(file.name);
     setSelectedFile(file.name);
     setFileSizeText(formatFileSize(file.size));
-    onFileSelect(file.name, fileType, file.size);
+    const content = await file.text();
+    onFileSelect(file.name, fileType, file.size, content);
   };
 
   const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
@@ -77,10 +79,19 @@ export function CadUploader({ onFileSelect }: CadUploaderProps) {
     }
   };
 
-  const handlePresetSelect = (name: string, type: CadFileType, size: number) => {
+  const handlePresetSelect = async (name: string, type: CadFileType, size: number) => {
     setSelectedFile(name);
     setFileSizeText(formatFileSize(size));
-    onFileSelect(name, type, size);
+    let content = '';
+    try {
+      const resp = await fetch(`/samples/${name}`);
+      if (resp.ok) {
+        content = await resp.text();
+      }
+    } catch {
+      // Continue
+    }
+    onFileSelect(name, type, size, content);
   };
 
   return (
@@ -185,7 +196,7 @@ export function CadUploader({ onFileSelect }: CadUploaderProps) {
                   )}
                 >
                   <FileCode className="h-3.5 w-3.5" />
-                  {preset.name}
+                  {preset.label}
                 </button>
               ))}
             </div>

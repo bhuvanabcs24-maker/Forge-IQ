@@ -12,14 +12,14 @@ import { calculateCadEstimates } from '@/lib/cad/cad-feature-extractor';
 export default function CadAnalysisPage() {
   const [parsingResult, setParsingResult] = useState<CadParsingResult | null>(null);
 
-  const loadDrawing = async (fileName: string, fileType: CadFileType, fileSize: number) => {
+  const loadDrawing = async (fileName: string, fileType: CadFileType, fileSize: number, fileContent?: string) => {
     const parser = getCadParser();
-    const res = await parser.parseDrawing({ fileName, fileType, fileSizeBytes: fileSize });
+    const res = await (parser as any).parseDrawing({ fileName, fileType, fileSizeBytes: fileSize, fileContent });
     setParsingResult(res);
   };
 
   useEffect(() => {
-    loadDrawing('Avionics_HeatSink_Flange.dxf', 'dxf', 1024 * 480);
+    loadDrawing('ForgeIQ_Sample_SheetMetal_Part.dxf', 'dxf', 1162);
   }, []);
 
   const handleUpdateGeometry = (updated: ExtractedCadGeometry) => {
@@ -40,7 +40,7 @@ export default function CadAnalysisPage() {
         breadcrumbs={[{ label: 'CAD Intelligence' }]}
       />
 
-      <CadUploader onFileSelect={(name, type, size) => loadDrawing(name, type, size)} />
+      <CadUploader onFileSelect={(name, type, size, content) => loadDrawing(name, type, size, content)} />
 
       {parsingResult && (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">

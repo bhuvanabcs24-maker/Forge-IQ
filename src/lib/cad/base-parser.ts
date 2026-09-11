@@ -12,14 +12,8 @@ export interface CadParserProvider {
   parseDrawing(options: CadParserOptions): Promise<CadParsingResult>;
 }
 
-import { MockCadParser } from './parsers/mock-cad-parser';
+import { ForgeIQCachedCadParser } from './parsers/forgeiq-cad-parser';
 
 export function getCadParser(providerName?: string): CadParserProvider {
-  const selected = (providerName || process.env.NEXT_PUBLIC_CAD_PARSER || 'mock').toLowerCase();
-
-  switch (selected) {
-    case 'mock':
-    default:
-      return new MockCadParser();
-  }
+  return new ForgeIQCachedCadParser();
 }

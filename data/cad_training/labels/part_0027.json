@@ -1,0 +1,71 @@
+{
+  "file": "part_0027.dxf",
+  "geometry": {
+    "width_mm": 200.0,
+    "height_mm": 250.0,
+    "thickness_mm": 3.0,
+    "material": "Stainless Steel",
+    "cut_perimeter_mm": 900.0,
+    "gross_area_mm2": 50000.0,
+    "net_area_mm2": 48793.63,
+    "hole_count": 6,
+    "bend_count": 0,
+    "weld_count": 0
+  },
+  "features": [
+    {
+      "entity_id": 0,
+      "type": "outer_cut",
+      "dxftype": "LWPOLYLINE",
+      "layer": "0"
+    },
+    {
+      "entity_id": 1,
+      "type": "hole",
+      "dxftype": "CIRCLE",
+      "layer": "0",
+      "radius": 8.0
+    },
+    {
+      "entity_id": 2,
+      "type": "hole",
+      "dxftype": "CIRCLE",
+      "layer": "0",
+      "radius": 8.0
+    },
+    {
+      "entity_id": 3,
+      "type": "hole",
+      "dxftype": "CIRCLE",
+      "layer": "0",
+      "radius": 8.0
+    },
+    {
+      "entity_id": 4,
+      "type": "hole",
+      "dxftype": "CIRCLE",
+      "layer": "0",
+      "radius": 8.0
+    },
+    {
+      "entity_id": 5,
+      "type": "hole",
+      "dxftype": "CIRCLE",
+      "layer": "0",
+      "radius": 8.0
+    },
+    {
+      "entity_id": 6,
+      "type": "hole",
+      "dxftype": "CIRCLE",
+      "layer": "0",
+      "radius": 8.0
+    },
+    {
+      "entity_id": 7,
+      "type": "annotation",
+      "dxftype": "TEXT",
+      "layer": "NOTES"
+    }
+  ]
+}

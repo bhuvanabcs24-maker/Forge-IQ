@@ -23,6 +23,7 @@ export class MockCadParser implements CadParserProvider {
       holeCount: isStep ? 12 : 8,
       bendCount: isStep ? 6 : 4,
       cutLengthMm: isStep ? 2450 : 1850,
+      weldCount: isStep ? 3 : 2,
       weldLengthMm: isStep ? 650 : 400,
       surfaceAreaSqFt: isStep ? 5.8 : 4.2,
       estimatedWeightKg: isStep ? 8.4 : 5.8,
