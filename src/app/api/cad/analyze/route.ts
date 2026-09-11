@@ -137,7 +137,18 @@ function parseDxfLocally(dxfContent: string, fileName: string): ExtractedCadGeom
           j += 2;
         }
         const len = Math.hypot(x2 - x1, y2 - y1);
-        if (layer.includes('BEND') || layer.includes('FOLD')) {
+        const isExcluded = layer.includes('AUX') || layer.includes('CONSTRUCTION') || layer.includes('DIM');
+        const isBend = !isExcluded && len >= 50 && (
+          layer.includes('BEND') || layer.includes('FOLD') ||
+          layer.includes('REF_LINES') || layer.includes('CENTERLINE') ||
+          layer.includes('BRAKE')
+        );
+        const isWeld = !isExcluded && (
+          layer.includes('WELD') || layer.includes('SEAM') ||
+          (layer.includes('DETAIL') && len < 120 && len >= 30)
+        );
+
+        if (isBend) {
           bends.push({ start: [x1, y1], end: [x2, y2], length: len });
           vectorEntities.push({
             id: `bend-${bends.length}`,
@@ -148,7 +159,7 @@ function parseDxfLocally(dxfContent: string, fileName: string): ExtractedCadGeom
             angle_deg: 90,
             color: '#F59E0B',
           });
-        } else if (layer.includes('WELD')) {
+        } else if (isWeld) {
           welds.push({ start: [x1, y1], end: [x2, y2], length: len });
           weldLengthMm += len;
           vectorEntities.push({

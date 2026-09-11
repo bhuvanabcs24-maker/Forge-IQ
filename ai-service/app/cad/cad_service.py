@@ -59,7 +59,12 @@ class CadService:
 
         # 5. Detect bends (pass cut_eids to prevent classifying slot/profile lines as bends)
         bends_result = FeatureDetectors.detect_bends(
-            entities, metadata["notes"], outer_bbox_tuple, cut_entity_ids=cut_eids
+            entities,
+            metadata["notes"],
+            outer_bbox_tuple,
+            cut_entity_ids=cut_eids,
+            rotation_deg=rotation_deg,
+            true_dimensions=(true_len, true_wid),
         )
 
         # 6. Detect welds (pass cut_eids and bend_eids to prevent overlap)
@@ -243,6 +248,12 @@ class CadService:
                 "holeDiameters": holes_result["diameter_groups"],
                 "holeSizeDistribution": holes_result.get("hole_size_distribution", {}),
                 "bendCount": bends_result["bend_count"],
+                "bendAngles": bends_result.get("angles_deg", [90.0] * bends_result["bend_count"]),
+                "bendAngleText": (
+                    f"{bends_result['bend_count']} × {int(bends_result.get('default_angle_deg', 90))}°"
+                    if bends_result["bend_count"] > 0
+                    else "None"
+                ),
                 "weldCount": welds_result["weld_count"],
                 "cutLengthMm": cut_perimeter_mm,
                 "outerPerimeterMm": cut_perimeter_mm,

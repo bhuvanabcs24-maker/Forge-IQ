@@ -195,8 +195,18 @@ export function GeometryTelemetryPanel({
                 className="h-8 text-xs font-bold"
               />
               <span className="text-[10px] text-emerald-500 font-bold block mt-0.5">
-                {confidence.bendCount}% Confidence (90° Press Bends)
+                {confidence.bendCount}% Confidence
               </span>
+              {geometry.bendCount > 0 && (
+                <div className="flex flex-wrap gap-1 mt-1">
+                  <span className="text-[9px] px-1.5 py-0.5 rounded bg-amber-500/10 text-amber-400 border border-amber-500/20 font-mono font-bold">
+                    Bends ({geometry.bendCount})
+                  </span>
+                  <span className="text-[9px] px-1.5 py-0.5 rounded bg-amber-500/10 text-amber-400 border border-amber-500/20 font-mono font-bold">
+                    Bend angles: {geometry.bendAngleText || `${geometry.bendCount} × 90°`}
+                  </span>
+                </div>
+              )}
             </div>
 
             <div>
@@ -267,7 +277,9 @@ export function GeometryTelemetryPanel({
             <div className="p-2 rounded-lg bg-slate-50 dark:bg-steel-900 border border-slate-200 dark:border-steel-800 text-center">
               <span className="text-[10px] text-slate-500 block">Bends</span>
               <span className="font-bold text-sm text-amber-500">{geometry.bendCount}</span>
-              <span className="text-[9px] text-slate-400 block mt-0.5">90° Air Bends</span>
+              <span className="text-[9px] text-slate-400 block mt-0.5">
+                {geometry.bendCount > 0 ? '90° Air Bends' : 'None'}
+              </span>
             </div>
             <div className="p-2 rounded-lg bg-slate-50 dark:bg-steel-900 border border-slate-200 dark:border-steel-800 text-center">
               <span className="text-[10px] text-slate-500 block">Welds</span>

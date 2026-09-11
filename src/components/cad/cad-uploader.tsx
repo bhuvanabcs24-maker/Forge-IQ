@@ -20,6 +20,7 @@ export function CadUploader({ onFileSelect }: CadUploaderProps) {
 
   const presets = [
     { name: 'ForgeIQ_Test_02_Internal_Cutouts.dxf', label: 'Test 02: Cutouts & Slots (500×300mm)', type: 'dxf' as CadFileType, size: 1612 },
+    { name: 'ForgeIQ_Test_03_Complex_Profile.dxf', label: 'Test 03: Bracket Profile (500×360mm)', type: 'dxf' as CadFileType, size: 2800 },
     { name: '01_simple_rectangle_holes.dxf', label: 'Test 01: Rect & Holes (300×200mm)', type: 'dxf' as CadFileType, size: 16531 },
     { name: '03_irregular_polygon.dxf', label: 'Test 03: Irregular Polygon (400×250mm)', type: 'dxf' as CadFileType, size: 16697 },
     { name: '04_multiple_hole_diameters.dxf', label: 'Test 04: Multi-Hole (450×300mm)', type: 'dxf' as CadFileType, size: 17138 },

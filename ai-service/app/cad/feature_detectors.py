@@ -108,18 +108,19 @@ class FeatureDetectors:
         text_annotations: List[str],
         outer_bbox: Optional[Tuple[float, float, float, float]] = None,
         cut_entity_ids: Optional[List[int]] = None,
+        rotation_deg: float = 0.0,
+        true_dimensions: Optional[Tuple[float, float]] = None,
     ) -> Dict[str, Any]:
         """
-        Detects press brake bend lines using layer hints, linetype, geometry, and annotations.
-        Supports non-semantic layer names (e.g. CENTERLINES) via geometric structural patterns.
+        Detects press brake bend lines using general geometric candidate scoring,
+        linetypes, envelope spans, parallel repetition patterns, and annotation corroboration.
+        Does not rely strictly on semantic layer names; protects against construction/auxiliary geometry.
         """
-        bends: List[Dict[str, Any]] = []
-        bend_entities: List[int] = []
         cut_ids = set(cut_entity_ids or [])
 
-        # Check for angle specifications and bend counts in drawing text (e.g. BENDS: 3 X 90 DEG)
-        detected_angle = 90.0  # default sheet metal bend
-        expected_bend_count = None
+        # 1. Parse drawing text notes for explicit bend count and angle declarations
+        expected_bend_count: Optional[int] = None
+        detected_angle = 90.0  # standard sheet metal air bend default
         for txt in text_annotations:
             count_match = re.search(r"BENDS?\s*[:=\-]?\s*(\d+)", txt, re.IGNORECASE)
             if count_match:
@@ -129,90 +130,232 @@ class FeatureDetectors:
             if angle_match:
                 detected_angle = float(angle_match.group(1))
 
-        EXCLUDED_BEND_LAYERS = [
-            "CONSTRUCTION", "DEFPOINTS", "DIM", "REF", "AUX",
-            "TITLE", "BORDER", "ANNO", "NOTE", "HATCH", "WELD", "CUT"
+        # Part envelope dimensions
+        if outer_bbox:
+            min_x, min_y, max_x, max_y = outer_bbox
+            sheet_w = max_x - min_x
+            sheet_h = max_y - min_y
+        else:
+            sheet_w = true_dimensions[0] if true_dimensions else 0.0
+            sheet_h = true_dimensions[1] if true_dimensions else 0.0
+            min_x, min_y, max_x, max_y = 0.0, 0.0, sheet_w, sheet_h
+
+        # Layer evidence taxonomies
+        POSITIVE_BEND_LAYERS = ["BEND", "FOLD", "BRAKE", "CREASE", "FORM"]
+        REFERENCE_FAB_LAYERS = [
+            "REF_LINES", "REFERENCE", "CENTERLINE", "CENTERLINES",
+            "FAB", "FAB_FEATURE", "DETAIL"
+        ]
+        AUXILIARY_CONSTRUCTION_LAYERS = [
+            "AUX", "AUXILIARY", "CONSTRUCTION", "DEFPOINTS", "DIM",
+            "DIMENSION", "TITLE", "BORDER", "ANNO", "NOTE", "HATCH",
+            "WELD", "CUT", "GUIDE", "GRID", "LEADER", "FRAME", "FRAMING"
         ]
 
-        sheet_w = (outer_bbox[2] - outer_bbox[0]) if outer_bbox else 0.0
-        sheet_h = (outer_bbox[3] - outer_bbox[1]) if outer_bbox else 0.0
+        candidate_lines: List[Dict[str, Any]] = []
+
+        # Coordinate transformation for rotated drawings
+        rad = math.radians(rotation_deg)
+        cos_rot = math.cos(-rad)
+        sin_rot = math.sin(-rad)
 
         for e in entities:
-            if e.get("type") == "LINE":
-                eid = e["id"]
-                if eid in cut_ids:
+            if e.get("type") != "LINE":
+                continue
+            eid = e["id"]
+            if eid in cut_ids:
+                continue
+
+            sx, sy = e["start"]
+            ex, ey = e["end"]
+            length = float(e.get("length", 0.0))
+            layer = str(e.get("layer", "")).upper()
+            linetype = str(e.get("linetype", "")).upper()
+
+            # Ignore lines outside envelope with 5mm margin
+            if outer_bbox:
+                if (max(sx, ex) < min_x - 5.0 or min(sx, ex) > max_x + 5.0 or
+                    max(sy, ey) < min_y - 5.0 or min(sy, ey) > max_y + 5.0):
                     continue
 
-                layer = str(e.get("layer", "")).upper()
-                linetype = str(e.get("linetype", "")).upper()
-                length = float(e.get("length", 0.0))
+            # Ignore micro-ticks or dot linetypes
+            if length < 10.0 or "DOT" in linetype:
+                continue
 
-                # Exclude construction and annotation layers
-                if any(ex in layer for ex in EXCLUDED_BEND_LAYERS):
+            # Rotate delta vector into part's intrinsic reference frame
+            dx_orig = ex - sx
+            dy_orig = ey - sy
+            dx = dx_orig * cos_rot - dy_orig * sin_rot
+            dy = dx_orig * sin_rot + dy_orig * cos_rot
+
+            abs_dx = abs(dx)
+            abs_dy = abs(dy)
+            is_v = abs_dy >= abs_dx
+            span_ratio = (abs_dy / max(sheet_h, 1e-6)) if is_v else (abs_dx / max(sheet_w, 1e-6))
+
+            score = 0.0
+            reasons = []
+
+            # 1. Layer Evidence (+40 / +20 / -45)
+            if any(b in layer for b in POSITIVE_BEND_LAYERS):
+                score += 40.0
+                reasons.append(f"layer:bend({layer})")
+            elif any(c in layer for c in AUXILIARY_CONSTRUCTION_LAYERS):
+                score -= 45.0
+                reasons.append(f"layer:auxiliary_construction({layer})")
+            elif any(r in layer for r in REFERENCE_FAB_LAYERS):
+                score += 20.0
+                reasons.append(f"layer:reference_fabrication({layer})")
+
+            # 2. Linetype Evidence (+25 / +10)
+            if any(lt in linetype for lt in ["DASHED", "HIDDEN", "DASH"]):
+                score += 25.0
+                reasons.append(f"linetype:dashed({linetype})")
+            elif any(lt in linetype for lt in ["CENTER", "PHANTOM"]):
+                score += 10.0
+                reasons.append(f"linetype:center_phantom({linetype})")
+
+            # 3. Geometric Span Ratio (+35 / +20 / +5 / -30)
+            if span_ratio >= 0.70:
+                score += 35.0
+                reasons.append(f"span:strong({span_ratio:.2f})")
+            elif span_ratio >= 0.50:
+                score += 20.0
+                reasons.append(f"span:moderate({span_ratio:.2f})")
+            elif span_ratio >= 0.30:
+                score += 5.0
+                reasons.append(f"span:weak({span_ratio:.2f})")
+            else:
+                score -= 30.0
+                reasons.append(f"span:short_insufficient({span_ratio:.2f})")
+
+            # 4. Corner-to-corner diagonal envelope check (brace/framing X-lines)
+            is_diagonal = (abs_dx > 0.3 * sheet_w and abs_dy > 0.3 * sheet_h)
+            if is_diagonal:
+                score -= 40.0
+                reasons.append("negative:diagonal_cross_geometry")
+
+            # 5. Drawing text annotation corroboration
+            if expected_bend_count is not None and span_ratio >= 0.50 and not is_diagonal:
+                score += 20.0
+                reasons.append(f"annotation:corroborated_bends({expected_bend_count})")
+
+            candidate_lines.append({
+                "entity": e,
+                "id": eid,
+                "layer": layer,
+                "length": length,
+                "span_ratio": span_ratio,
+                "is_v": is_v,
+                "score": score,
+                "reasons": reasons,
+                "start": [round(sx, 2), round(sy, 2)],
+                "end": [round(ex, 2), round(ey, 2)],
+            })
+
+        # 6. Negative Pattern Penalties: Dense parallel rule spacing (< 25mm) and cross-hatching
+        for c1 in candidate_lines:
+            close_parallel = 0
+            perpendicular_crosses = 0
+            for c2 in candidate_lines:
+                if c1["id"] == c2["id"]:
                     continue
+                if c1["is_v"] == c2["is_v"]:
+                    coord1 = c1["start"][0] if c1["is_v"] else c1["start"][1]
+                    coord2 = c2["start"][0] if c2["is_v"] else c2["start"][1]
+                    dist = abs(coord1 - coord2)
+                    if 0.1 < dist <= 25.0:
+                        close_parallel += 1
+                else:
+                    # Perpendicular line intersection check
+                    if c1["is_v"]:
+                        vx = c1["start"][0]
+                        hy = c2["start"][1]
+                        if (min(c1["start"][1], c1["end"][1]) <= hy <= max(c1["start"][1], c1["end"][1]) and
+                            min(c2["start"][0], c2["end"][0]) <= vx <= max(c2["start"][0], c2["end"][0])):
+                            perpendicular_crosses += 1
+                    else:
+                        hy = c1["start"][1]
+                        vx = c2["start"][0]
+                        if (min(c1["start"][0], c1["end"][0]) <= vx <= max(c1["start"][0], c1["end"][0]) and
+                            min(c2["start"][1], c2["end"][1]) <= hy <= max(c2["start"][1], c2["end"][1])):
+                            perpendicular_crosses += 1
 
-                # Exclude dot linetypes
-                if any(ex in linetype for ex in ["DOT"]):
-                    continue
+            if close_parallel >= 2:
+                c1["score"] -= 35.0
+                c1["reasons"].append("negative:dense_parallel_grid")
+            if perpendicular_crosses >= 2:
+                c1["score"] -= 35.0
+                c1["reasons"].append("negative:perpendicular_lattice")
 
-                # Exclude lines completely outside bounding box if provided
-                if outer_bbox:
-                    sx, sy = e["start"]
-                    ex, ey = e["end"]
-                    min_x, min_y, max_x, max_y = outer_bbox
-                    if (max(sx, ex) < min_x - 1.0 or min(sx, ex) > max_x + 1.0 or
-                        max(sy, ey) < min_y - 1.0 or min(sy, ey) > max_y + 1.0):
-                        continue
+        # 7. Select valid candidates meeting confidence threshold
+        valid_candidates = [c for c in candidate_lines if c["score"] >= 40.0]
 
-                # Classification Criteria:
-                # 1. Semantic layer (BEND/FOLD/FORM)
-                is_bend_layer = any(k in layer for k in ["BEND", "FOLD", "BRAKE", "CREASE", "FORM"])
-                # 2. Semantic linetype (DASHED/HIDDEN)
-                is_bend_linetype = any(k in linetype for k in ["DASHED", "HIDDEN", "DASH"])
-                # 3. Geometric structural pattern (e.g. on CENTERLINES or generic layers spanning sheet)
-                is_structural_bend = False
-                if sheet_h > 0 and sheet_w > 0:
-                    dx = abs(e["end"][0] - e["start"][0])
-                    dy = abs(e["end"][1] - e["start"][1])
-                    # Line spans substantial portion of sheet height or width
-                    is_vertical_span = (dy >= 0.55 * sheet_h) and (dx < 0.05 * sheet_w)
-                    is_horizontal_span = (dx >= 0.55 * sheet_w) and (dy < 0.05 * sheet_h)
-                    if (is_vertical_span or is_horizontal_span) and length > 10.0:
-                        # Corroborate with drawing text or layer naming
-                        has_bend_note = any("BEND" in t.upper() for t in text_annotations)
-                        if has_bend_note or "CENTER" in layer or "FAB" in layer:
-                            is_structural_bend = True
+        # 8. Reconcile with expected bend count from notes if present
+        final_bends: List[Dict[str, Any]] = []
+        if expected_bend_count is not None and len(valid_candidates) >= expected_bend_count:
+            v_bends = [c for c in valid_candidates if c["is_v"]]
+            h_bends = [c for c in valid_candidates if not c["is_v"]]
+            if len(v_bends) == expected_bend_count:
+                final_bends = v_bends
+            elif len(h_bends) == expected_bend_count:
+                final_bends = h_bends
+            else:
+                valid_candidates.sort(key=lambda x: x["score"], reverse=True)
+                final_bends = valid_candidates[:expected_bend_count]
+        else:
+            final_bends = valid_candidates
 
-                if (is_bend_layer or is_bend_linetype or is_structural_bend) and length > 5.0:
-                    confidence = 0.98 if is_bend_layer else (0.95 if is_structural_bend else 0.88)
-                    bends.append({
-                        "entity_id": eid,
-                        "line": {
-                            "start": [round(c, 2) for c in e["start"]],
-                            "end": [round(c, 2) for c in e["end"]],
-                            "length_mm": round(length, 2),
-                        },
-                        "angle_deg": detected_angle,
-                        "confidence": confidence,
-                        "layer": e.get("layer"),
-                    })
-                    bend_entities.append(eid)
+        # Sort bends by starting coordinates for deterministic output
+        final_bends.sort(key=lambda b: (b["start"][0], b["start"][1]))
 
-        # Sort bends by starting X then Y
-        bends.sort(key=lambda b: (b["line"]["start"][0], b["line"]["start"][1]))
+        bends_output: List[Dict[str, Any]] = []
+        bend_entities: List[int] = []
+        for b in final_bends:
+            has_corroboration = (expected_bend_count is not None and len(final_bends) == expected_bend_count)
+            has_dedicated_layer = any(l in b["layer"] for l in POSITIVE_BEND_LAYERS)
+            if has_corroboration:
+                conf = 0.98
+            elif has_dedicated_layer and b["score"] >= 60.0:
+                conf = 0.96
+            else:
+                conf = min(0.95, max(0.65, 0.60 + (b["score"] / 200.0)))
 
-        confidence = 0.95 if len(bends) > 0 else 0.98
+            bends_output.append({
+                "entity_id": b["id"],
+                "line": {
+                    "start": b["start"],
+                    "end": b["end"],
+                    "length_mm": round(b["length"], 2),
+                },
+                "angle_deg": detected_angle,
+                "confidence": round(conf, 2),
+                "layer": b["layer"],
+                "reasons": b["reasons"],
+            })
+            bend_entities.append(b["id"])
+
+        overall_conf = (
+            round(sum(b["confidence"] for b in bends_output) / len(bends_output), 2)
+            if bends_output else 0.98
+        )
+
+        warnings = []
+        if expected_bend_count is not None and len(bends_output) != expected_bend_count:
+            warnings.append(
+                f"Drawing text states {expected_bend_count} bends, but {len(bends_output)} verified geometrically."
+            )
 
         return {
-            "value": len(bends),
-            "bend_count": len(bends),
-            "confidence": confidence,
-            "method": "LAYER_AND_LINETYPES_GEOMETRY",
+            "value": len(bends_output),
+            "bend_count": len(bends_output),
+            "confidence": overall_conf,
+            "method": "GEOMETRIC_CANDIDATE_SCORING",
             "source_entities": bend_entities,
-            "bends": bends,
+            "bends": bends_output,
             "default_angle_deg": detected_angle,
-            "angles_deg": [b.get("angle_deg", detected_angle) for b in bends],
-            "warnings": [],
+            "angles_deg": [b["angle_deg"] for b in bends_output],
+            "warnings": warnings,
         }
 
     @classmethod
