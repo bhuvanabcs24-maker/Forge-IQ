@@ -15,6 +15,30 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+          cache-dependency-path: 'ai-service/requirements.txt'
+
+      - name: Install Python AI Service Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r ai-service/requirements.txt
+
+      - name: Start Python AI Microservice
+        run: |
+          cd ai-service && PYTHONPATH=. python -m uvicorn app.main:app --host 0.0.0.0 --port 8000 &
+          for i in {1..30}; do
+            if curl -s http://localhost:8000/health | grep -q "healthy"; then
+              echo "ForgeIQ AI Microservice is healthy and ready!"
+              break
+            fi
+            echo "Waiting for ForgeIQ AI Microservice..."
+            sleep 1
+          done
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
@@ -32,6 +56,8 @@ jobs:
         env:
           CI: true
           NODE_ENV: test
+          PYTHON_SERVICE_URL: http://localhost:8000
+          AI_SERVICE_URL: http://localhost:8000
 
       - name: Upload Playwright Test Report Artifacts
         if: always()

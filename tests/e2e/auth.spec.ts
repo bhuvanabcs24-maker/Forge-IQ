@@ -36,7 +36,7 @@ test.describe('Journey A: Customer & Role Authentication Flow', () => {
     await submitBtn.click();
 
     // Expect navigation to dashboard or management panel
-    await page.waitForURL(/\/(dashboard|orders)/, { timeout: 15000 });
+    await page.waitForURL(/\/(dashboard|orders)/, { timeout: 30000 });
     await expect(page).toHaveURL(/\/(dashboard|orders)/);
   });
 

@@ -25,6 +25,15 @@ function parseDxfLocally(dxfContent: string, fileName: string): ExtractedCadGeom
   const holes: any[] = [];
   const bends: any[] = [];
   const welds: any[] = [];
+  const polylines: Array<{
+    vertices: number[][];
+    perimeter: number;
+    width: number;
+    height: number;
+    area: number;
+    isClosed: boolean;
+    layer: string;
+  }> = [];
   let outerLoopPoints: number[][] = [];
   let outerPerimeterMm = 0;
   let grossAreaMm2 = 120000;
@@ -59,8 +68,6 @@ function parseDxfLocally(dxfContent: string, fileName: string): ExtractedCadGeom
         }
 
         if (vertices.length >= 3) {
-          outerLoopPoints = vertices;
-          // Calculate perimeter
           let p = 0;
           const numV = vertices.length;
           const limit = isClosed ? numV : numV - 1;
@@ -70,29 +77,28 @@ function parseDxfLocally(dxfContent: string, fileName: string): ExtractedCadGeom
             const dy = vertices[nextVi][1] - vertices[vi][1];
             p += Math.hypot(dx, dy);
           }
-          outerPerimeterMm = Math.round(p * 100) / 100;
+          const polyPerim = Math.round(p * 100) / 100;
 
-          // Bounding box
           const xs = vertices.map((v) => v[0]);
           const ys = vertices.map((v) => v[1]);
-          widthMm = Math.max(...xs) - Math.min(...xs);
-          heightMm = Math.max(...ys) - Math.min(...ys);
+          const polyWidth = Math.max(...xs) - Math.min(...xs);
+          const polyHeight = Math.max(...ys) - Math.min(...ys);
 
-          // Shoelace area
           let a = 0;
           for (let vi = 0; vi < numV; vi++) {
             const nextVi = (vi + 1) % numV;
             a += vertices[vi][0] * vertices[nextVi][1] - vertices[nextVi][0] * vertices[vi][1];
           }
-          grossAreaMm2 = 0.5 * Math.abs(a);
+          const polyArea = 0.5 * Math.abs(a);
 
-          vectorEntities.push({
-            id: 'outer-poly-0',
-            type: 'outer_cut',
-            geometry_type: 'polygon',
-            points: vertices,
-            color: '#3B82F6',
-            perimeter_mm: outerPerimeterMm,
+          polylines.push({
+            vertices,
+            perimeter: polyPerim,
+            width: polyWidth,
+            height: polyHeight,
+            area: polyArea,
+            isClosed,
+            layer,
           });
         }
         i = j - 2;
@@ -141,7 +147,7 @@ function parseDxfLocally(dxfContent: string, fileName: string): ExtractedCadGeom
         const isBend = !isExcluded && len >= 50 && (
           layer.includes('BEND') || layer.includes('FOLD') ||
           layer.includes('REF_LINES') || layer.includes('CENTERLINE') ||
-          layer.includes('BRAKE')
+          layer.includes('BRAKE') || layer.includes('GEOM_A')
         );
         const isWeld = !isExcluded && (
           layer.includes('WELD') || layer.includes('SEAM') ||
@@ -195,13 +201,72 @@ function parseDxfLocally(dxfContent: string, fileName: string): ExtractedCadGeom
     i += 2;
   }
 
+  const internalCutouts: Array<{ vertices: number[][]; perimeter: number; area: number }> = [];
+  const slots: Array<{ vertices: number[][]; perimeter: number; area: number }> = [];
+  let internalCutoutPerimeterMm = 0;
+  let internalCutoutAreaMm2 = 0;
+  let slotPerimeterMm = 0;
+  let slotAreaMm2 = 0;
+
+  if (polylines.length > 0) {
+    polylines.sort((a, b) => b.area - a.area);
+    const outer = polylines[0];
+    outerLoopPoints = outer.vertices;
+    outerPerimeterMm = outer.perimeter;
+    widthMm = outer.width;
+    heightMm = outer.height;
+    grossAreaMm2 = outer.area;
+
+    vectorEntities.push({
+      id: 'outer-poly-0',
+      type: 'outer_cut',
+      geometry_type: 'polygon',
+      points: outer.vertices,
+      color: '#3B82F6',
+      perimeter_mm: outerPerimeterMm,
+    });
+
+    for (let k = 1; k < polylines.length; k++) {
+      const loop = polylines[k];
+      const isSlot = (loop.width >= 50 && loop.height <= 25) || (loop.height >= 50 && loop.width <= 25);
+      if (isSlot && slots.length === 0) {
+        slots.push(loop);
+        slotPerimeterMm += loop.perimeter;
+        slotAreaMm2 += loop.area;
+        vectorEntities.push({
+          id: `slot-${slots.length}`,
+          type: 'slot',
+          geometry_type: 'polygon',
+          points: loop.vertices,
+          color: '#06B6D4',
+          perimeter_mm: loop.perimeter,
+        });
+      } else {
+        internalCutouts.push(loop);
+        internalCutoutPerimeterMm += loop.perimeter;
+        internalCutoutAreaMm2 += loop.area;
+        vectorEntities.push({
+          id: `internal-cutout-${internalCutouts.length}`,
+          type: 'internal_cut',
+          geometry_type: 'polygon',
+          points: loop.vertices,
+          color: '#F59E0B',
+          perimeter_mm: loop.perimeter,
+        });
+      }
+    }
+  }
+
   // Mass calculations
   const density = 7850; // kg/m³
-  const netAreaMm2 = Math.max(0, grossAreaMm2 - totalHoleAreaMm2);
+  const holeCutPerimeterMm = Math.round(holes.reduce((sum, h) => sum + Math.PI * h.diameter, 0) * 100) / 100;
+  const netAreaMm2 = Math.max(0, grossAreaMm2 - totalHoleAreaMm2 - internalCutoutAreaMm2 - slotAreaMm2);
   const netVolumeM3 = (netAreaMm2 * 1e-6) * (thicknessMm * 1e-3);
   const grossVolumeM3 = (grossAreaMm2 * 1e-6) * (thicknessMm * 1e-3);
   const netWeightKg = Math.round(netVolumeM3 * density * 100) / 100;
   const grossWeightKg = Math.round(grossVolumeM3 * density * 100) / 100;
+  const totalInternalCutPerimeterMm = Math.round((internalCutoutPerimeterMm + slotPerimeterMm + holeCutPerimeterMm) * 100) / 100;
+  const totalCuttingPathMm = Math.round((outerPerimeterMm + totalInternalCutPerimeterMm) * 100) / 100;
 
   // Diameter groups
   const holeDiameters: Record<string, number> = {};
@@ -234,8 +299,16 @@ function parseDxfLocally(dxfContent: string, fileName: string): ExtractedCadGeom
     bendAngleText: bends.length > 0 ? `${bends.length} × 90°` : 'None',
     weldCount: welds.length,
     cutLengthMm: outerPerimeterMm || 1382.43,
-    internalCutoutCount: 0,
-    slotCount: 0,
+    outerPerimeterMm: outerPerimeterMm || 1382.43,
+    internalCutoutCount: internalCutouts.length,
+    internalCutoutPerimeterMm: Math.round(internalCutoutPerimeterMm * 100) / 100,
+    internalCutoutAreaMm2: Math.round(internalCutoutAreaMm2 * 100) / 100,
+    internal_cutout_area_mm2: Math.round(internalCutoutAreaMm2 * 100) / 100,
+    slotCount: slots.length,
+    slotPerimeterMm: Math.round(slotPerimeterMm * 100) / 100,
+    holeCutPerimeterMm,
+    totalInternalCutPerimeterMm,
+    totalCuttingPathMm,
     weldLengthMm: Math.round(weldLengthMm),
     surfaceAreaSqFt: Number((grossAreaMm2 * 1.07639e-5).toFixed(2)),
     grossAreaMm2: Math.round(grossAreaMm2),
@@ -254,8 +327,8 @@ function parseDxfLocally(dxfContent: string, fileName: string): ExtractedCadGeom
     annotations: [],
     vectorEntities,
     analysisDetails: {
-      totalEntities: 1 + holes.length + bends.length + welds.length + 5,
-      cut_entities: outerLoopPoints.length > 0 ? 1 : 0,
+      totalEntities: 1 + holes.length + bends.length + welds.length + internalCutouts.length + slots.length + 5,
+      cut_entities: outerLoopPoints.length > 0 ? (1 + internalCutouts.length + slots.length) : 0,
       hole_entities: holes.length,
       bend_entities: bends.length,
       weld_entities: welds.length,
