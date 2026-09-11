@@ -20,6 +20,7 @@ export interface EstimatePartInput {
     internalCutoutCount?: number;
     slotCount?: number;
     netWeightKg?: number;
+    originalMaterial?: string;
     laserRuntimeMins?: number;
     bendingRuntimeMins?: number;
   };
