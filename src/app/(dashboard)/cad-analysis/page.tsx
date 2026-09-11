@@ -48,6 +48,7 @@ export default function CadAnalysisPage() {
           <GeometryTelemetryPanel
             geometry={parsingResult.geometry}
             estimates={parsingResult.estimates}
+            fileName={parsingResult.fileName}
             onUpdateGeometry={handleUpdateGeometry}
           />
         </div>

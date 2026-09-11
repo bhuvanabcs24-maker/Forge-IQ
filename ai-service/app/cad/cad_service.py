@@ -44,7 +44,12 @@ class CadService:
         aabb_wid = perimeter_result.get("aabb_width_mm", bounds["height"])
         rotation_deg = perimeter_result.get("rotation_deg", 0.0)
 
-        # 4. Detect holes
+        # 4. Identify cut entity IDs to exclude from bends/welds
+        cut_eids = list(perimeter_result.get("source_entities", []))
+        for c in perimeter_result.get("all_internal_loops", []):
+            cut_eids.extend(c.get("entities", []))
+        cut_eids = list(set(cut_eids))
+
         outer_bbox_tuple = (
             outer_loop["bbox"][0], outer_loop["bbox"][1],
             outer_loop["bbox"][2], outer_loop["bbox"][3]
@@ -52,21 +57,30 @@ class CadService:
 
         holes_result = FeatureDetectors.detect_holes(entities, outer_bbox_tuple)
 
-        # 5. Detect bends
-        bends_result = FeatureDetectors.detect_bends(entities, metadata["notes"], outer_bbox_tuple)
+        # 5. Detect bends (pass cut_eids to prevent classifying slot/profile lines as bends)
+        bends_result = FeatureDetectors.detect_bends(
+            entities, metadata["notes"], outer_bbox_tuple, cut_entity_ids=cut_eids
+        )
 
-        # 6. Detect welds
-        welds_result = FeatureDetectors.detect_welds(entities)
+        # 6. Detect welds (pass cut_eids and bend_eids to prevent overlap)
+        welds_result = FeatureDetectors.detect_welds(
+            entities,
+            cut_entity_ids=cut_eids,
+            bend_entity_ids=bends_result["source_entities"],
+            outer_bbox=outer_bbox_tuple,
+        )
 
-        # 7. Mass and weight calculation (subtract both holes and internal cutouts)
+        # 7. Mass and weight calculation (subtract holes, internal cutouts, and slots)
         gross_area_mm2 = outer_loop["area_mm2"] if outer_loop else (true_len * true_wid)
         cutout_area_mm2 = perimeter_result.get("internal_cutout_area_mm2", 0.0)
+        slot_area_mm2 = perimeter_result.get("slot_area_mm2", 0.0)
         mass_result = FeatureDetectors.calculate_weight_and_mass(
             gross_area_mm2=gross_area_mm2,
             hole_area_mm2=holes_result["total_hole_area_mm2"],
             thickness_mm=thickness_mm,
             material_name=material_name,
             cutout_area_mm2=cutout_area_mm2,
+            slot_area_mm2=slot_area_mm2,
         )
 
         # 8. Complexity score
@@ -136,6 +150,17 @@ class CadService:
                 "perimeter_mm": c_loop["perimeter"],
             })
 
+        # Slots
+        for idx, s_loop in enumerate(perimeter_result.get("slots", [])):
+            vector_entities.append({
+                "id": f"slot-{idx}",
+                "type": "slot",
+                "geometry_type": "polygon",
+                "points": s_loop["vertices"],
+                "color": "#06B6D4",
+                "perimeter_mm": s_loop["perimeter"],
+            })
+
         # Holes
         for idx, h in enumerate(holes_result["holes"]):
             vector_entities.append({
@@ -183,19 +208,24 @@ class CadService:
         conf_holes = int(holes_result["confidence"] * 100)
         conf_bends = int(bends_result["confidence"] * 100)
         conf_mass = int(mass_result["confidence"] * 100)
-        conf_thickness = 95 if metadata["has_thickness_specified"] else 80
+        conf_thickness = int(metadata["thickness_details"]["confidence"] * 100)
 
-        total_internal_perim = round(
-            perimeter_result.get("internal_cutout_perimeter_mm", 0.0) +
-            sum(3.1415926535 * h["diameter_mm"] for h in holes_result["holes"]),
-            2
-        )
+        hole_cut_perim = round(sum(3.1415926535 * h["diameter_mm"] for h in holes_result["holes"]), 2)
+        internal_cut_perim = round(perimeter_result.get("internal_cutout_perimeter_mm", 0.0), 2)
+        slot_cut_perim = round(perimeter_result.get("slot_perimeter_mm", 0.0), 2)
+        total_internal_perim = round(internal_cut_perim + slot_cut_perim + hole_cut_perim, 2)
+        total_cutting_path = round(cut_perimeter_mm + total_internal_perim, 2)
+
+        analysis_id = f"cad-{abs(hash(file_name + str(cut_perimeter_mm))) % 100000000:08d}"
+        clean_part_name = file_name.replace(".dxf", "").replace("_", " ")
 
         return {
             "success": True,
+            "analysis_id": analysis_id,
             "fileName": file_name,
             "geometry": {
-                "partName": file_name.replace(".dxf", "").replace("_", " "),
+                "analysisId": analysis_id,
+                "partName": clean_part_name,
                 "drawingNumber": f"DWG-2026-{abs(hash(file_name)) % 9000 + 1000}",
                 "fileType": "dxf",
                 "dimensions": {
@@ -215,9 +245,21 @@ class CadService:
                 "bendCount": bends_result["bend_count"],
                 "weldCount": welds_result["weld_count"],
                 "cutLengthMm": cut_perimeter_mm,
+                "outerPerimeterMm": cut_perimeter_mm,
                 "internalCutoutCount": perimeter_result.get("internal_cutouts_count", 0),
-                "internalCutoutPerimeterMm": perimeter_result.get("internal_cutout_perimeter_mm", 0.0),
+                "internalCutouts": perimeter_result.get("internal_cutouts", []),
+                "internalCutoutPerimeterMm": internal_cut_perim,
+                "slotCount": perimeter_result.get("slot_count", 0),
+                "slots": perimeter_result.get("slots", []),
+                "slotPerimeterMm": slot_cut_perim,
+                "holeCutPerimeterMm": hole_cut_perim,
                 "totalInternalCutPerimeterMm": total_internal_perim,
+                "totalCuttingPathMm": total_cutting_path,
+                "outer_perimeter_mm": cut_perimeter_mm,
+                "internal_cut_perimeter_mm": internal_cut_perim,
+                "hole_cut_perimeter_mm": hole_cut_perim,
+                "slot_cut_perimeter_mm": slot_cut_perim,
+                "total_cutting_path_mm": total_cutting_path,
                 "weldLengthMm": welds_result["weld_length_mm"],
                 "surfaceAreaSqFt": round(gross_area_mm2 * 1.07639e-5, 2),
                 "grossAreaMm2": gross_area_mm2,
@@ -237,7 +279,9 @@ class CadService:
                     "cut_perimeter": perimeter_result,
                     "holes": holes_result,
                     "bends": bends_result,
+                    "welds": welds_result,
                     "mass": mass_result,
+                    "thickness": metadata["thickness_details"],
                 },
                 "vectorEntities": vector_entities,
                 "analysisDetails": {
@@ -246,6 +290,7 @@ class CadService:
                     "units": "mm",
                     "material": mass_result["material"],
                     "thickness": f"{thickness_mm} mm",
+                    "thicknessDetails": metadata["thickness_details"],
                     "warnings": all_warnings,
                     "densityUsed": f"{mass_result['density_kg_m3']} kg/m³",
                     "orientedBoundingBox": {

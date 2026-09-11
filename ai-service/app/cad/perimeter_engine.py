@@ -265,18 +265,45 @@ class PerimeterEngine:
         primary_loop = candidate_loops[0]
         p_min_x, p_min_y, p_max_x, p_max_y = primary_loop["bbox"]
 
-        # 4. Extract internal cutout loops (nested inside primary outer loop)
+        # 4. Extract internal cutout loops and slots (nested inside primary outer loop)
+        entity_map = {e["id"]: e for e in entities}
         internal_cutouts = []
+        slots = []
         internal_cutout_perimeter_mm = 0.0
         internal_cutout_area_mm2 = 0.0
+        slot_perimeter_mm = 0.0
+        slot_area_mm2 = 0.0
 
         for loop in candidate_loops[1:]:
             l_min_x, l_min_y, l_max_x, l_max_y = loop["bbox"]
             if (l_min_x >= p_min_x - 1.0 and l_max_x <= p_max_x + 1.0 and
                 l_min_y >= p_min_y - 1.0 and l_max_y <= p_max_y + 1.0):
-                internal_cutouts.append(loop)
-                internal_cutout_perimeter_mm += loop["perimeter"]
-                internal_cutout_area_mm2 += loop["area"]
+
+                loop_entities = [entity_map[eid] for eid in loop.get("entities", []) if eid in entity_map]
+                line_count = sum(1 for e in loop_entities if e.get("type") == "LINE")
+                arc_count = sum(1 for e in loop_entities if e.get("type") == "ARC")
+
+                # Slot detection: 2 lines + 2 arcs forming a closed elongated profile
+                if (line_count == 2 and arc_count == 2) or (line_count >= 2 and arc_count >= 1):
+                    # Calculate true slot area (rectangle body + semicircular ends)
+                    arcs = [e for e in loop_entities if e.get("type") == "ARC"]
+                    lines = [e for e in loop_entities if e.get("type") == "LINE"]
+                    r = arcs[0].get("radius", 0.0) if arcs else 0.0
+                    line_len = lines[0].get("length", 0.0) if lines else 0.0
+                    computed_slot_area = (line_len * 2.0 * r) + (math.pi * (r ** 2)) if (r > 0 and line_len > 0) else loop["area"]
+
+                    loop_copy = dict(loop)
+                    loop_copy["is_slot"] = True
+                    loop_copy["slot_length_mm"] = round(line_len, 2)
+                    loop_copy["slot_width_mm"] = round(2.0 * r, 2)
+                    loop_copy["area"] = round(computed_slot_area, 2)
+                    slots.append(loop_copy)
+                    slot_perimeter_mm += loop["perimeter"]
+                    slot_area_mm2 += computed_slot_area
+                else:
+                    internal_cutouts.append(loop)
+                    internal_cutout_perimeter_mm += loop["perimeter"]
+                    internal_cutout_area_mm2 += loop["area"]
 
         # 5. Compute Oriented Bounding Box (OBB) for true part dimensions
         true_len, true_wid, rot_angle = cls.compute_min_oriented_bbox(primary_loop["vertices"])
@@ -321,6 +348,12 @@ class PerimeterEngine:
             "internal_cutouts_count": len(internal_cutouts),
             "internal_cutout_perimeter_mm": round(internal_cutout_perimeter_mm, 2),
             "internal_cutout_area_mm2": round(internal_cutout_area_mm2, 2),
+            "slots": slots,
+            "slot_count": len(slots),
+            "slot_perimeter_mm": round(slot_perimeter_mm, 2),
+            "slot_area_mm2": round(slot_area_mm2, 2),
+            "all_internal_loops": internal_cutouts + slots,
+            "all_internal_count": len(internal_cutouts) + len(slots),
             "true_length_mm": true_len,
             "true_width_mm": true_wid,
             "aabb_length_mm": aabb_len,

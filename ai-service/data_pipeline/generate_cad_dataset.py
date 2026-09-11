@@ -134,6 +134,8 @@ def generate_single_sample(sample_id: str, output_dir: str) -> Dict[str, Any]:
                 "type": "bend",
                 "dxftype": "LINE",
                 "layer": bend_layer,
+                "length": height - 30.0,
+                "linetype": "DASHED",
             })
             entity_counter += 1
 
@@ -145,13 +147,15 @@ def generate_single_sample(sample_id: str, output_dir: str) -> Dict[str, Any]:
             msp.add_line(
                 (40.0, wy),
                 (120.0, wy),
-                dxfattribs={"layer": weld_layer},
+                dxfattribs={"layer": weld_layer, "linetype": "CONTINUOUS"},
             )
             features.append({
                 "entity_id": entity_counter,
                 "type": "weld",
                 "dxftype": "LINE",
                 "layer": weld_layer,
+                "length": 80.0,
+                "linetype": "CONTINUOUS",
             })
             entity_counter += 1
 

@@ -19,10 +19,13 @@ export function CadUploader({ onFileSelect }: CadUploaderProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const presets = [
-    { name: 'ForgeIQ_Sample_SheetMetal_Part.dxf', label: 'ForgeIQ Sample (400×300mm)', type: 'dxf' as CadFileType, size: 1162 },
-    { name: 'Avionics_HeatSink_Flange.dxf', label: 'Avionics Flange.dxf', type: 'dxf' as CadFileType, size: 1024 * 480 },
-    { name: 'NEMA_4X_Enclosure_Bracket.step', label: 'NEMA Bracket.step', type: 'step' as CadFileType, size: 1024 * 1850 },
-    { name: 'Excavator_Bucket_Liner.dwg', label: 'Bucket Liner.dwg', type: 'dwg' as CadFileType, size: 1024 * 920 },
+    { name: 'ForgeIQ_Test_02_Internal_Cutouts.dxf', label: 'Test 02: Cutouts & Slots (500×300mm)', type: 'dxf' as CadFileType, size: 1612 },
+    { name: '01_simple_rectangle_holes.dxf', label: 'Test 01: Rect & Holes (300×200mm)', type: 'dxf' as CadFileType, size: 16531 },
+    { name: '03_irregular_polygon.dxf', label: 'Test 03: Irregular Polygon (400×250mm)', type: 'dxf' as CadFileType, size: 16697 },
+    { name: '04_multiple_hole_diameters.dxf', label: 'Test 04: Multi-Hole (450×300mm)', type: 'dxf' as CadFileType, size: 17138 },
+    { name: '08_rotated_part.dxf', label: 'Test 08: Rotated 37° (300×180mm)', type: 'dxf' as CadFileType, size: 17660 },
+    { name: '09_internal_cutouts.dxf', label: 'Test 09: Internal Cutouts (500×300mm)', type: 'dxf' as CadFileType, size: 17393 },
+    { name: 'ForgeIQ_Sample_SheetMetal_Part.dxf', label: 'Sample Part (400×300mm)', type: 'dxf' as CadFileType, size: 1162 },
   ];
 
   const detectFileType = (fileName: string): CadFileType => {

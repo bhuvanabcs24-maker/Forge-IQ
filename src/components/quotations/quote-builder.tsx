@@ -1,7 +1,7 @@
 'use client';
 
-import React, { useState, useMemo, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import React, { useState, useMemo, useEffect, Suspense } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -40,9 +40,12 @@ import {
 
 export function QuoteBuilder() {
   const router = useRouter();
+  const searchParams = useSearchParams();
 
-  const [customerName, setCustomerName] = useState('Apex Aerospace Solutions');
-  const [quoteTitle, setQuoteTitle] = useState('Batch 500 Avionics Heat Sink Flanges');
+  const [customerName, setCustomerName] = useState('Apex Precision Manufacturing');
+  const [quoteTitle, setQuoteTitle] = useState('ForgeIQ Sheet Metal Fabrication Quote');
+  const [sourceCadAnalysisId, setSourceCadAnalysisId] = useState<string | null>(null);
+  const [sourceCadFileName, setSourceCadFileName] = useState<string | null>(null);
   const [revisionNumber, setRevisionNumber] = useState('v1.0');
   const [status, setStatus] = useState<'Draft' | 'Sent' | 'Approved' | 'Rejected' | 'Expired'>('Draft');
 
@@ -53,45 +56,90 @@ export function QuoteBuilder() {
     orderId: string;
   } | null>(null);
 
-  // Load custom owner calculation rules from localStorage if set
+  const [lineItems, setLineItems] = useState<QuotationLineItemDetail[]>([]);
+
+  // Load active CAD analysis or owner pricing rules
   useEffect(() => {
     try {
       const savedRules = localStorage.getItem('FORGEIQ_PRICING_RULES');
+      let currentRules = DEFAULT_FABRICATION_PRICING_RULES;
       if (savedRules) {
-        const parsed = JSON.parse(savedRules);
-        setRules(parsed);
+        currentRules = JSON.parse(savedRules);
+        setRules(currentRules);
+      }
+
+      // Check for active CAD analysis in sessionStorage or localStorage
+      const activeCadRaw = sessionStorage.getItem('FORGEIQ_ACTIVE_CAD_ANALYSIS') ||
+                           localStorage.getItem('FORGEIQ_LATEST_CAD_ANALYSIS');
+
+      if (activeCadRaw) {
+        const cad = JSON.parse(activeCadRaw);
+        const analysisId = cad.analysis_id || cad.analysisId || searchParams?.get('analysisId') || 'cad-analysis-1';
+        const rawFileName = cad.file_name || cad.fileName || 'ForgeIQ_Test_02_Internal_Cutouts.dxf';
+        const cleanTitle = rawFileName.replace(/\.[^/.]+$/, '').replace(/_/g, ' ');
+
+        setSourceCadAnalysisId(analysisId);
+        setSourceCadFileName(rawFileName);
+        setQuoteTitle(cleanTitle);
+
+        const width = cad.dimensions?.width_mm || cad.dimensions?.lengthMm || 500;
+        const height = cad.dimensions?.height_mm || cad.dimensions?.widthMm || 300;
+        const thk = cad.dimensions?.thickness_mm || cad.dimensions?.thicknessMm || 6;
+        const mat = cad.material?.name || cad.materialGrade || 'Mild Steel';
+        const weight = cad.net_weight_kg || cad.estimatedWeightKg || 6.68;
+        const outerCut = cad.outer_perimeter_mm || cad.cutLengthMm || 1582.43;
+        const holes = cad.holes?.count !== undefined ? cad.holes.count : (cad.holeCount ?? 6);
+        const bends = cad.bends?.count !== undefined ? cad.bends.count : (cad.bendCount ?? 3);
+        const welds = cad.welds?.count !== undefined ? cad.welds.count : (cad.weldCount ?? 2);
+        const cutouts = cad.internal_cutouts?.count !== undefined ? cad.internal_cutouts.count : (cad.internalCutoutCount ?? 2);
+        const slots = cad.slots?.count !== undefined ? cad.slots.count : (cad.slotCount ?? 1);
+
+        const singleCadItem = aiEstimatePartItem(
+          {
+            id: `li-${analysisId}`,
+            partName: cleanTitle,
+            material: mat,
+            materialGrade: mat,
+            thickness: `${thk}mm`,
+            dimensions: `${width}mm x ${height}mm`,
+            quantity: 1, // Default quantity: 1, NOT 150!
+            sourceCadAnalysisId: analysisId,
+            sourceCadFileName: rawFileName,
+            cadMetrics: {
+              outerCutPerimeterMm: outerCut,
+              holeCount: holes,
+              bendCount: bends,
+              weldCount: welds,
+              internalCutoutCount: cutouts,
+              slotCount: slots,
+              netWeightKg: weight,
+              originalMaterial: mat,
+            },
+          },
+          currentRules
+        );
+
+        setLineItems([singleCadItem]);
+      } else {
+        // Default single item when no CAD is loaded (neutral precision part)
+        const defaultItem = aiEstimatePartItem(
+          {
+            id: 'li-part-initial',
+            partName: 'Precision Laser Cut Bracket',
+            material: 'Mild Steel',
+            materialGrade: 'Mild Steel',
+            thickness: '6mm',
+            dimensions: '500mm x 300mm',
+            quantity: 1,
+          },
+          currentRules
+        );
+        setLineItems([defaultItem]);
       }
     } catch (e) {
-      console.error('Error loading custom pricing rules:', e);
+      console.error('Error loading CAD quotation data:', e);
     }
-  }, []);
-
-  const [lineItems, setLineItems] = useState<QuotationLineItemDetail[]>([
-    aiEstimatePartItem(
-      {
-        id: 'li-part-avionics-base',
-        partName: 'Avionics Heat Sink Base Plate',
-        material: 'Stainless Steel',
-        materialGrade: '304 Stainless Steel',
-        thickness: '6mm',
-        dimensions: '400mm x 400mm',
-        quantity: 150,
-      },
-      rules
-    ),
-    aiEstimatePartItem(
-      {
-        id: 'li-part-mounting-flange',
-        partName: 'Mounting Support Flange',
-        material: 'Aluminum',
-        materialGrade: '6061-T6 Aluminum',
-        thickness: '3mm',
-        dimensions: '200mm x 300mm',
-        quantity: 150,
-      },
-      rules
-    ),
-  ]);
+  }, [searchParams]);
 
   const [revisions, setRevisions] = useState<QuotationRevision[]>([]);
   const [isExplainModalOpen, setIsExplainModalOpen] = useState(false);
@@ -128,6 +176,16 @@ export function QuoteBuilder() {
       prev.map((item) => {
         if (item.id === id) {
           const updated = { ...item, [key]: val };
+          if (key === 'materialGrade') {
+            const orig = item.cadMetrics?.originalMaterial || 'Mild Steel';
+            if (val !== orig) {
+              updated.isMaterialOverridden = true;
+              updated.materialSource = 'User Override';
+            } else {
+              updated.isMaterialOverridden = false;
+              updated.materialSource = item.sourceCadAnalysisId ? 'CAD Source' : 'Standard';
+            }
+          }
           const plugin = new FabricationPricingPlugin();
           return plugin.calculateLineItem(updated, rules);
         }
@@ -258,6 +316,25 @@ export function QuoteBuilder() {
       </div>
 
 
+      {/* CAD Data Lineage & Traceability Badge */}
+      {sourceCadAnalysisId && (
+        <div className="p-3.5 rounded-xl bg-emerald-500/10 border border-emerald-500/30 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 text-xs">
+          <div className="flex items-center gap-2">
+            <CheckCircle2 className="h-4 w-4 text-emerald-500 shrink-0" />
+            <div>
+              <span className="text-slate-600 dark:text-slate-400">Quote generated from: </span>
+              <strong className="font-mono text-emerald-700 dark:text-emerald-300">{sourceCadFileName || 'CAD Drawing'}</strong>
+            </div>
+          </div>
+          <div className="flex items-center gap-2 font-mono text-xs text-slate-500">
+            <span>Analysis ID:</span>
+            <Badge variant="outline" className="font-mono bg-white dark:bg-steel-900 border-emerald-500/40 text-emerald-600 dark:text-emerald-400">
+              {sourceCadAnalysisId}
+            </Badge>
+          </div>
+        </div>
+      )}
+
       {/* Quote Scope & Customer Info */}
       <Card>
         <CardContent className="p-4 grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -265,6 +342,7 @@ export function QuoteBuilder() {
             <label className="block text-xs font-semibold mb-1">Customer Account</label>
             <Select
               options={[
+                { label: 'Apex Precision Manufacturing', value: 'Apex Precision Manufacturing' },
                 { label: 'Apex Aerospace Solutions', value: 'Apex Aerospace Solutions' },
                 { label: 'Titan Heavy Machinery', value: 'Titan Heavy Machinery' },
                 { label: 'Vanguard Enclosures Inc.', value: 'Vanguard Enclosures Inc.' },
@@ -331,10 +409,33 @@ export function QuoteBuilder() {
                         onChange={(e) => handleUpdateItem(item.id, 'partName', e.target.value)}
                         className="text-xs h-7"
                       />
+                      {item.cadMetrics && (
+                        <div className="flex flex-wrap gap-1 mt-1 font-mono text-[9px]">
+                          <span className="px-1 py-0.5 rounded bg-blue-500/10 text-blue-400 border border-blue-500/20">
+                            {item.cadMetrics.outerCutPerimeterMm}mm Cut
+                          </span>
+                          <span className="px-1 py-0.5 rounded bg-rose-500/10 text-rose-400 border border-rose-500/20">
+                            {item.cadMetrics.holeCount} Holes
+                          </span>
+                          <span className="px-1 py-0.5 rounded bg-amber-500/10 text-amber-400 border border-amber-500/20">
+                            {item.cadMetrics.bendCount} Bends
+                          </span>
+                          <span className="px-1 py-0.5 rounded bg-purple-500/10 text-purple-400 border border-purple-500/20">
+                            {item.cadMetrics.weldCount} Welds
+                          </span>
+                          <span className="px-1 py-0.5 rounded bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">
+                            {item.cadMetrics.internalCutoutCount} Cutouts
+                          </span>
+                          <span className="px-1 py-0.5 rounded bg-cyan-500/10 text-cyan-400 border border-cyan-500/20">
+                            {item.cadMetrics.slotCount} Slot
+                          </span>
+                        </div>
+                      )}
                     </td>
                     <td className="p-3">
                       <Select
                         options={[
+                          { label: 'Mild Steel', value: 'Mild Steel' },
                           { label: '304 Stainless Steel', value: '304 Stainless Steel' },
                           { label: '316 Stainless Steel', value: '316 Stainless Steel' },
                           { label: '6061-T6 Aluminum', value: '6061-T6 Aluminum' },
@@ -344,6 +445,15 @@ export function QuoteBuilder() {
                         onChange={(e) => handleUpdateItem(item.id, 'materialGrade', e.target.value)}
                         className="text-xs h-7"
                       />
+                      {item.isMaterialOverridden || item.materialSource === 'User Override' ? (
+                        <span className="text-[9px] text-amber-500 font-bold block mt-1">
+                          Source: User Override
+                        </span>
+                      ) : (
+                        <span className="text-[9px] text-slate-400 block mt-1">
+                          Source: CAD ({item.cadMetrics?.originalMaterial || 'Mild Steel'})
+                        </span>
+                      )}
                     </td>
                     <td className="p-3">
                       <Input

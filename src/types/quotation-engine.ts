@@ -49,6 +49,20 @@ export interface QuotationLineItemDetail {
   thickness: string;
   dimensions: string;
   quantity: number;
+  sourceCadAnalysisId?: string;
+  sourceCadFileName?: string;
+  isMaterialOverridden?: boolean;
+  materialSource?: string;
+  cadMetrics?: {
+    outerCutPerimeterMm?: number;
+    holeCount?: number;
+    bendCount?: number;
+    weldCount?: number;
+    internalCutoutCount?: number;
+    slotCount?: number;
+    netWeightKg?: number;
+    originalMaterial?: string;
+  };
   // AI Generated Estimates
   estimatedWeightKg: AiEstimateField<number>;
   estimatedLaserRuntimeMins: AiEstimateField<number>;

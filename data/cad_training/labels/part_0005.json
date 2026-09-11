@@ -1,78 +1,94 @@
 {
   "file": "part_0005.dxf",
   "geometry": {
-    "width_mm": 500.0,
-    "height_mm": 200.0,
-    "thickness_mm": 5.0,
+    "width_mm": 350.0,
+    "height_mm": 250.0,
+    "thickness_mm": 8.0,
     "material": "Mild Steel",
-    "cut_perimeter_mm": 1400.0,
-    "gross_area_mm2": 100000.0,
-    "net_area_mm2": 99798.94,
+    "cut_perimeter_mm": 1200.0,
+    "gross_area_mm2": 87500.0,
+    "net_area_mm2": 86243.36,
     "hole_count": 4,
     "bend_count": 4,
-    "weld_count": 0
+    "weld_count": 1
   },
   "features": [
     {
       "entity_id": 0,
       "type": "outer_cut",
       "dxftype": "LWPOLYLINE",
-      "layer": "OUTLINE"
+      "layer": "PROFILE"
     },
     {
       "entity_id": 1,
       "type": "hole",
       "dxftype": "CIRCLE",
       "layer": "HOLES",
-      "radius": 4.0
+      "radius": 10.0
     },
     {
       "entity_id": 2,
       "type": "hole",
       "dxftype": "CIRCLE",
       "layer": "HOLES",
-      "radius": 4.0
+      "radius": 10.0
     },
     {
       "entity_id": 3,
       "type": "hole",
       "dxftype": "CIRCLE",
       "layer": "HOLES",
-      "radius": 4.0
+      "radius": 10.0
     },
     {
       "entity_id": 4,
       "type": "hole",
       "dxftype": "CIRCLE",
       "layer": "HOLES",
-      "radius": 4.0
+      "radius": 10.0
     },
     {
       "entity_id": 5,
       "type": "bend",
       "dxftype": "LINE",
-      "layer": "BRAKE"
+      "layer": "BRAKE",
+      "length": 220.0,
+      "linetype": "DASHED"
     },
     {
       "entity_id": 6,
       "type": "bend",
       "dxftype": "LINE",
-      "layer": "BRAKE"
+      "layer": "BRAKE",
+      "length": 220.0,
+      "linetype": "DASHED"
     },
     {
       "entity_id": 7,
       "type": "bend",
       "dxftype": "LINE",
-      "layer": "BRAKE"
+      "layer": "BRAKE",
+      "length": 220.0,
+      "linetype": "DASHED"
     },
     {
       "entity_id": 8,
       "type": "bend",
       "dxftype": "LINE",
-      "layer": "BRAKE"
+      "layer": "BRAKE",
+      "length": 220.0,
+      "linetype": "DASHED"
     },
     {
       "entity_id": 9,
+      "type": "weld",
+      "dxftype": "LINE",
+      "layer": "JOINTS",
+      "length": 80.0,
+      "linetype": "CONTINUOUS"
+    },
+    {
+      "entity_id": 10,
       "type": "annotation",
       "dxftype": "TEXT",
       "layer": "NOTES"

@@ -1,0 +1,123 @@
+{
+  "file": "part_0114.dxf",
+  "geometry": {
+    "width_mm": 250.0,
+    "height_mm": 150.0,
+    "thickness_mm": 6.0,
+    "material": "Stainless Steel",
+    "cut_perimeter_mm": 800.0,
+    "gross_area_mm2": 37500.0,
+    "net_area_mm2": 34358.41,
+    "hole_count": 10,
+    "bend_count": 1,
+    "weld_count": 2
+  },
+  "features": [
+    {
+      "entity_id": 0,
+      "type": "outer_cut",
+      "dxftype": "LWPOLYLINE",
+      "layer": "0"
+    },
+    {
+      "entity_id": 1,
+      "type": "hole",
+      "dxftype": "CIRCLE",
+      "layer": "0",
+      "radius": 10.0
+    },
+    {
+      "entity_id": 2,
+      "type": "hole",
+      "dxftype": "CIRCLE",
+      "layer": "0",
+      "radius": 10.0
+    },
+    {
+      "entity_id": 3,
+      "type": "hole",
+      "dxftype": "CIRCLE",
+      "layer": "0",
+      "radius": 10.0
+    },
+    {
+      "entity_id": 4,
+      "type": "hole",
+      "dxftype": "CIRCLE",
+      "layer": "0",
+      "radius": 10.0
+    },
+    {
+      "entity_id": 5,
+      "type": "hole",
+      "dxftype": "CIRCLE",
+      "layer": "0",
+      "radius": 10.0
+    },
+    {
+      "entity_id": 6,
+      "type": "hole",
+      "dxftype": "CIRCLE",
+      "layer": "0",
+      "radius": 10.0
+    },
+    {
+      "entity_id": 7,
+      "type": "hole",
+      "dxftype": "CIRCLE",
+      "layer": "0",
+      "radius": 10.0
+    },
+    {
+      "entity_id": 8,
+      "type": "hole",
+      "dxftype": "CIRCLE",
+      "layer": "0",
+      "radius": 10.0
+    },
+    {
+      "entity_id": 9,
+      "type": "hole",
+      "dxftype": "CIRCLE",
+      "layer": "0",
+      "radius": 10.0
+    },
+    {
+      "entity_id": 10,
+      "type": "hole",
+      "dxftype": "CIRCLE",
+      "layer": "0",
+      "radius": 10.0
+    },
+    {
+      "entity_id": 11,
+      "type": "bend",
+      "dxftype": "LINE",
+      "layer": "CONTINUOUS",
+      "length": 120.0,
+      "linetype": "DASHED"
+    },
+    {
+      "entity_id": 12,
+      "type": "weld",
+      "dxftype": "LINE",
+      "layer": "0",
+      "length": 80.0,
+      "linetype": "CONTINUOUS"
+    },
+    {
+      "entity_id": 13,
+      "type": "weld",
+      "dxftype": "LINE",
+      "layer": "0",
+      "length": 80.0,
+      "linetype": "CONTINUOUS"
+    },
+    {
+      "entity_id": 14,
+      "type": "annotation",
+      "dxftype": "TEXT",
+      "layer": "NOTES"
+    }
+  ]
+}

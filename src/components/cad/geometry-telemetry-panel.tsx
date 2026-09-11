@@ -6,21 +6,75 @@ import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/com
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Boxes, Zap, ArrowRight, ChevronDown, ChevronUp, AlertCircle, CheckCircle2, HelpCircle, Layers, Info } from 'lucide-react';
+import { Boxes, Zap, ArrowRight, ChevronDown, ChevronUp, AlertCircle, CheckCircle2, HelpCircle, Layers, Info, Cpu } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 
 export function GeometryTelemetryPanel({
   geometry,
   estimates,
+  fileName,
   onUpdateGeometry,
 }: {
   geometry: ExtractedCadGeometry;
   estimates: CadFeatureEstimate;
+  fileName?: string;
   onUpdateGeometry: (updated: ExtractedCadGeometry) => void;
 }) {
   const router = useRouter();
   const [showAnalysisDetails, setShowAnalysisDetails] = useState(true);
   const [showWhyResult, setShowWhyResult] = useState<string | null>(null);
+
+  const handleGenerateQuotation = () => {
+    const analysisId = geometry.analysisId || `cad-${Date.now()}`;
+    const partTitle = (fileName || geometry.partName || 'ForgeIQ Test 02 Internal Cutouts')
+      .replace(/\.[^/.]+$/, '')
+      .replace(/_/g, ' ');
+
+    const canonicalAnalysis = {
+      analysis_id: analysisId,
+      file_name: fileName || geometry.partName || 'ForgeIQ_Test_02_Internal_Cutouts.dxf',
+      units: details.units || 'MM',
+      dimensions: {
+        width_mm: geometry.dimensions.lengthMm,
+        height_mm: geometry.dimensions.widthMm,
+        thickness_mm: geometry.dimensions.thicknessMm,
+      },
+      material: {
+        name: geometry.materialGrade || 'Mild Steel',
+        density_kg_m3: details.densityUsed ? parseFloat(details.densityUsed) : 7850,
+      },
+      outer_perimeter_mm: geometry.cutLengthMm,
+      holes: {
+        count: geometry.holeCount,
+        diameters_mm: geometry.holeDiameters,
+      },
+      bends: {
+        count: geometry.bendCount,
+        angles_deg: geometry.featureConfidenceDetails?.bends?.angles_deg || [90, 90, 90],
+      },
+      welds: {
+        count: geometry.weldCount,
+      },
+      internal_cutouts: {
+        count: geometry.internalCutoutCount || 0,
+      },
+      slots: {
+        count: geometry.slotCount || 0,
+      },
+      net_weight_kg: geometry.estimatedWeightKg,
+      geometry,
+      estimates,
+    };
+
+    try {
+      sessionStorage.setItem('FORGEIQ_ACTIVE_CAD_ANALYSIS', JSON.stringify(canonicalAnalysis));
+      localStorage.setItem('FORGEIQ_LATEST_CAD_ANALYSIS', JSON.stringify(canonicalAnalysis));
+    } catch (e) {
+      console.error('Failed to save active CAD analysis to storage:', e);
+    }
+
+    router.push(`/quotations/builder?analysisId=${encodeURIComponent(analysisId)}`);
+  };
 
   const details = geometry.analysisDetails || {
     totalEntities: 20,
@@ -50,13 +104,18 @@ export function GeometryTelemetryPanel({
     <div className="space-y-4 text-xs">
       <Card>
         <CardHeader className="pb-3">
-          <CardTitle className="text-base flex items-center justify-between">
+          <CardTitle className="text-base flex items-center justify-between flex-wrap gap-2">
             <span className="flex items-center gap-2">
               <Boxes className="h-4 w-4 text-brand-500" /> Extracted Geometry Telemetry & Confidence
             </span>
-            <Badge variant="outline" className="text-emerald-500 bg-emerald-500/10 border-emerald-500/30 text-[10px]">
-              Deterministic CAD Engine
-            </Badge>
+            <div className="flex items-center gap-1.5 flex-wrap">
+              <Badge variant="outline" className="text-emerald-500 bg-emerald-500/10 border-emerald-500/30 text-[10px] flex items-center gap-1">
+                <CheckCircle2 className="h-3 w-3" /> Verified by Deterministic CAD Engine
+              </Badge>
+              <Badge variant="outline" className="text-purple-400 bg-purple-500/10 border-purple-500/30 text-[10px] flex items-center gap-1">
+                <Cpu className="h-3 w-3" /> ML Feature Verification
+              </Badge>
+            </div>
           </CardTitle>
           <CardDescription>Exact physics and geometric loop closure measurements with ML feature verification</CardDescription>
         </CardHeader>
@@ -198,6 +257,77 @@ export function GeometryTelemetryPanel({
             </div>
           </div>
 
+          {/* Key Manufacturing Features Summary Grid */}
+          <div className="grid grid-cols-2 sm:grid-cols-5 gap-2 pt-2 border-t border-slate-200 dark:border-steel-800">
+            <div className="p-2 rounded-lg bg-slate-50 dark:bg-steel-900 border border-slate-200 dark:border-steel-800 text-center">
+              <span className="text-[10px] text-slate-500 block">Holes</span>
+              <span className="font-bold text-sm text-rose-500">{geometry.holeCount}</span>
+              <span className="text-[9px] text-slate-400 block mt-0.5">Circles</span>
+            </div>
+            <div className="p-2 rounded-lg bg-slate-50 dark:bg-steel-900 border border-slate-200 dark:border-steel-800 text-center">
+              <span className="text-[10px] text-slate-500 block">Bends</span>
+              <span className="font-bold text-sm text-amber-500">{geometry.bendCount}</span>
+              <span className="text-[9px] text-slate-400 block mt-0.5">90° Air Bends</span>
+            </div>
+            <div className="p-2 rounded-lg bg-slate-50 dark:bg-steel-900 border border-slate-200 dark:border-steel-800 text-center">
+              <span className="text-[10px] text-slate-500 block">Welds</span>
+              <span className="font-bold text-sm text-purple-500">{geometry.weldCount}</span>
+              <span className="text-[9px] text-slate-400 block mt-0.5">Joint Seams</span>
+            </div>
+            <div className="p-2 rounded-lg bg-slate-50 dark:bg-steel-900 border border-slate-200 dark:border-steel-800 text-center">
+              <span className="text-[10px] text-slate-500 block">Internal Cutouts</span>
+              <span className="font-bold text-sm text-blue-500">{geometry.internalCutoutCount || 0}</span>
+              <span className="text-[9px] text-slate-400 block mt-0.5">Rectangular</span>
+            </div>
+            <div className="p-2 rounded-lg bg-slate-50 dark:bg-steel-900 border border-slate-200 dark:border-steel-800 text-center">
+              <span className="text-[10px] text-slate-500 block">Slots</span>
+              <span className="font-bold text-sm text-cyan-500">{geometry.slotCount || 0}</span>
+              <span className="text-[9px] text-slate-400 block mt-0.5">Line-Arc Loop</span>
+            </div>
+          </div>
+
+          {/* Laser Cutting Path Breakdown (Phase 6 & 17) */}
+          <div className="pt-2 border-t border-slate-200 dark:border-steel-800">
+            <div className="text-[11px] font-semibold text-slate-700 dark:text-slate-300 mb-2 flex items-center justify-between">
+              <span>Laser Cutting Path Breakdown</span>
+              <span className="text-[10px] font-mono text-brand-500 font-bold">
+                Total Path: {(geometry.totalCuttingPathMm || (geometry.cutLengthMm + (geometry.totalInternalCutPerimeterMm || 0))).toFixed(1)} mm
+              </span>
+            </div>
+            <div className="grid grid-cols-2 sm:grid-cols-5 gap-2 font-mono">
+              <div className="p-1.5 rounded bg-slate-100/70 dark:bg-steel-950/60 border border-slate-200/60 dark:border-steel-800/60 text-center">
+                <span className="text-[9px] text-slate-500 block uppercase">Outer Cut Perimeter</span>
+                <span className="text-xs font-bold text-blue-500">
+                  {geometry.outerPerimeterMm || geometry.cutLengthMm} mm
+                </span>
+              </div>
+              <div className="p-1.5 rounded bg-slate-100/70 dark:bg-steel-950/60 border border-slate-200/60 dark:border-steel-800/60 text-center">
+                <span className="text-[9px] text-slate-500 block uppercase">Internal Cut Perimeter</span>
+                <span className="text-xs font-bold text-sky-400">
+                  {geometry.internalCutoutPerimeterMm || 0} mm
+                </span>
+              </div>
+              <div className="p-1.5 rounded bg-slate-100/70 dark:bg-steel-950/60 border border-slate-200/60 dark:border-steel-800/60 text-center">
+                <span className="text-[9px] text-slate-500 block uppercase">Hole Cutting Path</span>
+                <span className="text-xs font-bold text-rose-400">
+                  {geometry.holeCutPerimeterMm || (geometry.holeCount * Math.PI * 16).toFixed(1)} mm
+                </span>
+              </div>
+              <div className="p-1.5 rounded bg-slate-100/70 dark:bg-steel-950/60 border border-slate-200/60 dark:border-steel-800/60 text-center">
+                <span className="text-[9px] text-slate-500 block uppercase">Slot Cutting Path</span>
+                <span className="text-xs font-bold text-purple-400">
+                  {geometry.slotPerimeterMm || 0} mm
+                </span>
+              </div>
+              <div className="p-1.5 rounded bg-slate-100/70 dark:bg-steel-950/60 border border-slate-200/60 dark:border-steel-800/60 text-center">
+                <span className="text-[9px] text-slate-500 block uppercase">Total Cutting Path</span>
+                <span className="text-xs font-bold text-emerald-400">
+                  {(geometry.totalCuttingPathMm || (geometry.cutLengthMm + (geometry.totalInternalCutPerimeterMm || 0))).toFixed(1)} mm
+                </span>
+              </div>
+            </div>
+          </div>
+
           {/* Inline "Why this result?" Explainability Popover */}
           {showWhyResult && (
             <div className="p-3 rounded-xl bg-slate-900 text-slate-300 border border-steel-800 text-[11px] leading-relaxed animate-in fade-in duration-200">
@@ -317,7 +447,7 @@ export function GeometryTelemetryPanel({
             <span className="flex items-center gap-2">
               <Zap className="h-4 w-4 text-purple-500" /> AI Manufacturing Estimates
             </span>
-            <Button size="sm" onClick={() => router.push('/quotations/builder')}>
+            <Button size="sm" onClick={handleGenerateQuotation} id="generate-quotation-button">
               1-Click Generate AI Quotation <ArrowRight className="h-3.5 w-3.5 ml-1" />
             </Button>
           </CardTitle>

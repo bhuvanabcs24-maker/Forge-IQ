@@ -436,7 +436,6 @@ npm run dev -p 3000
 ### What I'm Looking For
 - **Roles**: Backend Engineer, ML Engineer, Platform Engineer, SDE-2/3
 - **Companies**: Top tech (Google, Meta, Microsoft, NVIDIA), High-growth AI startups
-- **Target Comp**: 30 LPA+ (or USD equivalent)
 - **Locations**: Remote, Bangalore, Pune
 
 ### Why Hire Me

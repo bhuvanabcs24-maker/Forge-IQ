@@ -1,64 +1,112 @@
 {
   "file": "part_0037.dxf",
   "geometry": {
-    "width_mm": 250.0,
+    "width_mm": 200.0,
     "height_mm": 350.0,
     "thickness_mm": 1.5,
-    "material": "Mild Steel",
-    "cut_perimeter_mm": 1176.57,
-    "gross_area_mm2": 87300.0,
-    "net_area_mm2": 87142.92,
-    "hole_count": 2,
-    "bend_count": 2,
-    "weld_count": 2
+    "material": "Stainless Steel",
+    "cut_perimeter_mm": 1076.57,
+    "gross_area_mm2": 69800.0,
+    "net_area_mm2": 66658.41,
+    "hole_count": 10,
+    "bend_count": 1,
+    "weld_count": 1
   },
   "features": [
     {
       "entity_id": 0,
       "type": "outer_cut",
       "dxftype": "LWPOLYLINE",
-      "layer": "0"
+      "layer": "CONTOUR"
     },
     {
       "entity_id": 1,
       "type": "hole",
       "dxftype": "CIRCLE",
-      "layer": "0",
-      "radius": 5.0
+      "layer": "CUTOUTS",
+      "radius": 10.0
     },
     {
       "entity_id": 2,
       "type": "hole",
       "dxftype": "CIRCLE",
-      "layer": "0",
-      "radius": 5.0
+      "layer": "CUTOUTS",
+      "radius": 10.0
     },
     {
       "entity_id": 3,
-      "type": "bend",
-      "dxftype": "LINE",
-      "layer": "CONTINUOUS"
+      "type": "hole",
+      "dxftype": "CIRCLE",
+      "layer": "CUTOUTS",
+      "radius": 10.0
     },
     {
       "entity_id": 4,
-      "type": "bend",
-      "dxftype": "LINE",
-      "layer": "CONTINUOUS"
+      "type": "hole",
+      "dxftype": "CIRCLE",
+      "layer": "CUTOUTS",
+      "radius": 10.0
     },
     {
       "entity_id": 5,
-      "type": "weld",
-      "dxftype": "LINE",
-      "layer": "0"
+      "type": "hole",
+      "dxftype": "CIRCLE",
+      "layer": "CUTOUTS",
+      "radius": 10.0
     },
     {
       "entity_id": 6,
-      "type": "weld",
-      "dxftype": "LINE",
-      "layer": "0"
+      "type": "hole",
+      "dxftype": "CIRCLE",
+      "layer": "CUTOUTS",
+      "radius": 10.0
     },
     {
       "entity_id": 7,
+      "type": "hole",
+      "dxftype": "CIRCLE",
+      "layer": "CUTOUTS",
+      "radius": 10.0
+    },
+    {
+      "entity_id": 8,
+      "type": "hole",
+      "dxftype": "CIRCLE",
+      "layer": "CUTOUTS",
+      "radius": 10.0
+    },
+    {
+      "entity_id": 9,
+      "type": "hole",
+      "dxftype": "CIRCLE",
+      "layer": "CUTOUTS",
+      "radius": 10.0
+    },
+    {
+      "entity_id": 10,
+      "type": "hole",
+      "dxftype": "CIRCLE",
+      "layer": "CUTOUTS",
+      "radius": 10.0
+    },
+    {
+      "entity_id": 11,
+      "type": "bend",
+      "dxftype": "LINE",
+      "layer": "FOLD",
+      "length": 320.0,
+      "linetype": "DASHED"
+    },
+    {
+      "entity_id": 12,
+      "type": "weld",
+      "dxftype": "LINE",
+      "layer": "SEAMS",
+      "length": 80.0,
+      "linetype": "CONTINUOUS"
+    },
+    {
+      "entity_id": 13,
       "type": "annotation",
       "dxftype": "TEXT",
       "layer": "NOTES"

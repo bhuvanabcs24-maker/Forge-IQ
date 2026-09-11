@@ -1,0 +1,87 @@
+{
+  "file": "part_0069.dxf",
+  "geometry": {
+    "width_mm": 350.0,
+    "height_mm": 250.0,
+    "thickness_mm": 4.0,
+    "material": "Mild Steel",
+    "cut_perimeter_mm": 1176.57,
+    "gross_area_mm2": 87300.0,
+    "net_area_mm2": 86828.76,
+    "hole_count": 6,
+    "bend_count": 1,
+    "weld_count": 1
+  },
+  "features": [
+    {
+      "entity_id": 0,
+      "type": "outer_cut",
+      "dxftype": "LWPOLYLINE",
+      "layer": "PROFILE"
+    },
+    {
+      "entity_id": 1,
+      "type": "hole",
+      "dxftype": "CIRCLE",
+      "layer": "HOLES",
+      "radius": 5.0
+    },
+    {
+      "entity_id": 2,
+      "type": "hole",
+      "dxftype": "CIRCLE",
+      "layer": "HOLES",
+      "radius": 5.0
+    },
+    {
+      "entity_id": 3,
+      "type": "hole",
+      "dxftype": "CIRCLE",
+      "layer": "HOLES",
+      "radius": 5.0
+    },
+    {
+      "entity_id": 4,
+      "type": "hole",
+      "dxftype": "CIRCLE",
+      "layer": "HOLES",
+      "radius": 5.0
+    },
+    {
+      "entity_id": 5,
+      "type": "hole",
+      "dxftype": "CIRCLE",
+      "layer": "HOLES",
+      "radius": 5.0
+    },
+    {
+      "entity_id": 6,
+      "type": "hole",
+      "dxftype": "CIRCLE",
+      "layer": "HOLES",
+      "radius": 5.0
+    },
+    {
+      "entity_id": 7,
+      "type": "bend",
+      "dxftype": "LINE",
+      "layer": "BRAKE",
+      "length": 220.0,
+      "linetype": "DASHED"
+    },
+    {
+      "entity_id": 8,
+      "type": "weld",
+      "dxftype": "LINE",
+      "layer": "JOINTS",
+      "length": 80.0,
+      "linetype": "CONTINUOUS"
+    },
+    {
+      "entity_id": 9,
+      "type": "annotation",
+      "dxftype": "TEXT",
+      "layer": "NOTES"
+    }
+  ]
+}

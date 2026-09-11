@@ -1,0 +1,73 @@
+{
+  "file": "part_0145.dxf",
+  "geometry": {
+    "width_mm": 350.0,
+    "height_mm": 150.0,
+    "thickness_mm": 8.0,
+    "material": "Aluminum",
+    "cut_perimeter_mm": 1000.0,
+    "gross_area_mm2": 52500.0,
+    "net_area_mm2": 52047.61,
+    "hole_count": 4,
+    "bend_count": 0,
+    "weld_count": 2
+  },
+  "features": [
+    {
+      "entity_id": 0,
+      "type": "outer_cut",
+      "dxftype": "LWPOLYLINE",
+      "layer": "0"
+    },
+    {
+      "entity_id": 1,
+      "type": "hole",
+      "dxftype": "CIRCLE",
+      "layer": "0",
+      "radius": 6.0
+    },
+    {
+      "entity_id": 2,
+      "type": "hole",
+      "dxftype": "CIRCLE",
+      "layer": "0",
+      "radius": 6.0
+    },
+    {
+      "entity_id": 3,
+      "type": "hole",
+      "dxftype": "CIRCLE",
+      "layer": "0",
+      "radius": 6.0
+    },
+    {
+      "entity_id": 4,
+      "type": "hole",
+      "dxftype": "CIRCLE",
+      "layer": "0",
+      "radius": 6.0
+    },
+    {
+      "entity_id": 5,
+      "type": "weld",
+      "dxftype": "LINE",
+      "layer": "0",
+      "length": 80.0,
+      "linetype": "CONTINUOUS"
+    },
+    {
+      "entity_id": 6,
+      "type": "weld",
+      "dxftype": "LINE",
+      "layer": "0",
+      "length": 80.0,
+      "linetype": "CONTINUOUS"
+    },
+    {
+      "entity_id": 7,
+      "type": "annotation",
+      "dxftype": "TEXT",
+      "layer": "NOTES"
+    }
+  ]
+}

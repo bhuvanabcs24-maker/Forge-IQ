@@ -1,0 +1,95 @@
+{
+  "file": "part_0108.dxf",
+  "geometry": {
+    "width_mm": 400.0,
+    "height_mm": 150.0,
+    "thickness_mm": 1.5,
+    "material": "CRCA",
+    "cut_perimeter_mm": 1076.57,
+    "gross_area_mm2": 59800.0,
+    "net_area_mm2": 57915.04,
+    "hole_count": 6,
+    "bend_count": 1,
+    "weld_count": 2
+  },
+  "features": [
+    {
+      "entity_id": 0,
+      "type": "outer_cut",
+      "dxftype": "LWPOLYLINE",
+      "layer": "0"
+    },
+    {
+      "entity_id": 1,
+      "type": "hole",
+      "dxftype": "CIRCLE",
+      "layer": "0",
+      "radius": 10.0
+    },
+    {
+      "entity_id": 2,
+      "type": "hole",
+      "dxftype": "CIRCLE",
+      "layer": "0",
+      "radius": 10.0
+    },
+    {
+      "entity_id": 3,
+      "type": "hole",
+      "dxftype": "CIRCLE",
+      "layer": "0",
+      "radius": 10.0
+    },
+    {
+      "entity_id": 4,
+      "type": "hole",
+      "dxftype": "CIRCLE",
+      "layer": "0",
+      "radius": 10.0
+    },
+    {
+      "entity_id": 5,
+      "type": "hole",
+      "dxftype": "CIRCLE",
+      "layer": "0",
+      "radius": 10.0
+    },
+    {
+      "entity_id": 6,
+      "type": "hole",
+      "dxftype": "CIRCLE",
+      "layer": "0",
+      "radius": 10.0
+    },
+    {
+      "entity_id": 7,
+      "type": "bend",
+      "dxftype": "LINE",
+      "layer": "CONTINUOUS",
+      "length": 120.0,
+      "linetype": "DASHED"
+    },
+    {
+      "entity_id": 8,
+      "type": "weld",
+      "dxftype": "LINE",
+      "layer": "0",
+      "length": 80.0,
+      "linetype": "CONTINUOUS"
+    },
+    {
+      "entity_id": 9,
+      "type": "weld",
+      "dxftype": "LINE",
+      "layer": "0",
+      "length": 80.0,
+      "linetype": "CONTINUOUS"
+    },
+    {
+      "entity_id": 10,
+      "type": "annotation",
+      "dxftype": "TEXT",
+      "layer": "NOTES"
+    }
+  ]
+}

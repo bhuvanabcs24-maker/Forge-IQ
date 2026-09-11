@@ -13,8 +13,35 @@ export class FabricationPricingPlugin implements PricingPlugin {
     item: Partial<QuotationLineItemDetail>,
     rules: PricingRules
   ): QuotationLineItemDetail {
-    const qty = item.quantity || 1;
-    const weightKg = item.estimatedWeightKg?.value || 2.5;
+    const qty = Math.max(1, item.quantity || 1);
+
+    // Density adjustment on material override
+    const densityMap: Record<string, number> = {
+      'Mild Steel': 7850,
+      '304 Stainless Steel': 8000,
+      '316 Stainless Steel': 8000,
+      'Stainless Steel': 8000,
+      '6061-T6 Aluminum': 2700,
+      '5052-H32 Aluminum': 2700,
+      'Aluminum': 2700,
+      'A36 Carbon Steel': 7850,
+      'Carbon Steel': 7850,
+      'Galvanized Sheet': 7850,
+    };
+
+    const currentGrade = item.materialGrade || 'Mild Steel';
+    const originalGrade = item.cadMetrics?.originalMaterial || 'Mild Steel';
+    const isOverridden = item.isMaterialOverridden || (item.sourceCadAnalysisId ? currentGrade !== originalGrade : false);
+
+    let weightKg = item.estimatedWeightKg?.value || 2.5;
+    if (item.cadMetrics?.netWeightKg && isOverridden) {
+      const origDensity = densityMap[originalGrade] || 7850;
+      const newDensity = densityMap[currentGrade] || 7850;
+      weightKg = Number((item.cadMetrics.netWeightKg * (newDensity / origDensity)).toFixed(2));
+    } else if (item.cadMetrics?.netWeightKg) {
+      weightKg = item.cadMetrics.netWeightKg;
+    }
+
     const laserMins = item.estimatedLaserRuntimeMins?.value || 12;
     const bendsCount = item.estimatedBendsCount?.value || 4;
     const laborHrs = item.estimatedLaborHours?.value || 0.5;
@@ -22,7 +49,7 @@ export class FabricationPricingPlugin implements PricingPlugin {
     const complexity = item.complexityFactor?.value || 1.1;
 
     // 1. Material Cost ($)
-    const matRatePerKg = rules.materialRates[item.materialGrade || '304 Stainless Steel'] || 4.5;
+    const matRatePerKg = rules.materialRates[currentGrade] || rules.materialRates['Mild Steel'] || 140;
     const rawMaterialCost = weightKg * matRatePerKg * (1 + scrapPct / 100);
 
     // 2. Machine Runtime Cost ($)
@@ -46,12 +73,23 @@ export class FabricationPricingPlugin implements PricingPlugin {
     return {
       id: item.id || `li-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`,
       partName: item.partName || 'Custom Metal Component',
-      material: item.material || 'Stainless Steel',
-      materialGrade: item.materialGrade || '304 Stainless Steel',
+      material: item.material || currentGrade,
+      materialGrade: currentGrade,
       thickness: item.thickness || '3mm',
       dimensions: item.dimensions || '300mm x 400mm',
       quantity: qty,
-      estimatedWeightKg: item.estimatedWeightKg || { value: weightKg, confidence: 92 },
+      sourceCadAnalysisId: item.sourceCadAnalysisId,
+      sourceCadFileName: item.sourceCadFileName,
+      isMaterialOverridden: isOverridden,
+      materialSource: isOverridden ? 'User Override' : (item.sourceCadAnalysisId ? 'CAD Source' : 'Standard'),
+      cadMetrics: item.cadMetrics,
+      estimatedWeightKg: {
+        value: weightKg,
+        confidence: item.estimatedWeightKg?.confidence || 95,
+        aiAssumptionNotes: isOverridden
+          ? `Density adjusted for ${currentGrade} (${densityMap[currentGrade] || 7850} kg/m³)`
+          : item.estimatedWeightKg?.aiAssumptionNotes,
+      },
       estimatedLaserRuntimeMins: item.estimatedLaserRuntimeMins || { value: laserMins, confidence: 88 },
       estimatedBendsCount: item.estimatedBendsCount || { value: bendsCount, confidence: 95 },
       estimatedLaborHours: item.estimatedLaborHours || { value: laborHrs, confidence: 85 },

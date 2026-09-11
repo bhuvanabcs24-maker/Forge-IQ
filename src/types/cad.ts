@@ -60,6 +60,7 @@ export interface ExtractedCadGeometry {
     aabbWidthMm?: number;
     rotationDeg?: number;
   };
+  analysisId?: string;
   materialGrade: string;
   holeCount: number;
   holeDiameters?: Record<string, number>;
@@ -67,9 +68,19 @@ export interface ExtractedCadGeometry {
   bendCount: number;
   weldCount: number;
   cutLengthMm: number;
+  outerPerimeterMm?: number;
   internalCutoutCount?: number;
   internalCutoutPerimeterMm?: number;
+  slotCount?: number;
+  slotPerimeterMm?: number;
+  holeCutPerimeterMm?: number;
   totalInternalCutPerimeterMm?: number;
+  totalCuttingPathMm?: number;
+  outer_perimeter_mm?: number;
+  internal_cut_perimeter_mm?: number;
+  hole_cut_perimeter_mm?: number;
+  slot_cut_perimeter_mm?: number;
+  total_cutting_path_mm?: number;
   weldLengthMm: number;
   surfaceAreaSqFt: number;
   grossAreaMm2?: number;

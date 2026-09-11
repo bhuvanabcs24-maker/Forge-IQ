@@ -1,0 +1,97 @@
+{
+  "file": "part_0090.dxf",
+  "geometry": {
+    "width_mm": 500.0,
+    "height_mm": 250.0,
+    "thickness_mm": 5.0,
+    "material": "Stainless Steel",
+    "cut_perimeter_mm": 1476.57,
+    "gross_area_mm2": 124800.0,
+    "net_area_mm2": 124485.84,
+    "hole_count": 4,
+    "bend_count": 4,
+    "weld_count": 1
+  },
+  "features": [
+    {
+      "entity_id": 0,
+      "type": "outer_cut",
+      "dxftype": "LWPOLYLINE",
+      "layer": "OUTLINE"
+    },
+    {
+      "entity_id": 1,
+      "type": "hole",
+      "dxftype": "CIRCLE",
+      "layer": "HOLES",
+      "radius": 5.0
+    },
+    {
+      "entity_id": 2,
+      "type": "hole",
+      "dxftype": "CIRCLE",
+      "layer": "HOLES",
+      "radius": 5.0
+    },
+    {
+      "entity_id": 3,
+      "type": "hole",
+      "dxftype": "CIRCLE",
+      "layer": "HOLES",
+      "radius": 5.0
+    },
+    {
+      "entity_id": 4,
+      "type": "hole",
+      "dxftype": "CIRCLE",
+      "layer": "HOLES",
+      "radius": 5.0
+    },
+    {
+      "entity_id": 5,
+      "type": "bend",
+      "dxftype": "LINE",
+      "layer": "CREASE",
+      "length": 220.0,
+      "linetype": "DASHED"
+    },
+    {
+      "entity_id": 6,
+      "type": "bend",
+      "dxftype": "LINE",
+      "layer": "CREASE",
+      "length": 220.0,
+      "linetype": "DASHED"
+    },
+    {
+      "entity_id": 7,
+      "type": "bend",
+      "dxftype": "LINE",
+      "layer": "CREASE",
+      "length": 220.0,
+      "linetype": "DASHED"
+    },
+    {
+      "entity_id": 8,
+      "type": "bend",
+      "dxftype": "LINE",
+      "layer": "CREASE",
+      "length": 220.0,
+      "linetype": "DASHED"
+    },
+    {
+      "entity_id": 9,
+      "type": "weld",
+      "dxftype": "LINE",
+      "layer": "SEAMS",
+      "length": 80.0,
+      "linetype": "CONTINUOUS"
+    },
+    {
+      "entity_id": 10,
+      "type": "annotation",
+      "dxftype": "TEXT",
+      "layer": "NOTES"
+    }
+  ]
+}

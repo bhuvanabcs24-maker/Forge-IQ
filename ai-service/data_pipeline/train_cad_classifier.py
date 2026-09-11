@@ -35,13 +35,19 @@ def extract_entity_feature_vector(feat: dict, geom: dict) -> list:
     is_text = 1.0 if dxftype in ("TEXT", "MTEXT") else 0.0
 
     radius = float(feat.get("radius", 0.0))
-    has_bend_hint = 1.0 if any(k in layer for k in ["BEND", "FOLD", "BRAKE", "DASH"]) else 0.0
-    has_weld_hint = 1.0 if any(k in layer for k in ["WELD", "SEAM"]) else 0.0
-    has_cut_hint = 1.0 if any(k in layer for k in ["CUT", "PROFILE", "OUTLINE"]) else 0.0
+    length = float(feat.get("length", 0.0))
+    linetype = str(feat.get("linetype", "")).upper()
+    is_dashed = 1.0 if any(k in linetype for k in ["DASH", "HIDDEN", "PHANTOM", "CENTER"]) else 0.0
+
+    has_bend_hint = 1.0 if any(k in layer for k in ["BEND", "FOLD", "BRAKE", "DASH", "CREASE"]) else 0.0
+    has_weld_hint = 1.0 if any(k in layer for k in ["WELD", "SEAM", "JOINT"]) else 0.0
+    has_cut_hint = 1.0 if any(k in layer for k in ["CUT", "PROFILE", "OUTLINE", "CONTOUR"]) else 0.0
     has_hole_hint = 1.0 if any(k in layer for k in ["HOLE", "DRILL", "CUTOUT"]) else 0.0
 
     w = float(geom.get("width_mm", 400.0))
     h = float(geom.get("height_mm", 300.0))
+    diag = (w * w + h * h) ** 0.5
+    length_ratio = min(2.0, length / max(diag, 1.0))
 
     return [
         is_circle,
@@ -49,6 +55,8 @@ def extract_entity_feature_vector(feat: dict, geom: dict) -> list:
         is_line,
         is_text,
         radius,
+        length_ratio,
+        is_dashed,
         has_bend_hint,
         has_weld_hint,
         has_cut_hint,

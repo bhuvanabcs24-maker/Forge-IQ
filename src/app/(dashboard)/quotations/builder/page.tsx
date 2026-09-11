@@ -16,7 +16,9 @@ export default function QuoteBuilderPage() {
         ]}
       />
 
-      <QuoteBuilder />
+      <React.Suspense fallback={<div className="p-8 text-center text-slate-500 text-sm">Loading Quote Builder...</div>}>
+        <QuoteBuilder />
+      </React.Suspense>
     </div>
   );
 }

@@ -1,16 +1,16 @@
 {
   "file": "part_0035.dxf",
   "geometry": {
-    "width_mm": 250.0,
+    "width_mm": 400.0,
     "height_mm": 350.0,
-    "thickness_mm": 4.0,
+    "thickness_mm": 2.0,
     "material": "CRCA",
-    "cut_perimeter_mm": 1176.57,
-    "gross_area_mm2": 87300.0,
-    "net_area_mm2": 87199.47,
-    "hole_count": 2,
-    "bend_count": 4,
-    "weld_count": 2
+    "cut_perimeter_mm": 1476.57,
+    "gross_area_mm2": 139800.0,
+    "net_area_mm2": 138895.22,
+    "hole_count": 8,
+    "bend_count": 1,
+    "weld_count": 1
   },
   "features": [
     {
@@ -24,53 +24,75 @@
       "type": "hole",
       "dxftype": "CIRCLE",
       "layer": "HOLES",
-      "radius": 4.0
+      "radius": 6.0
     },
     {
       "entity_id": 2,
       "type": "hole",
       "dxftype": "CIRCLE",
       "layer": "HOLES",
-      "radius": 4.0
+      "radius": 6.0
     },
     {
       "entity_id": 3,
-      "type": "bend",
-      "dxftype": "LINE",
-      "layer": "BEND"
+      "type": "hole",
+      "dxftype": "CIRCLE",
+      "layer": "HOLES",
+      "radius": 6.0
     },
     {
       "entity_id": 4,
-      "type": "bend",
-      "dxftype": "LINE",
-      "layer": "BEND"
+      "type": "hole",
+      "dxftype": "CIRCLE",
+      "layer": "HOLES",
+      "radius": 6.0
     },
     {
       "entity_id": 5,
-      "type": "bend",
-      "dxftype": "LINE",
-      "layer": "BEND"
+      "type": "hole",
+      "dxftype": "CIRCLE",
+      "layer": "HOLES",
+      "radius": 6.0
     },
     {
       "entity_id": 6,
-      "type": "bend",
-      "dxftype": "LINE",
-      "layer": "BEND"
+      "type": "hole",
+      "dxftype": "CIRCLE",
+      "layer": "HOLES",
+      "radius": 6.0
     },
     {
       "entity_id": 7,
-      "type": "weld",
-      "dxftype": "LINE",
-      "layer": "WELDS"
+      "type": "hole",
+      "dxftype": "CIRCLE",
+      "layer": "HOLES",
+      "radius": 6.0
     },
     {
       "entity_id": 8,
-      "type": "weld",
-      "dxftype": "LINE",
-      "layer": "WELDS"
+      "type": "hole",
+      "dxftype": "CIRCLE",
+      "layer": "HOLES",
+      "radius": 6.0
     },
     {
       "entity_id": 9,
+      "type": "bend",
+      "dxftype": "LINE",
+      "layer": "BEND",
+      "length": 320.0,
+      "linetype": "DASHED"
+    },
+    {
+      "entity_id": 10,
+      "type": "weld",
+      "dxftype": "LINE",
+      "layer": "WELDS",
+      "length": 80.0,
+      "linetype": "CONTINUOUS"
+    },
+    {
+      "entity_id": 11,
       "type": "annotation",
       "dxftype": "TEXT",
       "layer": "NOTES"

@@ -107,28 +107,42 @@ class FeatureDetectors:
         entities: List[Dict[str, Any]],
         text_annotations: List[str],
         outer_bbox: Optional[Tuple[float, float, float, float]] = None,
+        cut_entity_ids: Optional[List[int]] = None,
     ) -> Dict[str, Any]:
         """
         Detects press brake bend lines using layer hints, linetype, geometry, and annotations.
+        Supports non-semantic layer names (e.g. CENTERLINES) via geometric structural patterns.
         """
         bends: List[Dict[str, Any]] = []
         bend_entities: List[int] = []
+        cut_ids = set(cut_entity_ids or [])
 
-        # Check for angle specifications in drawing text (e.g. 90°, R5, BEND)
+        # Check for angle specifications and bend counts in drawing text (e.g. BENDS: 3 X 90 DEG)
         detected_angle = 90.0  # default sheet metal bend
+        expected_bend_count = None
         for txt in text_annotations:
+            count_match = re.search(r"BENDS?\s*[:=\-]?\s*(\d+)", txt, re.IGNORECASE)
+            if count_match:
+                expected_bend_count = int(count_match.group(1))
+
             angle_match = re.search(r"(\d+(?:\.\d+)?)\s*(?:°|deg|degrees)", txt, re.IGNORECASE)
             if angle_match:
                 detected_angle = float(angle_match.group(1))
-                break
 
         EXCLUDED_BEND_LAYERS = [
-            "CONSTRUCTION", "DEFPOINTS", "CENTER", "DIM", "REF", "AUX",
+            "CONSTRUCTION", "DEFPOINTS", "DIM", "REF", "AUX",
             "TITLE", "BORDER", "ANNO", "NOTE", "HATCH", "WELD", "CUT"
         ]
 
+        sheet_w = (outer_bbox[2] - outer_bbox[0]) if outer_bbox else 0.0
+        sheet_h = (outer_bbox[3] - outer_bbox[1]) if outer_bbox else 0.0
+
         for e in entities:
             if e.get("type") == "LINE":
+                eid = e["id"]
+                if eid in cut_ids:
+                    continue
+
                 layer = str(e.get("layer", "")).upper()
                 linetype = str(e.get("linetype", "")).upper()
                 length = float(e.get("length", 0.0))
@@ -137,19 +151,42 @@ class FeatureDetectors:
                 if any(ex in layer for ex in EXCLUDED_BEND_LAYERS):
                     continue
 
-                # Exclude centerline and phantom linetypes (used for holes/reference geometry)
-                if any(ex in linetype for ex in ["CENTER", "PHANTOM", "DOT"]):
+                # Exclude dot linetypes
+                if any(ex in linetype for ex in ["DOT"]):
                     continue
 
-                # Heuristic: Layer has BEND/FOLD/FORM or linetype has DASHED/HIDDEN
+                # Exclude lines completely outside bounding box if provided
+                if outer_bbox:
+                    sx, sy = e["start"]
+                    ex, ey = e["end"]
+                    min_x, min_y, max_x, max_y = outer_bbox
+                    if (max(sx, ex) < min_x - 1.0 or min(sx, ex) > max_x + 1.0 or
+                        max(sy, ey) < min_y - 1.0 or min(sy, ey) > max_y + 1.0):
+                        continue
+
+                # Classification Criteria:
+                # 1. Semantic layer (BEND/FOLD/FORM)
                 is_bend_layer = any(k in layer for k in ["BEND", "FOLD", "BRAKE", "CREASE", "FORM"])
+                # 2. Semantic linetype (DASHED/HIDDEN)
                 is_bend_linetype = any(k in linetype for k in ["DASHED", "HIDDEN", "DASH"])
+                # 3. Geometric structural pattern (e.g. on CENTERLINES or generic layers spanning sheet)
+                is_structural_bend = False
+                if sheet_h > 0 and sheet_w > 0:
+                    dx = abs(e["end"][0] - e["start"][0])
+                    dy = abs(e["end"][1] - e["start"][1])
+                    # Line spans substantial portion of sheet height or width
+                    is_vertical_span = (dy >= 0.55 * sheet_h) and (dx < 0.05 * sheet_w)
+                    is_horizontal_span = (dx >= 0.55 * sheet_w) and (dy < 0.05 * sheet_h)
+                    if (is_vertical_span or is_horizontal_span) and length > 10.0:
+                        # Corroborate with drawing text or layer naming
+                        has_bend_note = any("BEND" in t.upper() for t in text_annotations)
+                        if has_bend_note or "CENTER" in layer or "FAB" in layer:
+                            is_structural_bend = True
 
-                if (is_bend_layer or is_bend_linetype) and length > 5.0:
-                    confidence = 0.96 if is_bend_layer else 0.88
-
+                if (is_bend_layer or is_bend_linetype or is_structural_bend) and length > 5.0:
+                    confidence = 0.98 if is_bend_layer else (0.95 if is_structural_bend else 0.88)
                     bends.append({
-                        "entity_id": e["id"],
+                        "entity_id": eid,
                         "line": {
                             "start": [round(c, 2) for c in e["start"]],
                             "end": [round(c, 2) for c in e["end"]],
@@ -159,7 +196,7 @@ class FeatureDetectors:
                         "confidence": confidence,
                         "layer": e.get("layer"),
                     })
-                    bend_entities.append(e["id"])
+                    bend_entities.append(eid)
 
         # Sort bends by starting X then Y
         bends.sort(key=lambda b: (b["line"]["start"][0], b["line"]["start"][1]))
@@ -174,34 +211,57 @@ class FeatureDetectors:
             "source_entities": bend_entities,
             "bends": bends,
             "default_angle_deg": detected_angle,
+            "angles_deg": [b.get("angle_deg", detected_angle) for b in bends],
             "warnings": [],
         }
 
     @classmethod
-    def detect_welds(cls, entities: List[Dict[str, Any]]) -> Dict[str, Any]:
+    def detect_welds(
+        cls,
+        entities: List[Dict[str, Any]],
+        cut_entity_ids: Optional[List[int]] = None,
+        bend_entity_ids: Optional[List[int]] = None,
+        outer_bbox: Optional[Tuple[float, float, float, float]] = None,
+    ) -> Dict[str, Any]:
         """
         Identifies weld seams and symbols, ensuring they are isolated from cutting perimeter.
+        Supports both semantic layers (WELD, SEAM, JOIN) and detail/fabrication layers (DETAIL_01).
         """
         welds: List[Dict[str, Any]] = []
         weld_entities: List[int] = []
         total_length = 0.0
+        excluded_ids = set((cut_entity_ids or []) + (bend_entity_ids or []))
+
+        EXCLUDED_WELD_LAYERS = ["CONSTRUCTION", "DEFPOINTS", "DIM", "REF", "AUX", "TITLE", "BORDER", "ANNO"]
 
         for e in entities:
             if e.get("type") == "LINE":
+                eid = e["id"]
+                if eid in excluded_ids:
+                    continue
+
                 layer = str(e.get("layer", "")).upper()
-                if any(k in layer for k in ["WELD", "SEAM", "JOIN"]):
-                    length = float(e.get("length", 0.0))
+                if any(ex in layer for ex in EXCLUDED_WELD_LAYERS):
+                    continue
+
+                length = float(e.get("length", 0.0))
+
+                # Check semantic layer or detail/fabrication indication lines
+                is_weld_layer = any(k in layer for k in ["WELD", "SEAM", "JOIN"])
+                is_detail_layer = any(k in layer for k in ["DETAIL", "FAB_DETAIL", "FAB_WELD"])
+
+                if (is_weld_layer or is_detail_layer) and length > 5.0:
                     welds.append({
-                        "entity_id": e["id"],
+                        "entity_id": eid,
                         "line": {
                             "start": [round(c, 2) for c in e["start"]],
                             "end": [round(c, 2) for c in e["end"]],
                             "length_mm": round(length, 2),
                         },
-                        "confidence": 0.96,
+                        "confidence": 0.96 if is_weld_layer else 0.92,
                         "layer": e.get("layer"),
                     })
-                    weld_entities.append(e["id"])
+                    weld_entities.append(eid)
                     total_length += length
 
         confidence = 0.95 if len(welds) > 0 else 0.98
@@ -220,16 +280,22 @@ class FeatureDetectors:
     @classmethod
     def extract_metadata_notes(cls, entities: List[Dict[str, Any]]) -> Dict[str, Any]:
         """
-        Extracts material, thickness, and drawing notes using regex patterns.
+        Extracts material, thickness, and drawing notes using prioritized rules.
+        Priority for thickness:
+        1. Explicit CAD metadata / dimensions
+        2. Drawing notes with explicit keyword (THICKNESS / THK)
+        3. Single letter 'T' with strict assignment delimiter (T = / T:)
+        4. User-provided value (if specified)
+        5. Configurable fallback
         """
-        texts: List[str] = []
+        texts: List[Tuple[int, str]] = []
         for e in entities:
             if e.get("type") in ("TEXT", "MTEXT"):
                 txt = str(e.get("text", "")).strip()
                 if txt:
-                    texts.append(txt)
+                    texts.append((e["id"], txt))
 
-        combined_notes = " | ".join(texts)
+        combined_notes = " | ".join(t[1] for t in texts)
 
         # Extract material
         detected_material: Optional[str] = None
@@ -241,21 +307,52 @@ class FeatureDetectors:
         if mat_match:
             detected_material = mat_match.group(1).strip()
         else:
-            # Look for common material names
             for mat_key in MATERIAL_DENSITIES.keys():
                 if mat_key in combined_notes.upper():
                     detected_material = mat_key.title()
                     break
 
-        # Extract thickness
+        # Priority extraction for thickness
         detected_thickness_mm: Optional[float] = None
-        thk_match = re.search(
-            r"(?:Thickness|Thk|T)\s*[:=\-]?\s*(\d+(?:\.\d+)?)\s*(?:mm|in)?",
-            combined_notes,
-            re.IGNORECASE,
-        )
-        if thk_match:
-            detected_thickness_mm = float(thk_match.group(1))
+        thickness_source_id: Optional[int] = None
+        thickness_method: str = "CONFIGURABLE_FALLBACK"
+        thickness_conf: float = 0.85
+
+        # Priority 1: Check DIMENSION entities
+        for e in entities:
+            if e.get("type") == "DIMENSION":
+                dim_txt = str(e.get("text", "")).strip()
+                m_dim = re.search(r"\b(?:THICKNESS|THK)\s*[:=\-]?\s*(\d+(?:\.\d+)?)\b", dim_txt, re.IGNORECASE)
+                if m_dim:
+                    detected_thickness_mm = float(m_dim.group(1))
+                    thickness_source_id = e["id"]
+                    thickness_method = "CAD_DIMENSION"
+                    thickness_conf = 0.99
+                    break
+
+        # Priority 2: Check drawing notes for unambiguous THICKNESS or THK keywords
+        if detected_thickness_mm is None:
+            for eid, txt in texts:
+                m_thk = re.search(r"\b(?:THICKNESS|THK)\s*[:=\-]?\s*(\d+(?:\.\d+)?)\s*(?:MM|IN)?\b", txt, re.IGNORECASE)
+                if m_thk:
+                    detected_thickness_mm = float(m_thk.group(1))
+                    thickness_source_id = eid
+                    thickness_method = "ANNOTATION_TEXT"
+                    thickness_conf = 0.98
+                    break
+
+        # Priority 3: Check single letter T with strict delimiter (e.g. 'T: 6mm', 'T=6') - NOT hyphenated like 'TEST-02'
+        if detected_thickness_mm is None:
+            for eid, txt in texts:
+                m_t = re.search(r"\bT\s*[:=]\s*(\d+(?:\.\d+)?)\s*(?:MM)?\b", txt, re.IGNORECASE)
+                if m_t:
+                    detected_thickness_mm = float(m_t.group(1))
+                    thickness_source_id = eid
+                    thickness_method = "ANNOTATION_TEXT_SHORT"
+                    thickness_conf = 0.93
+                    break
+
+        thickness_val = detected_thickness_mm if detected_thickness_mm is not None else 6.0
 
         # Check for stated envelope (for cross-validation)
         envelope_match = re.search(
@@ -269,9 +366,16 @@ class FeatureDetectors:
 
         return {
             "material": detected_material or "Unknown",
-            "thickness_mm": detected_thickness_mm or 6.0,  # default 6mm if unspecified
+            "thickness_mm": thickness_val,
+            "thickness_details": {
+                "value": thickness_val,
+                "unit": "mm",
+                "confidence": thickness_conf,
+                "method": thickness_method,
+                "source_entity": thickness_source_id,
+            },
             "stated_envelope": stated_envelope,
-            "notes": texts,
+            "notes": [t[1] for t in texts],
             "has_material_specified": detected_material is not None,
             "has_thickness_specified": detected_thickness_mm is not None,
         }
@@ -284,9 +388,11 @@ class FeatureDetectors:
         thickness_mm: float,
         material_name: str,
         cutout_area_mm2: float = 0.0,
+        slot_area_mm2: float = 0.0,
     ) -> Dict[str, Any]:
         """
-        Calculates sheet volume, gross mass, and net mass accounting for holes and internal cutouts.
+        Calculates sheet volume, gross mass, and net mass accounting for holes,
+        internal cutouts, and manufacturing slots.
         """
         clean_mat = material_name.strip().upper()
         density = MATERIAL_DENSITIES.get(clean_mat, DEFAULT_DENSITY)
@@ -298,7 +404,7 @@ class FeatureDetectors:
         elif is_assumed:
             warnings.append(f"Unrecognized material '{material_name}'; default density {DEFAULT_DENSITY:.0f} kg/m³ applied.")
 
-        total_void_area_mm2 = hole_area_mm2 + cutout_area_mm2
+        total_void_area_mm2 = hole_area_mm2 + cutout_area_mm2 + slot_area_mm2
         net_area_mm2 = max(0.0, gross_area_mm2 - total_void_area_mm2)
 
         # Convert to SI units: m² and m

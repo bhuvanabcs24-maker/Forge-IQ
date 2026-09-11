@@ -4,11 +4,15 @@ export const DEFAULT_FABRICATION_PRICING_RULES: PricingRules = {
   id: 'rules-fab-default',
   industry: 'Fabrication',
   materialRates: {
+    'Mild Steel': 140, // ₹/kg
     '304 Stainless Steel': 380, // ₹/kg
     '316 Stainless Steel': 520, // ₹/kg
+    'Stainless Steel': 380, // ₹/kg
     '6061-T6 Aluminum': 310, // ₹/kg
     '5052-H32 Aluminum': 270, // ₹/kg
+    'Aluminum': 310, // ₹/kg
     'A36 Carbon Steel': 150, // ₹/kg
+    'Carbon Steel': 150, // ₹/kg
     'Galvanized Sheet': 170, // ₹/kg
   },
   machineRates: {

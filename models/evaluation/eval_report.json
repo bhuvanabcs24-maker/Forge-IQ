@@ -1,0 +1,91 @@
+{
+  "dataset": {
+    "test_samples_count": 15,
+    "total_test_entities": 164
+  },
+  "accuracy": 1.0,
+  "class_metrics": {
+    "outer_cut": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1_score": 1.0,
+      "support": 15.0
+    },
+    "hole": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1_score": 1.0,
+      "support": 94.0
+    },
+    "bend": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1_score": 1.0,
+      "support": 22.0
+    },
+    "weld": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1_score": 1.0,
+      "support": 18.0
+    },
+    "annotation": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1_score": 1.0,
+      "support": 15.0
+    }
+  },
+  "confusion_matrix": {
+    "labels": [
+      "outer_cut",
+      "hole",
+      "bend",
+      "weld",
+      "annotation"
+    ],
+    "matrix": [
+      [
+        15,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        94,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        22,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        18,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        15
+      ]
+    ]
+  },
+  "targets_met": {
+    "hole_f1_ge_99": true,
+    "bend_f1_ge_95": true,
+    "weld_f1_ge_95": true,
+    "cut_f1_ge_95": true
+  }
+}

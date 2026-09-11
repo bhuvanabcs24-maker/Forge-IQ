@@ -171,12 +171,12 @@ function parseDxfLocally(dxfContent: string, fileName: string): ExtractedCadGeom
           j += 2;
         }
         if (textStr.includes('Material:')) {
-          const m = textStr.match(/Material:\s*([^|]+)/i);
+          const m = textStr.match(/Material\s*[:=\-]\s*([^|]+)/i);
           if (m) materialGrade = m[1].trim();
         }
-        if (textStr.includes('Thickness:')) {
-          const m = textStr.match(/Thickness:\s*(\d+(?:\.\d+)?)/i);
-          if (m) thicknessMm = parseFloat(m[1]);
+        const mThk = textStr.match(/\b(?:Thickness|Thk)\s*[:=\-]?\s*(\d+(?:\.\d+)?)/i);
+        if (mThk) {
+          thicknessMm = parseFloat(mThk[1]);
         }
         i = j - 2;
       }
@@ -199,7 +199,10 @@ function parseDxfLocally(dxfContent: string, fileName: string): ExtractedCadGeom
     holeDiameters[key] = (holeDiameters[key] || 0) + 1;
   }
 
+  const analysisId = `cad-${Math.abs(hashString(fileName + outerPerimeterMm)) % 100000000}`;
+
   return {
+    analysisId,
     partName: fileName.replace(/\.[^/.]+$/, '').replace(/_/g, ' '),
     drawingNumber: `DWG-2026-${Math.floor(1000 + Math.random() * 9000)}`,
     fileType: 'dxf',
@@ -215,6 +218,8 @@ function parseDxfLocally(dxfContent: string, fileName: string): ExtractedCadGeom
     bendCount: bends.length,
     weldCount: welds.length,
     cutLengthMm: outerPerimeterMm || 1382.43,
+    internalCutoutCount: 0,
+    slotCount: 0,
     weldLengthMm: Math.round(weldLengthMm),
     surfaceAreaSqFt: Number((grossAreaMm2 * 1.07639e-5).toFixed(2)),
     grossAreaMm2: Math.round(grossAreaMm2),
@@ -249,6 +254,15 @@ function parseDxfLocally(dxfContent: string, fileName: string): ExtractedCadGeom
   };
 }
 
+function hashString(str: string): number {
+  let hash = 0;
+  for (let i = 0; i < str.length; i++) {
+    hash = (hash << 5) - hash + str.charCodeAt(i);
+    hash |= 0;
+  }
+  return Math.abs(hash);
+}
+
 export async function POST(req: NextRequest) {
   try {
     const contentType = req.headers.get('content-type') || '';
@@ -281,8 +295,11 @@ export async function POST(req: NextRequest) {
         const json = await pyRes.json();
         if (json.success && json.geometry) {
           const estimates = calculateCadEstimates(json.geometry);
+          const canonicalId = json.analysis_id || json.geometry.analysisId || `cad-${Date.now()}`;
+          json.geometry.analysisId = canonicalId;
           return NextResponse.json({
-            id: `cad-${Date.now()}`,
+            id: canonicalId,
+            analysis_id: canonicalId,
             fileName,
             geometry: json.geometry,
             estimates,
@@ -297,9 +314,10 @@ export async function POST(req: NextRequest) {
     // Local deterministic extraction fallback
     const geometry = parseDxfLocally(dxfContent, fileName);
     const estimates = calculateCadEstimates(geometry);
+    const canonicalId = geometry.analysisId || `cad-${Date.now()}`;
 
     const result: CadParsingResult = {
-      id: `cad-${Date.now()}`,
+      id: canonicalId,
       fileName,
       geometry,
       estimates,
