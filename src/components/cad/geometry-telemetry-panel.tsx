@@ -50,14 +50,24 @@ export function GeometryTelemetryPanel({
       },
       bends: {
         count: geometry.bendCount,
-        angles_deg: geometry.featureConfidenceDetails?.bends?.angles_deg || [90, 90, 90],
+        bend_entities: geometry.bend_entities || geometry.featureConfidenceDetails?.bends?.source_entities || [],
+        angles_deg:
+          geometry.bendAngles ||
+          geometry.bend_angles ||
+          geometry.featureConfidenceDetails?.bends?.angles_deg ||
+          Array(geometry.bendCount || 0).fill(90),
       },
       welds: {
         count: geometry.weldCount,
       },
       internal_cutouts: {
         count: geometry.internalCutoutCount || 0,
+        perimeter_mm: geometry.internalCutoutPerimeterMm || 0,
+        area_mm2: geometry.internalCutoutAreaMm2 || geometry.internal_cutout_area_mm2 || 0,
       },
+      cutout_area_mm2: geometry.internalCutoutAreaMm2 || geometry.internal_cutout_area_mm2 || 0,
+      cutout_perimeter_mm: geometry.internalCutoutPerimeterMm || 0,
+      total_cutting_path_mm: geometry.totalCuttingPathMm || 0,
       slots: {
         count: geometry.slotCount || 0,
       },
@@ -289,7 +299,11 @@ export function GeometryTelemetryPanel({
             <div className="p-2 rounded-lg bg-slate-50 dark:bg-steel-900 border border-slate-200 dark:border-steel-800 text-center">
               <span className="text-[10px] text-slate-500 block">Internal Cutouts</span>
               <span className="font-bold text-sm text-blue-500">{geometry.internalCutoutCount || 0}</span>
-              <span className="text-[9px] text-slate-400 block mt-0.5">Rectangular</span>
+              <span className="text-[9px] text-slate-400 block mt-0.5">
+                {(geometry.internalCutoutAreaMm2 || geometry.internal_cutout_area_mm2)
+                  ? `${geometry.internalCutoutAreaMm2 || geometry.internal_cutout_area_mm2} mm²`
+                  : 'Rectangular'}
+              </span>
             </div>
             <div className="p-2 rounded-lg bg-slate-50 dark:bg-steel-900 border border-slate-200 dark:border-steel-800 text-center">
               <span className="text-[10px] text-slate-500 block">Slots</span>
@@ -437,6 +451,23 @@ export function GeometryTelemetryPanel({
                     <span className="font-bold text-emerald-400">{details.units.toUpperCase()}</span>
                   </div>
                 </div>
+
+                {geometry.internalCutoutCount && geometry.internalCutoutCount > 0 ? (
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 pt-1">
+                    <div className="p-2 rounded-lg bg-white dark:bg-steel-950 border border-slate-200 dark:border-steel-800">
+                      <span className="text-slate-400 block text-[10px]">Internal Cutout Count</span>
+                      <span className="font-bold text-blue-400">{geometry.internalCutoutCount}</span>
+                    </div>
+                    <div className="p-2 rounded-lg bg-white dark:bg-steel-950 border border-slate-200 dark:border-steel-800">
+                      <span className="text-slate-400 block text-[10px]">Internal Cutout Perimeter</span>
+                      <span className="font-bold text-sky-400">{geometry.internalCutoutPerimeterMm || 0} mm</span>
+                    </div>
+                    <div className="p-2 rounded-lg bg-white dark:bg-steel-950 border border-slate-200 dark:border-steel-800">
+                      <span className="text-slate-400 block text-[10px]">Internal Cutout Area</span>
+                      <span className="font-bold text-emerald-400">{geometry.internalCutoutAreaMm2 || geometry.internal_cutout_area_mm2 || 0} mm²</span>
+                    </div>
+                  </div>
+                ) : null}
 
                 {details.warnings && details.warnings.length > 0 && (
                   <div className="mt-2 p-2 rounded-lg bg-amber-500/10 border border-amber-500/30 text-amber-400 text-[10px] space-y-1">

@@ -97,7 +97,7 @@ class CadService:
             gross_area_mm2=gross_area_mm2,
         )
 
-        # 9. ML entity classification and audit breakdown
+        # 9. ML entity classification reconciled with deterministic geometry ground truth
         classified_entities = []
         entity_breakdown = {
             "cut_entities": 0,
@@ -108,10 +108,33 @@ class CadService:
             "ignored_entities": 0,
         }
 
+        bend_id_set = set(bends_result.get("source_entities", []))
+        weld_id_set = set(welds_result.get("source_entities", []))
+        hole_id_set = set(h.get("entity_id", -1) for h in holes_result.get("holes", []))
+        cut_id_set = set(cut_eids)
+
         for e in entities:
-            pred_class, conf = CadClassifier.classify_entity(e, bounds)
+            eid = e["id"]
+            if eid in bend_id_set:
+                pred_class = "bend"
+                conf = bends_result.get("confidence", 0.98)
+            elif eid in weld_id_set:
+                pred_class = "weld"
+                conf = welds_result.get("confidence", 0.95)
+            elif eid in hole_id_set or (e.get("type") == "CIRCLE" and eid not in cut_id_set):
+                pred_class = "hole"
+                conf = holes_result.get("confidence", 0.98)
+            elif eid in cut_id_set:
+                pred_class = "outer_cut"
+                conf = perimeter_result.get("confidence", 0.98)
+            elif e.get("type") in ("TEXT", "MTEXT"):
+                pred_class = "annotation"
+                conf = 0.99
+            else:
+                pred_class, conf = CadClassifier.classify_entity(e, bounds)
+
             classified_entities.append({
-                "id": e["id"],
+                "id": eid,
                 "type": e["type"],
                 "layer": e.get("layer"),
                 "predicted_class": pred_class,
@@ -129,6 +152,11 @@ class CadService:
                 entity_breakdown["annotation_entities"] += 1
             else:
                 entity_breakdown["ignored_entities"] += 1
+
+        # Enforce canonical entity breakdown matches verified deterministic features
+        entity_breakdown["bend_entities"] = len(bends_result.get("source_entities", []))
+        entity_breakdown["weld_entities"] = len(welds_result.get("source_entities", []))
+        entity_breakdown["hole_entities"] = len(holes_result.get("holes", []))
 
         # 10. Vector entities formatted for synchronized UI rendering
         vector_entities = []
@@ -228,6 +256,12 @@ class CadService:
             "success": True,
             "analysis_id": analysis_id,
             "fileName": file_name,
+            "bend_count": bends_result["bend_count"],
+            "bend_entities": bends_result.get("source_entities", []),
+            "bend_angles": bends_result.get("angles_deg", [90.0] * bends_result["bend_count"]),
+            "internal_cutout_area_mm2": perimeter_result.get("internal_cutout_area_mm2", 0.0),
+            "internal_cutout_perimeter_mm": internal_cut_perim,
+            "total_cutting_path_mm": total_cutting_path,
             "geometry": {
                 "analysisId": analysis_id,
                 "partName": clean_part_name,
@@ -248,7 +282,11 @@ class CadService:
                 "holeDiameters": holes_result["diameter_groups"],
                 "holeSizeDistribution": holes_result.get("hole_size_distribution", {}),
                 "bendCount": bends_result["bend_count"],
+                "bend_count": bends_result["bend_count"],
+                "bend_entities": bends_result.get("source_entities", []),
+                "bendEntities": bends_result.get("source_entities", []),
                 "bendAngles": bends_result.get("angles_deg", [90.0] * bends_result["bend_count"]),
+                "bend_angles": bends_result.get("angles_deg", [90.0] * bends_result["bend_count"]),
                 "bendAngleText": (
                     f"{bends_result['bend_count']} × {int(bends_result.get('default_angle_deg', 90))}°"
                     if bends_result["bend_count"] > 0
@@ -260,6 +298,8 @@ class CadService:
                 "internalCutoutCount": perimeter_result.get("internal_cutouts_count", 0),
                 "internalCutouts": perimeter_result.get("internal_cutouts", []),
                 "internalCutoutPerimeterMm": internal_cut_perim,
+                "internalCutoutAreaMm2": perimeter_result.get("internal_cutout_area_mm2", 0.0),
+                "internal_cutout_area_mm2": perimeter_result.get("internal_cutout_area_mm2", 0.0),
                 "slotCount": perimeter_result.get("slot_count", 0),
                 "slots": perimeter_result.get("slots", []),
                 "slotPerimeterMm": slot_cut_perim,

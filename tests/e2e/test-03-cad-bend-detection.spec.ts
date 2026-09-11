@@ -19,11 +19,11 @@ test.describe('Test 03 End-to-End: Robust Bend Detection & Quotation Generation'
     await expect(page.locator('input[value*="500"][value*="360"][value*="8"]')).toBeVisible();
 
     // Assert Feature counts in summary grid
-    await expect(page.getByText('Holes', { exact: true }).locator('..').getByText('7')).toBeVisible();
-    await expect(page.getByText('Bends', { exact: true }).locator('..').getByText('4')).toBeVisible();
+    await expect(page.getByText('Holes', { exact: true }).locator('..').getByText('7', { exact: true })).toBeVisible();
+    await expect(page.getByText('Bends', { exact: true }).locator('..').getByText('4', { exact: true })).toBeVisible();
     await expect(page.getByText('Bends (4)').first()).toBeVisible();
-    await expect(page.getByText('Welds', { exact: true }).locator('..').getByText('2')).toBeVisible();
-    await expect(page.getByText('Internal Cutouts', { exact: true }).locator('..').getByText('3')).toBeVisible();
+    await expect(page.getByText('Welds', { exact: true }).locator('..').getByText('2', { exact: true })).toBeVisible();
+    await expect(page.getByText('Internal Cutouts', { exact: true }).locator('..').getByText('3', { exact: true })).toBeVisible();
 
     // Assert Press Brake Bends input value = 4
     await expect(page.locator('input[type="number"][value="4"]')).toBeVisible();
@@ -43,6 +43,16 @@ test.describe('Test 03 End-to-End: Robust Bend Detection & Quotation Generation'
 
     // Assert Estimated Net Weight (~10.16 kg)
     await expect(page.locator('input[value*="10.16"]')).toBeVisible();
+
+    // Assert Audit Trail shows Bend Entities: 4
+    await expect(page.getByText('Bend Entities', { exact: true }).locator('..').getByText('4')).toBeVisible();
+
+    // Assert Cutout Area & Cutout Perimeter are separate and accurate
+    await expect(page.getByText('6300 mm²').first()).toBeVisible();
+    await expect(page.getByText('560 mm').first()).toBeVisible();
+
+    // Assert Total Cutting Path (~2485.2 mm)
+    await expect(page.getByText(/2485\.2/i).first()).toBeVisible();
 
     // 4. Click "1-Click Generate AI Quotation"
     const generateQuoteBtn = page.locator('#generate-quotation-button');

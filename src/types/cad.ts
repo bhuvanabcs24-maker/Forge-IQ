@@ -66,13 +66,18 @@ export interface ExtractedCadGeometry {
   holeDiameters?: Record<string, number>;
   holeSizeDistribution?: Record<string, number>;
   bendCount: number;
+  bend_count?: number;
+  bend_entities?: number[];
   bendAngles?: number[];
+  bend_angles?: number[];
   bendAngleText?: string;
   weldCount: number;
   cutLengthMm: number;
   outerPerimeterMm?: number;
   internalCutoutCount?: number;
   internalCutoutPerimeterMm?: number;
+  internalCutoutAreaMm2?: number;
+  internal_cutout_area_mm2?: number;
   slotCount?: number;
   slotPerimeterMm?: number;
   holeCutPerimeterMm?: number;

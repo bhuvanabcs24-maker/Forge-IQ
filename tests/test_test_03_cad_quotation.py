@@ -64,6 +64,14 @@ def test_test_03_cad_extraction(test_03_dxf_bytes):
     # Entities 11, 12, 13, 14 are on REF_LINES
     bend_entities = bends_detail["source_entities"]
     assert bend_entities == [11, 12, 13, 14]
+    assert g["bend_count"] == 4
+    assert len(g["bend_entities"]) == 4
+    assert g["bend_entities"] == [11, 12, 13, 14]
+    assert g["bend_angles"] == [90.0, 90.0, 90.0, 90.0]
+    assert g["analysisDetails"]["bend_entities"] == 4
+    assert g["internalCutoutAreaMm2"] == 6300.0
+    assert g["internal_cutout_area_mm2"] == 6300.0
+    assert g["internalCutoutPerimeterMm"] == 560.0
 
     # Protection against auxiliary construction lines (entities 15-24 must NOT be bends)
     auxiliary_ids = set(range(15, 25))
@@ -72,6 +80,7 @@ def test_test_03_cad_extraction(test_03_dxf_bytes):
     # 8. Material & Weight (~10.16 kg)
     assert "MILD STEEL" in g["materialGrade"].upper()
     assert abs(g["estimatedWeightKg"] - 10.16) <= 0.05
+    assert abs(g["totalCuttingPathMm"] - 2485.22) < 1.0
     assert g["confidenceScores"]["bendCount"] >= 90
 
 
