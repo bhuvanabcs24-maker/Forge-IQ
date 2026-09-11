@@ -29,7 +29,6 @@
 
 > 🚀 **LIVE**: Production system deployed on Vercel  
 > 📊 **HARD**: 5.5x performance optimization, 96.9% AI accuracy, 8/8 production gates passing  
-> 💼 **READY**: Available for 30 LPA+ backend/ML roles starting 2027  
 > ⏱️ **QUICK READ**: [2-min summary](#-by-the-numbers) | [Full CV](#-open-to-opportunities)
 
 </div>
