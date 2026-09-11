@@ -1,0 +1,418 @@
+{
+  "summary": {
+    "total_tests": 10,
+    "passed_tests": 10,
+    "failed_tests": 0,
+    "pass_rate_pct": 100.0,
+    "mean_perimeter_error_pct": 0.0,
+    "max_perimeter_error_pct": 0.0,
+    "mean_dimension_error_pct": 0.0,
+    "max_dimension_error_pct": 0.0,
+    "mean_weight_error_pct": 0.1421,
+    "max_weight_error_pct": 0.5629,
+    "hole_count_accuracy_pct": 100.0,
+    "bend_count_accuracy_pct": 100.0
+  },
+  "results": [
+    {
+      "file": "01_simple_rectangle_holes.dxf",
+      "description": "Simple 300x200 rectangle with 4 holes",
+      "perimeter": {
+        "exp": 1000.0,
+        "pred": 1000.0,
+        "err_pct": 0.0
+      },
+      "length": {
+        "exp": 300.0,
+        "pred": 300.0,
+        "err_pct": 0.0
+      },
+      "width": {
+        "exp": 200.0,
+        "pred": 200.0,
+        "err_pct": 0.0
+      },
+      "holes": {
+        "exp": 4,
+        "pred": 4,
+        "match": true
+      },
+      "bends": {
+        "exp": 0,
+        "pred": 0,
+        "match": true
+      },
+      "welds": {
+        "exp": 0,
+        "pred": 0,
+        "match": true
+      },
+      "weight": {
+        "exp": 2.323,
+        "pred": 2.32,
+        "err_pct": 0.12914334911752534
+      },
+      "status": "PASS"
+    },
+    {
+      "file": "02_rounded_rectangle.dxf",
+      "description": "400x250 rounded rectangle with 4 true arcs and 6 holes",
+      "perimeter": {
+        "exp": 1265.66,
+        "pred": 1265.66,
+        "err_pct": 0.0
+      },
+      "length": {
+        "exp": 400.0,
+        "pred": 400.0,
+        "err_pct": 0.0
+      },
+      "width": {
+        "exp": 250.0,
+        "pred": 250.0,
+        "err_pct": 0.0
+      },
+      "holes": {
+        "exp": 6,
+        "pred": 6,
+        "match": true
+      },
+      "bends": {
+        "exp": 0,
+        "pred": 0,
+        "match": true
+      },
+      "welds": {
+        "exp": 0,
+        "pred": 0,
+        "match": true
+      },
+      "weight": {
+        "exp": 1.599,
+        "pred": 1.59,
+        "err_pct": 0.562851782363971
+      },
+      "status": "PASS"
+    },
+    {
+      "file": "03_irregular_polygon.dxf",
+      "description": "Asymmetric 7-sided polygon profile with 5 holes",
+      "perimeter": {
+        "exp": 1160.61,
+        "pred": 1160.61,
+        "err_pct": 0.0
+      },
+      "length": {
+        "exp": 400.0,
+        "pred": 400.0,
+        "err_pct": 0.0
+      },
+      "width": {
+        "exp": 250.0,
+        "pred": 250.0,
+        "err_pct": 0.0
+      },
+      "holes": {
+        "exp": 5,
+        "pred": 5,
+        "match": true
+      },
+      "bends": {
+        "exp": 0,
+        "pred": 0,
+        "match": true
+      },
+      "welds": {
+        "exp": 0,
+        "pred": 0,
+        "match": true
+      },
+      "weight": {
+        "exp": 2.852,
+        "pred": 2.85,
+        "err_pct": 0.07012622720896844
+      },
+      "status": "PASS"
+    },
+    {
+      "file": "04_multiple_hole_diameters.dxf",
+      "description": "450x300 sheet with multi-diameter distribution (4x10, 4x16, 2x25)",
+      "perimeter": {
+        "exp": 1500.0,
+        "pred": 1500.0,
+        "err_pct": 0.0
+      },
+      "length": {
+        "exp": 450.0,
+        "pred": 450.0,
+        "err_pct": 0.0
+      },
+      "width": {
+        "exp": 300.0,
+        "pred": 300.0,
+        "err_pct": 0.0
+      },
+      "holes": {
+        "exp": 10,
+        "pred": 10,
+        "match": true
+      },
+      "bends": {
+        "exp": 0,
+        "pred": 0,
+        "match": true
+      },
+      "welds": {
+        "exp": 0,
+        "pred": 0,
+        "match": true
+      },
+      "weight": {
+        "exp": 5.216,
+        "pred": 5.22,
+        "err_pct": 0.07668711656440873
+      },
+      "status": "PASS"
+    },
+    {
+      "file": "05_different_layer_names.dxf",
+      "description": "400x280 part using non-standard layers (PROFILE_OUT, GEOM_A, FAB_FEATURE)",
+      "perimeter": {
+        "exp": 1360.0,
+        "pred": 1360.0,
+        "err_pct": 0.0
+      },
+      "length": {
+        "exp": 400.0,
+        "pred": 400.0,
+        "err_pct": 0.0
+      },
+      "width": {
+        "exp": 280.0,
+        "pred": 280.0,
+        "err_pct": 0.0
+      },
+      "holes": {
+        "exp": 6,
+        "pred": 6,
+        "match": true
+      },
+      "bends": {
+        "exp": 2,
+        "pred": 2,
+        "match": true
+      },
+      "welds": {
+        "exp": 0,
+        "pred": 0,
+        "match": true
+      },
+      "weight": {
+        "exp": 3.487,
+        "pred": 3.49,
+        "err_pct": 0.08603383997706089
+      },
+      "status": "PASS"
+    },
+    {
+      "file": "06_bends_with_construction_geometry.dxf",
+      "description": "400x300 sheet with 4 true bends and 12+ construction/center/phantom lines",
+      "perimeter": {
+        "exp": 1400.0,
+        "pred": 1400.0,
+        "err_pct": 0.0
+      },
+      "length": {
+        "exp": 400.0,
+        "pred": 400.0,
+        "err_pct": 0.0
+      },
+      "width": {
+        "exp": 300.0,
+        "pred": 300.0,
+        "err_pct": 0.0
+      },
+      "holes": {
+        "exp": 4,
+        "pred": 4,
+        "match": true
+      },
+      "bends": {
+        "exp": 4,
+        "pred": 4,
+        "match": true
+      },
+      "welds": {
+        "exp": 0,
+        "pred": 0,
+        "match": true
+      },
+      "weight": {
+        "exp": 2.815,
+        "pred": 2.82,
+        "err_pct": 0.17761989342806014
+      },
+      "status": "PASS"
+    },
+    {
+      "file": "07_welds_and_annotations.dxf",
+      "description": "350x250 sheet with 2 weld seams, 2 bends, 4 holes, dimensions and leaders",
+      "perimeter": {
+        "exp": 1200.0,
+        "pred": 1200.0,
+        "err_pct": 0.0
+      },
+      "length": {
+        "exp": 350.0,
+        "pred": 350.0,
+        "err_pct": 0.0
+      },
+      "width": {
+        "exp": 250.0,
+        "pred": 250.0,
+        "err_pct": 0.0
+      },
+      "holes": {
+        "exp": 4,
+        "pred": 4,
+        "match": true
+      },
+      "bends": {
+        "exp": 2,
+        "pred": 2,
+        "match": true
+      },
+      "welds": {
+        "exp": 2,
+        "pred": 2,
+        "match": true
+      },
+      "weight": {
+        "exp": 3.475,
+        "pred": 3.48,
+        "err_pct": 0.14388489208632785
+      },
+      "status": "PASS"
+    },
+    {
+      "file": "08_rotated_part.dxf",
+      "description": "300x180 sheet metal part rotated by 37 degrees",
+      "perimeter": {
+        "exp": 960.0,
+        "pred": 960.0,
+        "err_pct": 0.0
+      },
+      "length": {
+        "exp": 300.0,
+        "pred": 300.0,
+        "err_pct": 0.0
+      },
+      "width": {
+        "exp": 180.0,
+        "pred": 180.0,
+        "err_pct": 0.0
+      },
+      "holes": {
+        "exp": 4,
+        "pred": 4,
+        "match": true
+      },
+      "bends": {
+        "exp": 2,
+        "pred": 2,
+        "match": true
+      },
+      "welds": {
+        "exp": 0,
+        "pred": 0,
+        "match": true
+      },
+      "weight": {
+        "exp": 1.681,
+        "pred": 1.68,
+        "err_pct": 0.059488399762053064
+      },
+      "status": "PASS"
+    },
+    {
+      "file": "09_internal_cutouts.dxf",
+      "description": "500x300 outer sheet with 6 holes, 2 rectangular cutouts, and 1 slot",
+      "perimeter": {
+        "exp": 1600.0,
+        "pred": 1600.0,
+        "err_pct": 0.0
+      },
+      "length": {
+        "exp": 500.0,
+        "pred": 500.0,
+        "err_pct": 0.0
+      },
+      "width": {
+        "exp": 300.0,
+        "pred": 300.0,
+        "err_pct": 0.0
+      },
+      "holes": {
+        "exp": 6,
+        "pred": 6,
+        "match": true
+      },
+      "bends": {
+        "exp": 0,
+        "pred": 0,
+        "match": true
+      },
+      "welds": {
+        "exp": 0,
+        "pred": 0,
+        "match": true
+      },
+      "weight": {
+        "exp": 5.595,
+        "pred": 5.59,
+        "err_pct": 0.08936550491510087
+      },
+      "status": "PASS"
+    },
+    {
+      "file": "10_messy_engineering_drawing.dxf",
+      "description": "Stepped 420x260 profile with 6 holes, internal cutout, 3 bends, 2 welds, dimensions, title block, centerlines",
+      "perimeter": {
+        "exp": 1360.0,
+        "pred": 1360.0,
+        "err_pct": 0.0
+      },
+      "length": {
+        "exp": 420.0,
+        "pred": 420.0,
+        "err_pct": 0.0
+      },
+      "width": {
+        "exp": 260.0,
+        "pred": 260.0,
+        "err_pct": 0.0
+      },
+      "holes": {
+        "exp": 6,
+        "pred": 6,
+        "match": true
+      },
+      "bends": {
+        "exp": 3,
+        "pred": 3,
+        "match": true
+      },
+      "welds": {
+        "exp": 2,
+        "pred": 2,
+        "match": true
+      },
+      "weight": {
+        "exp": 3.869,
+        "pred": 3.87,
+        "err_pct": 0.025846471956575082
+      },
+      "status": "PASS"
+    }
+  ]
+}

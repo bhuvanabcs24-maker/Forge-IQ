@@ -32,19 +32,17 @@ class CadService:
         thickness_mm = metadata["thickness_mm"]
         material_name = metadata["material"]
 
-        # 3. Outer profile & cut perimeter
+        # 3. Outer profile, cut perimeter, internal cutouts, and oriented bounding box
         perimeter_result = PerimeterEngine.calculate_cut_perimeter(entities, bounds)
         cut_perimeter_mm = perimeter_result["cut_perimeter_mm"]
         outer_loop = perimeter_result.get("outer_loop")
 
-        # Dimensions: calculate from outer loop bbox if available, else overall bounds
-        if outer_loop and outer_loop.get("bbox"):
-            obbox = outer_loop["bbox"]
-            width_mm = round(obbox[2] - obbox[0], 2)
-            height_mm = round(obbox[3] - obbox[1], 2)
-        else:
-            width_mm = bounds["width"]
-            height_mm = bounds["height"]
+        # Dimensions: use true oriented bounding box (OBB) if calculated, otherwise AABB
+        true_len = perimeter_result.get("true_length_mm", bounds["width"])
+        true_wid = perimeter_result.get("true_width_mm", bounds["height"])
+        aabb_len = perimeter_result.get("aabb_length_mm", bounds["width"])
+        aabb_wid = perimeter_result.get("aabb_width_mm", bounds["height"])
+        rotation_deg = perimeter_result.get("rotation_deg", 0.0)
 
         # 4. Detect holes
         outer_bbox_tuple = (
@@ -60,13 +58,15 @@ class CadService:
         # 6. Detect welds
         welds_result = FeatureDetectors.detect_welds(entities)
 
-        # 7. Mass and weight calculation
-        gross_area_mm2 = outer_loop["area_mm2"] if outer_loop else (width_mm * height_mm)
+        # 7. Mass and weight calculation (subtract both holes and internal cutouts)
+        gross_area_mm2 = outer_loop["area_mm2"] if outer_loop else (true_len * true_wid)
+        cutout_area_mm2 = perimeter_result.get("internal_cutout_area_mm2", 0.0)
         mass_result = FeatureDetectors.calculate_weight_and_mass(
             gross_area_mm2=gross_area_mm2,
             hole_area_mm2=holes_result["total_hole_area_mm2"],
             thickness_mm=thickness_mm,
             material_name=material_name,
+            cutout_area_mm2=cutout_area_mm2,
         )
 
         # 8. Complexity score
@@ -125,6 +125,17 @@ class CadService:
                 "perimeter_mm": cut_perimeter_mm,
             })
 
+        # Internal cutouts
+        for idx, c_loop in enumerate(perimeter_result.get("internal_cutouts", [])):
+            vector_entities.append({
+                "id": f"internal-cutout-{idx}",
+                "type": "internal_cut",
+                "geometry_type": "polygon",
+                "points": c_loop["vertices"],
+                "color": "#F59E0B",
+                "perimeter_mm": c_loop["perimeter"],
+            })
+
         # Holes
         for idx, h in enumerate(holes_result["holes"]):
             vector_entities.append({
@@ -145,8 +156,8 @@ class CadService:
                 "geometry_type": "line",
                 "start": b["line"]["start"],
                 "end": b["line"]["end"],
-                "angle_deg": b["angle_deg"],
                 "color": "#F59E0B",
+                "angle_deg": b.get("angle_deg", 90.0),
             })
 
         # Welds
@@ -167,12 +178,18 @@ class CadService:
         all_warnings.extend(mass_result.get("warnings", []))
 
         # Confidence compilation (0-100 scale for UI)
-        conf_dimensions = 98 if (width_mm > 0 and height_mm > 0) else 50
+        conf_dimensions = 98 if (true_len > 0 and true_wid > 0) else 50
         conf_cut = int(perimeter_result["confidence"] * 100)
         conf_holes = int(holes_result["confidence"] * 100)
         conf_bends = int(bends_result["confidence"] * 100)
         conf_mass = int(mass_result["confidence"] * 100)
         conf_thickness = 95 if metadata["has_thickness_specified"] else 80
+
+        total_internal_perim = round(
+            perimeter_result.get("internal_cutout_perimeter_mm", 0.0) +
+            sum(3.1415926535 * h["diameter_mm"] for h in holes_result["holes"]),
+            2
+        )
 
         return {
             "success": True,
@@ -182,16 +199,25 @@ class CadService:
                 "drawingNumber": f"DWG-2026-{abs(hash(file_name)) % 9000 + 1000}",
                 "fileType": "dxf",
                 "dimensions": {
-                    "lengthMm": width_mm,
-                    "widthMm": height_mm,
+                    "lengthMm": true_len,
+                    "widthMm": true_wid,
                     "thicknessMm": thickness_mm,
+                    "trueLengthMm": true_len,
+                    "trueWidthMm": true_wid,
+                    "aabbLengthMm": aabb_len,
+                    "aabbWidthMm": aabb_wid,
+                    "rotationDeg": rotation_deg,
                 },
                 "materialGrade": mass_result["material"],
                 "holeCount": holes_result["hole_count"],
                 "holeDiameters": holes_result["diameter_groups"],
+                "holeSizeDistribution": holes_result.get("hole_size_distribution", {}),
                 "bendCount": bends_result["bend_count"],
                 "weldCount": welds_result["weld_count"],
                 "cutLengthMm": cut_perimeter_mm,
+                "internalCutoutCount": perimeter_result.get("internal_cutouts_count", 0),
+                "internalCutoutPerimeterMm": perimeter_result.get("internal_cutout_perimeter_mm", 0.0),
+                "totalInternalCutPerimeterMm": total_internal_perim,
                 "weldLengthMm": welds_result["weld_length_mm"],
                 "surfaceAreaSqFt": round(gross_area_mm2 * 1.07639e-5, 2),
                 "grossAreaMm2": gross_area_mm2,
@@ -222,6 +248,13 @@ class CadService:
                     "thickness": f"{thickness_mm} mm",
                     "warnings": all_warnings,
                     "densityUsed": f"{mass_result['density_kg_m3']} kg/m³",
+                    "orientedBoundingBox": {
+                        "trueLength": true_len,
+                        "trueWidth": true_wid,
+                        "rotationDeg": rotation_deg,
+                        "aabbLength": aabb_len,
+                        "aabbWidth": aabb_wid,
+                    },
                 },
             },
         }

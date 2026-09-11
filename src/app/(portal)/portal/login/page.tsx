@@ -31,7 +31,7 @@ function CustomerPortalLoginContent() {
     }
     setIsSubmitting(true);
     login(email, selectedCustomerId);
-    router.push(redirectTarget);
+    window.location.href = redirectTarget;
   };
 
   const handleSelectClient = (cust: (typeof MOCK_CUSTOMERS)[0]) => {
@@ -40,7 +40,7 @@ function CustomerPortalLoginContent() {
     setPassword('demo_pass_123');
     setIsSubmitting(true);
     login(cust.email, cust.id);
-    router.push(redirectTarget);
+    window.location.href = redirectTarget;
   };
 
   return (

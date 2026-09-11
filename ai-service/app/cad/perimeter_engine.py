@@ -179,35 +179,67 @@ class PerimeterEngine:
 
         return loops
 
+    @staticmethod
+    def compute_min_oriented_bbox(vertices: List[List[float]]) -> Tuple[float, float, float]:
+        """
+        Computes Minimum Area Oriented Bounding Box (OBB) using rotating edge projection.
+        Returns (true_length, true_width, rotation_degrees).
+        """
+        if len(vertices) < 3:
+            return 0.0, 0.0, 0.0
+        best_area = float("inf")
+        best_w, best_h = 0.0, 0.0
+        best_angle = 0.0
+        n = len(vertices)
+
+        for i in range(n):
+            p1 = vertices[i]
+            p2 = vertices[(i + 1) % n]
+            dx = p2[0] - p1[0]
+            dy = p2[1] - p1[1]
+            if abs(dx) < 1e-6 and abs(dy) < 1e-6:
+                continue
+            theta = math.atan2(dy, dx)
+            cos_t = math.cos(-theta)
+            sin_t = math.sin(-theta)
+            rot_pts = [(x * cos_t - y * sin_t, x * sin_t + y * cos_t) for x, y in vertices]
+            xs = [p[0] for p in rot_pts]
+            ys = [p[1] for p in rot_pts]
+            w = max(xs) - min(xs)
+            h = max(ys) - min(ys)
+            area = w * h
+            if area < best_area - 1e-4:
+                best_area = area
+                best_w, best_h = max(w, h), min(w, h)
+                best_angle = abs(math.degrees(theta)) % 90.0
+
+        return round(best_w, 2), round(best_h, 2), round(best_angle, 2)
+
     @classmethod
     def calculate_cut_perimeter(
         cls, entities: List[Dict[str, Any]], drawing_bounds: Dict[str, float]
     ) -> Dict[str, Any]:
         """
-        Extracts the outermost profile and calculates the exact cut perimeter.
-        Returns auditable details and confidence score.
+        Extracts the outermost profile, calculates exact cut perimeter,
+        identifies internal cutouts/slots, and computes oriented bounding box.
         """
         candidate_loops: List[Dict[str, Any]] = []
 
         # 1. Check for dedicated closed polylines
         for e in entities:
-            # If layer is explicitly CUT/PROFILE/OUTLINE
-            layer = str(e.get("layer", "")).upper()
             if cls.is_candidate_entity(e):
                 loop = cls.find_closed_loops_from_polyline(e)
                 if loop:
                     candidate_loops.append(loop)
 
-        # 2. If no direct closed polyline or to cross-validate, search connected segments
+        # 2. Search connected segments for closed loops
         candidates = [e for e in entities if cls.is_candidate_entity(e)]
         connected_loops = cls.build_connected_loops(candidates)
         for cl in connected_loops:
-            # Avoid duplicate if identical perimeter already found
             if not any(abs(cl["perimeter"] - existing["perimeter"]) < 0.1 for existing in candidate_loops):
                 candidate_loops.append(cl)
 
         if not candidate_loops:
-            # Fallback: Check if any unclassified entities form boundary
             return {
                 "value": 0.0,
                 "cut_perimeter_mm": 0.0,
@@ -217,33 +249,56 @@ class PerimeterEngine:
                 "warnings": ["Unable to confidently identify outer cut profile. No closed outer loop found."],
                 "candidates": [],
                 "outer_loop": None,
+                "internal_cutouts": [],
+                "internal_cutouts_count": 0,
+                "internal_cutout_perimeter_mm": 0.0,
+                "internal_cutout_area_mm2": 0.0,
+                "true_length_mm": drawing_bounds.get("width", 0.0),
+                "true_width_mm": drawing_bounds.get("height", 0.0),
+                "aabb_length_mm": drawing_bounds.get("width", 0.0),
+                "aabb_width_mm": drawing_bounds.get("height", 0.0),
+                "rotation_deg": 0.0,
             }
 
-        # 3. Identify the outermost loop by maximum bounding box area and polygon area
+        # 3. Identify the outermost loop by maximum area and perimeter
         candidate_loops.sort(key=lambda l: (l["area"], l["perimeter"]), reverse=True)
         primary_loop = candidate_loops[0]
+        p_min_x, p_min_y, p_max_x, p_max_y = primary_loop["bbox"]
 
-        # 4. Confidence evaluation
+        # 4. Extract internal cutout loops (nested inside primary outer loop)
+        internal_cutouts = []
+        internal_cutout_perimeter_mm = 0.0
+        internal_cutout_area_mm2 = 0.0
+
+        for loop in candidate_loops[1:]:
+            l_min_x, l_min_y, l_max_x, l_max_y = loop["bbox"]
+            if (l_min_x >= p_min_x - 1.0 and l_max_x <= p_max_x + 1.0 and
+                l_min_y >= p_min_y - 1.0 and l_max_y <= p_max_y + 1.0):
+                internal_cutouts.append(loop)
+                internal_cutout_perimeter_mm += loop["perimeter"]
+                internal_cutout_area_mm2 += loop["area"]
+
+        # 5. Compute Oriented Bounding Box (OBB) for true part dimensions
+        true_len, true_wid, rot_angle = cls.compute_min_oriented_bbox(primary_loop["vertices"])
+        aabb_w = round(p_max_x - p_min_x, 2)
+        aabb_h = round(p_max_y - p_min_y, 2)
+        aabb_len = max(aabb_w, aabb_h)
+        aabb_wid = min(aabb_w, aabb_h)
+
+        # If rotation is tiny (< 0.5 deg), sync with AABB
+        if rot_angle < 0.5 or rot_angle > 89.5:
+            true_len = aabb_len
+            true_wid = aabb_wid
+            rot_angle = 0.0
+
+        # 6. Confidence evaluation
         warnings = []
         confidence = 0.98
 
-        # If multiple large loops exist, assess if there are nested parts or ambiguity
-        if len(candidate_loops) > 1:
-            second_loop = candidate_loops[1]
-            if second_loop["area"] > 0.8 * primary_loop["area"]:
-                confidence = 0.82
-                warnings.append(
-                    f"Multiple candidate outer profiles detected with similar areas ({primary_loop['area']:.1f} vs {second_loop['area']:.1f} mm²)."
-                )
-
-        # Cross-check envelope match
-        box_w = primary_loop["bbox"][2] - primary_loop["bbox"][0]
-        box_h = primary_loop["bbox"][3] - primary_loop["bbox"][1]
         overall_w = drawing_bounds.get("width", 0.0)
         overall_h = drawing_bounds.get("height", 0.0)
-
         if overall_w > 0 and overall_h > 0:
-            if box_w < 0.7 * overall_w or box_h < 0.7 * overall_h:
+            if aabb_w < 0.6 * overall_w or aabb_h < 0.6 * overall_h:
                 warnings.append("Outer profile bounding box is significantly smaller than overall drawing extent.")
                 confidence = min(confidence, 0.88)
 
@@ -262,4 +317,13 @@ class PerimeterEngine:
                 "area_mm2": round(primary_loop["area"], 2),
                 "bbox": [round(c, 2) for c in primary_loop["bbox"]],
             },
+            "internal_cutouts": internal_cutouts,
+            "internal_cutouts_count": len(internal_cutouts),
+            "internal_cutout_perimeter_mm": round(internal_cutout_perimeter_mm, 2),
+            "internal_cutout_area_mm2": round(internal_cutout_area_mm2, 2),
+            "true_length_mm": true_len,
+            "true_width_mm": true_wid,
+            "aabb_length_mm": aabb_len,
+            "aabb_width_mm": aabb_wid,
+            "rotation_deg": rot_angle,
         }

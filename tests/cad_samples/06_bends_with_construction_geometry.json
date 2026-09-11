@@ -1,0 +1,24 @@
+{
+  "file": "06_bends_with_construction_geometry.dxf",
+  "description": "400x300 sheet with 4 true bends and 12+ construction/center/phantom lines",
+  "width_mm": 400.0,
+  "height_mm": 300.0,
+  "thickness_mm": 3.0,
+  "material": "Mild Steel",
+  "outer_perimeter_mm": 1400.0,
+  "gross_area_mm2": 120000.0,
+  "net_area_mm2": 119547.61,
+  "hole_count": 4,
+  "hole_diameters": [
+    12.0,
+    12.0,
+    12.0,
+    12.0
+  ],
+  "hole_size_distribution": {
+    "12.0": 4
+  },
+  "bend_count": 4,
+  "weld_count": 0,
+  "estimated_weight_kg": 2.815
+}

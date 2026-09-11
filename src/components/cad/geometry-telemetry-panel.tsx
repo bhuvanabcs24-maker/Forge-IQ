@@ -6,7 +6,7 @@ import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/com
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Boxes, Zap, ArrowRight, ChevronDown, ChevronUp, AlertCircle, CheckCircle2, HelpCircle, Layers } from 'lucide-react';
+import { Boxes, Zap, ArrowRight, ChevronDown, ChevronUp, AlertCircle, CheckCircle2, HelpCircle, Layers, Info } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 
 export function GeometryTelemetryPanel({
@@ -77,9 +77,16 @@ export function GeometryTelemetryPanel({
                 value={`${geometry.dimensions.lengthMm} x ${geometry.dimensions.widthMm} x ${geometry.dimensions.thicknessMm}mm`}
                 className="h-8 text-xs font-bold bg-slate-50 dark:bg-steel-900"
               />
-              <span className="text-[10px] text-emerald-500 font-bold block mt-0.5">
-                {confidence.dimensions}% Confidence
-              </span>
+              <div className="flex items-center justify-between mt-0.5">
+                <span className="text-[10px] text-emerald-500 font-bold">
+                  {confidence.dimensions}% Confidence
+                </span>
+                {geometry.dimensions.rotationDeg && geometry.dimensions.rotationDeg > 0.5 ? (
+                  <span className="text-[9px] text-purple-400 font-mono font-bold">
+                    Rotated {geometry.dimensions.rotationDeg}°
+                  </span>
+                ) : null}
+              </div>
             </div>
 
             <div>
@@ -101,6 +108,15 @@ export function GeometryTelemetryPanel({
               <span className="text-[10px] text-emerald-500 font-bold block mt-0.5">
                 {confidence.holeCount}% Confidence ({geometry.holeCount} circles)
               </span>
+              {geometry.holeDiameters && Object.keys(geometry.holeDiameters).length > 0 && (
+                <div className="flex flex-wrap gap-1 mt-1">
+                  {Object.entries(geometry.holeDiameters).map(([dia, cnt]) => (
+                    <span key={dia} className="text-[9px] px-1 py-0.5 rounded bg-rose-500/10 text-rose-400 border border-rose-500/20 font-mono font-bold">
+                      {cnt}x Ø{dia}mm
+                    </span>
+                  ))}
+                </div>
+              )}
             </div>
 
             <div>
@@ -143,6 +159,11 @@ export function GeometryTelemetryPanel({
               <span className="text-[10px] text-emerald-500 font-bold block mt-0.5">
                 {confidence.cutLength}% Confidence (Closed Loop)
               </span>
+              {geometry.internalCutoutCount && geometry.internalCutoutCount > 0 ? (
+                <span className="text-[9px] text-amber-400 font-mono block mt-0.5">
+                  + {geometry.internalCutoutCount} internal cutouts ({geometry.internalCutoutPerimeterMm}mm)
+                </span>
+              ) : null}
             </div>
 
             <div>
@@ -162,7 +183,7 @@ export function GeometryTelemetryPanel({
                 className="h-8 text-xs font-bold"
               />
               <span className="text-[10px] text-slate-400 block mt-0.5">
-                {geometry.materialGrade} ({details.densityUsed})
+                {details.material} @ {details.densityUsed}
               </span>
             </div>
 
@@ -177,15 +198,16 @@ export function GeometryTelemetryPanel({
             </div>
           </div>
 
-          {/* "Why This Result?" Explanations Panel */}
+          {/* Inline "Why this result?" Explainability Popover */}
           {showWhyResult && (
-            <div className="p-3 rounded-lg bg-blue-500/10 border border-blue-500/30 text-[11px] space-y-1 text-slate-700 dark:text-slate-300">
-              <div className="flex items-center justify-between font-bold text-blue-400">
+            <div className="p-3 rounded-xl bg-slate-900 text-slate-300 border border-steel-800 text-[11px] leading-relaxed animate-in fade-in duration-200">
+              <div className="flex items-center justify-between mb-1.5 font-bold text-brand-400">
                 <span className="flex items-center gap-1.5">
-                  <CheckCircle2 className="h-3.5 w-3.5 text-blue-400" />
-                  Engineering Rationale: {showWhyResult.toUpperCase()}
+                  <Info className="h-3.5 w-3.5" /> Engineering Rationale: {showWhyResult.toUpperCase()}
                 </span>
-                <button onClick={() => setShowWhyResult(null)} className="text-slate-400 hover:text-white text-xs">✕</button>
+                <button onClick={() => setShowWhyResult(null)} className="text-slate-500 hover:text-white">
+                  &times;
+                </button>
               </div>
               {showWhyResult === 'perimeter' && (
                 <p>
@@ -203,9 +225,16 @@ export function GeometryTelemetryPanel({
                 </p>
               )}
               {showWhyResult === 'envelope' && (
-                <p>
-                  Envelope (<strong>{geometry.dimensions.lengthMm} × {geometry.dimensions.widthMm} mm</strong>) is directly derived from coordinate extrema of the outermost polyline vertices and cross-checked against drawing notes.
-                </p>
+                <div className="space-y-1">
+                  <p>
+                    True Extents (<strong>{geometry.dimensions.lengthMm} × {geometry.dimensions.widthMm} mm</strong>) calculated from Minimum Oriented Bounding Box (OBB) loop analysis.
+                  </p>
+                  {geometry.dimensions.rotationDeg && geometry.dimensions.rotationDeg > 0.5 ? (
+                    <p className="text-purple-300">
+                      Geometry is rotated by <strong>{geometry.dimensions.rotationDeg}°</strong>. Axis-Aligned Bounding Box (AABB) is <strong>{geometry.dimensions.aabbLengthMm} × {geometry.dimensions.aabbWidthMm} mm</strong>, while physical manufacturing blank size is <strong>{geometry.dimensions.trueLengthMm} × {geometry.dimensions.trueWidthMm} mm</strong>.
+                    </p>
+                  ) : null}
+                </div>
               )}
               {showWhyResult === 'weight' && (
                 <p>

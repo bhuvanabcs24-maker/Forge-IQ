@@ -1,0 +1,24 @@
+{
+  "file": "01_simple_rectangle_holes.dxf",
+  "description": "Simple 300x200 rectangle with 4 holes",
+  "width_mm": 300.0,
+  "height_mm": 200.0,
+  "thickness_mm": 5.0,
+  "material": "Mild Steel",
+  "outer_perimeter_mm": 1000.0,
+  "gross_area_mm2": 60000.0,
+  "net_area_mm2": 59195.75,
+  "hole_count": 4,
+  "hole_diameters": [
+    16.0,
+    16.0,
+    16.0,
+    16.0
+  ],
+  "hole_size_distribution": {
+    "16.0": 4
+  },
+  "bend_count": 0,
+  "weld_count": 0,
+  "estimated_weight_kg": 2.323
+}

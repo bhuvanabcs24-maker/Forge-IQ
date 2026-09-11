@@ -1,0 +1,27 @@
+{
+  "file": "03_irregular_polygon.dxf",
+  "description": "Asymmetric 7-sided polygon profile with 5 holes",
+  "width_mm": 400.0,
+  "height_mm": 250.0,
+  "thickness_mm": 4.0,
+  "material": "Stainless Steel",
+  "outer_perimeter_mm": 1160.61,
+  "gross_area_mm2": 89750.0,
+  "net_area_mm2": 89126.39,
+  "hole_count": 5,
+  "hole_diameters": [
+    10.0,
+    10.0,
+    12.0,
+    15.0,
+    15.0
+  ],
+  "hole_size_distribution": {
+    "10.0": 2,
+    "12.0": 1,
+    "15.0": 2
+  },
+  "bend_count": 0,
+  "weld_count": 0,
+  "estimated_weight_kg": 2.852
+}

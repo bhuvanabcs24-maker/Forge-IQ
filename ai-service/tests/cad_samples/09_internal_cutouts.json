@@ -1,0 +1,29 @@
+{
+  "file": "09_internal_cutouts.dxf",
+  "description": "500x300 outer sheet with 6 holes, 2 rectangular cutouts, and 1 slot",
+  "width_mm": 500.0,
+  "height_mm": 300.0,
+  "thickness_mm": 5.0,
+  "material": "Mild Steel",
+  "outer_perimeter_mm": 1600.0,
+  "internal_cutouts_count": 3,
+  "internal_cutout_perimeter_mm": 600.0,
+  "total_internal_cut_perimeter_mm": 882.74,
+  "gross_area_mm2": 150000.0,
+  "net_area_mm2": 142539.71,
+  "hole_count": 6,
+  "hole_diameters": [
+    15.0,
+    15.0,
+    15.0,
+    15.0,
+    15.0,
+    15.0
+  ],
+  "hole_size_distribution": {
+    "15.0": 6
+  },
+  "bend_count": 0,
+  "weld_count": 0,
+  "estimated_weight_kg": 5.595
+}

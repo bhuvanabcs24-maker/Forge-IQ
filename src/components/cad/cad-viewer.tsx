@@ -20,6 +20,7 @@ export function CadViewer({ geometry }: { geometry: ExtractedCadGeometry }) {
 
   const vectorEntities = geometry.vectorEntities || [];
   const outerCutEntities = vectorEntities.filter((e) => e.type === 'outer_cut');
+  const internalCutEntities = vectorEntities.filter((e) => e.type === 'internal_cut');
   const holeEntities = vectorEntities.filter((e) => e.type === 'hole');
   const bendEntities = vectorEntities.filter((e) => e.type === 'bend');
   const weldEntities = vectorEntities.filter((e) => e.type === 'weld');
@@ -127,6 +128,25 @@ export function CadViewer({ geometry }: { geometry: ExtractedCadGeometry }) {
               strokeWidth="2.5"
             />
           )}
+ 
+          {/* Internal Cutouts & Slots */}
+          {showCuts && internalCutEntities.map((cut) => {
+            if (cut.geometry_type === 'polygon' && cut.points) {
+              const ptsStr = cut.points.map((p) => `${p[0]},${p[1]}`).join(' ');
+              return (
+                <polygon
+                  key={cut.id}
+                  points={ptsStr}
+                  fill="rgba(245, 158, 11, 0.15)"
+                  stroke="#F59E0B"
+                  strokeWidth="2"
+                  strokeDasharray="4,2"
+                  strokeLinejoin="round"
+                />
+              );
+            }
+            return null;
+          })}
 
           {/* 2. Press Brake Bend Lines (Render exact start/end coordinates) */}
           {showBends && bendEntities.map((bend, idx) => {

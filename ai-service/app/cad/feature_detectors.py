@@ -86,6 +86,7 @@ class FeatureDetectors:
             diameter_groups[d] = diameter_groups.get(d, 0) + 1
 
         confidence = 0.99 if len(holes) > 0 else 0.95
+        hole_size_distribution = {f"{k:.1f}": v for k, v in diameter_groups.items()}
 
         return {
             "value": len(holes),
@@ -95,6 +96,7 @@ class FeatureDetectors:
             "source_entities": hole_entities,
             "holes": holes,
             "diameter_groups": diameter_groups,
+            "hole_size_distribution": hole_size_distribution,
             "total_hole_area_mm2": round(total_area, 2),
             "warnings": [],
         }
@@ -120,18 +122,31 @@ class FeatureDetectors:
                 detected_angle = float(angle_match.group(1))
                 break
 
+        EXCLUDED_BEND_LAYERS = [
+            "CONSTRUCTION", "DEFPOINTS", "CENTER", "DIM", "REF", "AUX",
+            "TITLE", "BORDER", "ANNO", "NOTE", "HATCH", "WELD", "CUT"
+        ]
+
         for e in entities:
             if e.get("type") == "LINE":
                 layer = str(e.get("layer", "")).upper()
                 linetype = str(e.get("linetype", "")).upper()
                 length = float(e.get("length", 0.0))
 
-                # Heuristic: Layer has BEND or linetype has DASH/CENTER/HIDDEN
-                is_bend_layer = any(k in layer for k in ["BEND", "FOLD", "BRAKE", "CREASE"])
-                is_bend_linetype = any(k in linetype for k in ["DASHED", "CENTER", "HIDDEN", "PHANTOM"])
+                # Exclude construction and annotation layers
+                if any(ex in layer for ex in EXCLUDED_BEND_LAYERS):
+                    continue
+
+                # Exclude centerline and phantom linetypes (used for holes/reference geometry)
+                if any(ex in linetype for ex in ["CENTER", "PHANTOM", "DOT"]):
+                    continue
+
+                # Heuristic: Layer has BEND/FOLD/FORM or linetype has DASHED/HIDDEN
+                is_bend_layer = any(k in layer for k in ["BEND", "FOLD", "BRAKE", "CREASE", "FORM"])
+                is_bend_linetype = any(k in linetype for k in ["DASHED", "HIDDEN", "DASH"])
 
                 if (is_bend_layer or is_bend_linetype) and length > 5.0:
-                    confidence = 0.96 if is_bend_layer else 0.85
+                    confidence = 0.96 if is_bend_layer else 0.88
 
                     bends.append({
                         "entity_id": e["id"],
@@ -268,9 +283,10 @@ class FeatureDetectors:
         hole_area_mm2: float,
         thickness_mm: float,
         material_name: str,
+        cutout_area_mm2: float = 0.0,
     ) -> Dict[str, Any]:
         """
-        Calculates sheet volume, gross mass, and net mass accounting for holes.
+        Calculates sheet volume, gross mass, and net mass accounting for holes and internal cutouts.
         """
         clean_mat = material_name.strip().upper()
         density = MATERIAL_DENSITIES.get(clean_mat, DEFAULT_DENSITY)
@@ -282,7 +298,8 @@ class FeatureDetectors:
         elif is_assumed:
             warnings.append(f"Unrecognized material '{material_name}'; default density {DEFAULT_DENSITY:.0f} kg/m³ applied.")
 
-        net_area_mm2 = max(0.0, gross_area_mm2 - hole_area_mm2)
+        total_void_area_mm2 = hole_area_mm2 + cutout_area_mm2
+        net_area_mm2 = max(0.0, gross_area_mm2 - total_void_area_mm2)
 
         # Convert to SI units: m² and m
         gross_area_m2 = gross_area_mm2 * 1e-6

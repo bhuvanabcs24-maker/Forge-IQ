@@ -1,0 +1,27 @@
+{
+  "file": "08_rotated_part.dxf",
+  "description": "300x180 sheet metal part rotated by 37 degrees",
+  "width_mm": 300.0,
+  "height_mm": 180.0,
+  "aabb_width_mm": 347.92,
+  "aabb_height_mm": 324.3,
+  "rotation_deg": 37.0,
+  "thickness_mm": 4.0,
+  "material": "Mild Steel",
+  "outer_perimeter_mm": 960.0,
+  "gross_area_mm2": 54000.0,
+  "net_area_mm2": 53547.61,
+  "hole_count": 4,
+  "hole_diameters": [
+    12.0,
+    12.0,
+    12.0,
+    12.0
+  ],
+  "hole_size_distribution": {
+    "12.0": 4
+  },
+  "bend_count": 2,
+  "weld_count": 0,
+  "estimated_weight_kg": 1.681
+}

@@ -1,0 +1,26 @@
+{
+  "file": "02_rounded_rectangle.dxf",
+  "description": "400x250 rounded rectangle with 4 true arcs and 6 holes",
+  "width_mm": 400.0,
+  "height_mm": 250.0,
+  "thickness_mm": 6.0,
+  "material": "Aluminum",
+  "outer_perimeter_mm": 1265.66,
+  "gross_area_mm2": 99656.64,
+  "net_area_mm2": 98733.01,
+  "hole_count": 6,
+  "hole_diameters": [
+    14.0,
+    14.0,
+    14.0,
+    14.0,
+    14.0,
+    14.0
+  ],
+  "hole_size_distribution": {
+    "14.0": 6
+  },
+  "bend_count": 0,
+  "weld_count": 0,
+  "estimated_weight_kg": 1.599
+}

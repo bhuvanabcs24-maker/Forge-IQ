@@ -10,7 +10,7 @@ export interface CadAnnotation {
 
 export interface VectorEntity {
   id: string;
-  type: 'outer_cut' | 'hole' | 'bend' | 'weld' | 'annotation';
+  type: 'outer_cut' | 'internal_cut' | 'hole' | 'bend' | 'weld' | 'annotation';
   geometry_type: 'polygon' | 'circle' | 'line';
   points?: number[][];
   center?: number[];
@@ -36,6 +36,13 @@ export interface AnalysisDetails {
   thickness: string;
   warnings: string[];
   densityUsed: string;
+  orientedBoundingBox?: {
+    trueLength: number;
+    trueWidth: number;
+    rotationDeg: number;
+    aabbLength: number;
+    aabbWidth: number;
+  };
 }
 
 export interface ExtractedCadGeometry {
@@ -43,13 +50,26 @@ export interface ExtractedCadGeometry {
   drawingNumber: string;
   fileType: CadFileType;
   fileSizeMb: number;
-  dimensions: { lengthMm: number; widthMm: number; thicknessMm: number };
+  dimensions: {
+    lengthMm: number;
+    widthMm: number;
+    thicknessMm: number;
+    trueLengthMm?: number;
+    trueWidthMm?: number;
+    aabbLengthMm?: number;
+    aabbWidthMm?: number;
+    rotationDeg?: number;
+  };
   materialGrade: string;
   holeCount: number;
   holeDiameters?: Record<string, number>;
+  holeSizeDistribution?: Record<string, number>;
   bendCount: number;
   weldCount: number;
   cutLengthMm: number;
+  internalCutoutCount?: number;
+  internalCutoutPerimeterMm?: number;
+  totalInternalCutPerimeterMm?: number;
   weldLengthMm: number;
   surfaceAreaSqFt: number;
   grossAreaMm2?: number;
