@@ -7,6 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
+    "test": "./pytest tests/ -v",
+    "test:pytest": "./pytest tests/ -v",
     "load-test": "python3 performance/run_load_test.py --quick",
     "load-test:full": "python3 performance/run_load_test.py",
     "load-test:locust": "./ai-service/.venv/bin/locust -f performance/load_test.py --host=http://localhost:3000",
