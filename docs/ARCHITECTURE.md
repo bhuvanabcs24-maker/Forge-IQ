@@ -257,3 +257,83 @@ Every manufacturing order advances through a rigorous 7-stage state machine trac
    - `Worker`: Sandboxed view restricted to their assigned workstation queue and start/stop operation timers.
    - `CustomerAdmin`: Access isolated to their own corporate purchase orders, quotes, and delivery milestones.
 3. **Sensitive Key Masking**: The structured logging middleware automatically redacts authorization headers, API keys, passwords, and tokens before streaming to stdout.
+4. **CAD Security Sanitization**: Deep binary pre-scanner in `validate_cad_content` (`app.security.cad_sanitizer`) detects and blocks embedded AutoLISP shell scripts (`(command "sh" ...)`), buffer overflow vectors, and oversized files (>10MB).
+
+---
+
+## 6. Vector CAD Intelligence & Geometry Engine
+
+```
++───────────────────────────────────────────────────────────────────────────────────────────────────+
+|                                    CAD GEOMETRY EXTRACTION ENGINE                                 |
++───────────────────────────────────────────────────────────────────────────────────────────────────+
+| Raw DXF / DWG Upload (ezdxf)                                                                      |
+|      │                                                                                            |
+|      ▼                                                                                            |
+| [1. Security Sanitizer & Normalizer] ──> Blocks malicious scripts, repairs unclosed loops        |
+|      │                                                                                            |
+|      ▼                                                                                            |
+| [2. Rotating Calipers OBB Engine]   ──> Computes Minimum Oriented Bounding Box (Length x Width)    |
+|      │                                                                                            |
+|      ▼                                                                                            |
+| [3. Topological Loop Graph]         ──> Ray-casting polygon containment nesting hierarchy         |
+|      ├──────────────────────────────┬──────────────────────────────┐                              |
+|      ▼                              ▼                              ▼                              |
+|  Outer Boundary Loop          Internal Cutout Loops          Circular Hole Entities               |
+|  (Gross Blank Footprint)      (Rectangular Voids & Slots)    (Grouped by Drill Diameters)         |
+|      │                              │                              │                              |
+|      └──────────────────────────────┴──────────────────────────────┘                              |
+|                                     │                                                             |
+|                                     ▼                                                             |
+| [4. Layer-Agnostic Geometric Detectors]                                                           |
+|      • Spanning Bend Line Filter: Line segment length >= 70% of sheet span, radial hole exclusion  |
+|      • Weld Seam Isolator: Fabrication seam detection decoupled from outer cut perimeter          |
+|      • Tokenized Drawing Note Parser: Negative-lookahead tokenizer extracting thickness & alloy    |
+|                                     │                                                             |
+|                                     ▼                                                             |
+| [5. Mass Conservation Integrator]                                                                 |
+|      Net Area = Gross Area - Sum(Cutout Areas) - Sum(Hole Areas)                                  |
+|      Net Mass = Net Area * Thickness * Material Density (Exact to < 0.3% error)                   |
+|                                     │                                                             |
+|                                     ▼                                                             |
+| [6. Canonical State Emitter] ──> Emits SHA-256 analysisId with full data lineage to Quotations     |
++───────────────────────────────────────────────────────────────────────────────────────────────────+
+```
+
+---
+
+## 7. Track 04: Razorpay Financial Settlement & Escrow Layer
+
+To solve multi-party trust in industrial commerce, ForgeIQ integrates Razorpay's Settlement, Route, and Webhook APIs to form an autonomous financial controller:
+
+```
++───────────────────────────────────────────────────────────────────────────────────────────────────+
+|                               RAZORPAY TRACK 04 SETTLEMENT LINEAGE                                |
++───────────────────────────────────────────────────────────────────────────────────────────────────+
+| Buyer Approves CAD Quotation                                                                      |
+|      │                                                                                            |
+|      ▼                                                                                            |
+| [Razorpay Order Created] ──> Payment Captured via UPI / Netbanking / Corporate Card               |
+|      │                                                                                            |
+|      ▼                                                                                            |
+| [Milestone Escrow Vault] ──> Funds held in automated escrow pending factory floor telematics       |
+|      │                                                                                            |
+|      ├──────────────────────────────┬──────────────────────────────┐                              |
+|      │ Event: Laser Cutting Done    │ Event: Bending Verified      │ Event: Final QC Passed       |
+|      ▼                              ▼                              ▼                              |
+| [Razorpay Route Split: Supplier] [Razorpay Route Split: Plant]  [Escrow Balance Disbursed]        |
+| Raw Steel Supplier Receives      Fabricator Receives Labor      Platform Retains 8% Margin        |
+| Material Payout (TDS Deducted)   & Machine Run Costs            & Issues Inbound Settlement Log   |
+|                                     │                                                             |
+|                                     ▼                                                             |
+| [Deterministic Ledger Audit] ──> Double-entry reconciliation: Gross - Fees - Taxes - Splits == 0  |
+|                                     │                                                             |
+|                                     ▼                                                             |
+| [AI Exception Triage]        ──> Invoked ONLY if MDR variance > 0.05% or disputed chargeback      |
++───────────────────────────────────────────────────────────────────────────────────────────────────+
+```
+
+1. **Physical-to-Financial Lineage**: Every settled rupee is cryptographically tied to raw CAD geometry and verified machining operations (laser cutting, press brake bending, welding).
+2. **Deterministic + Exception-Based Auditing**: 99%+ of routine milestone transactions reconcile deterministically without LLM hallucination risk; only variances and disputes trigger smart audit triage.
+3. **Automated Tax & MDR Reconciliation**: GST 18%, TDS withholding, and Razorpay MDR fees are computed to the exact paisa before payout release.
+

@@ -11,7 +11,7 @@
 [![Live Demo - Click Here](https://img.shields.io/badge/🎯_CLICK_HERE-Visit%20Live%20Demo-blue?style=for-the-badge&logoColor=white)](https://forge-iq-gold.vercel.app)
 [![Performance](https://img.shields.io/badge/Performance-5.5x%20Optimized%20(4589%20req%2Fs)-brightgreen?style=for-the-badge)](docs/CASE_STUDY_OPTIMIZATION.md)
 [![Uptime](https://img.shields.io/badge/Uptime-99.8%25%20Production-success?style=for-the-badge)](docs/MONITORING_DASHBOARD.md)
-[![Tests](https://img.shields.io/badge/Tests-33%2F33%20Pytest%20+%2016%20E2E%20Passing-brightgreen?style=for-the-badge)](ai-service/tests/)
+[![Tests](https://img.shields.io/badge/Tests-109%2F109%20Pytest%20+%2022%20E2E%20Passing-brightgreen?style=for-the-badge)](tests/)
 [![AI Accuracy](https://img.shields.io/badge/AI%20Accuracy-96.9%25%20(100%25%20Zero%20Hallucinations)-blueviolet?style=for-the-badge)](ai-service/MODEL_CARD.md)
 
 <br />
@@ -20,7 +20,7 @@
 [![React](https://img.shields.io/badge/React-19.0-61dafb?style=for-the-badge&logo=react&logoColor=black)](https://react.dev/)
 [![Python](https://img.shields.io/badge/Python-3.11%20FastAPI-3776ab?style=for-the-badge&logo=python&logoColor=white)](https://www.python.org/)
 [![PostgreSQL](https://img.shields.io/badge/Neon-PostgreSQL%2018-00e599?style=for-the-badge&logo=postgresql&logoColor=black)](https://neon.tech/)
-[![Playwright](https://img.shields.io/badge/Playwright-16%2F16%20E2E%20Green-2EAD33?style=for-the-badge&logo=playwright&logoColor=white)](tests/e2e/)
+[![Playwright](https://img.shields.io/badge/Playwright-22%2F22%20E2E%20Green-2EAD33?style=for-the-badge&logo=playwright&logoColor=white)](tests/e2e/)
 [![License](https://img.shields.io/badge/License-MIT-purple.svg?style=for-the-badge)](LICENSE)
 
 ---
@@ -28,7 +28,7 @@
 ### ⭐ **For Recruiters in a Hurry**
 
 > 🚀 **LIVE**: Production system deployed on Vercel  
-> 📊 **HARD**: 5.5x performance optimization, 96.9% AI accuracy, 8/8 production gates passing  
+> 📊 **HARD**: 5.5x performance optimization, 96.9% AI accuracy, 109/109 unit tests, 8/8 production gates passing  
 > ⏱️ **QUICK READ**: [2-min summary](#-by-the-numbers) | [Full CV](#-open-to-opportunities)
 
 </div>
@@ -43,7 +43,7 @@
 | **Latency** | p95: 850ms (target: <1000ms) ✅ | Live production verified |
 | **Uptime** | 99.8% (real production data) | [Monitoring dashboard](docs/MONITORING_DASHBOARD.md) |
 | **AI Accuracy** | 96.9% benchmark, 100% zero hallucinations | [Model card](ai-service/MODEL_CARD.md) |
-| **Test Coverage** | 33/33 Pytest + 16/16 Playwright E2E + 8/8 AI gates | [All passing](ai-service/evaluation/reports/summary.md) |
+| **Test Coverage** | 109/109 Pytest + 22/22 Playwright E2E + 8/8 AI gates | [All passing (109 tests)](tests/) |
 | **Scale** | Handles 50 concurrent users ✅ | Load tested to failure |
 | **Cache Hit Rate** | 94% RAG, 87% calculators | Exceptional optimization |
 
@@ -63,7 +63,7 @@
 ### What Makes ForgeIQ Different
 - ✅ **DEPLOYED TO PRODUCTION** with real users
 - ✅ **REAL MANUFACTURING DATA** from 25 verified sources (BenDFM, NASA, NIST)
-- ✅ **PRODUCTION-GRADE TESTING**: 33 units + 16 E2E journeys + 8 AI gates
+- ✅ **PRODUCTION-GRADE TESTING**: 109 unit & invariant tests + 22 E2E journeys + 8 AI gates
 - ✅ **RIGOROUS PERFORMANCE ANALYSIS**: 5.5x optimization with detailed measurements
 - ✅ **SYSTEMS THINKING**: Database indexing, vector caching, request deduplication
 - ✅ **PRODUCTION MINDSET**: Structured logging, RBAC + JWT auth, audit logs, rate limiting
@@ -71,7 +71,7 @@
 ### Interview Talking Points (Ready to Use)
 
 **"Tell me about a time you optimized a system"**
-> I optimized ForgeIQ's throughput 5.5x by identifying the bottleneck through load testing. Database queries were taking 45ms each. I implemented 12 targeted PostgreSQL indexes (37.6x faster), in-flight request deduplication (37,500x cache hits), and vector caching (5.2x faster RAG retrieval). All 33 unit tests and 16 Playwright journeys pass—optimization never means sacrificing verification.
+> I optimized ForgeIQ's throughput 5.5x by identifying the bottleneck through load testing. Database queries were taking 45ms each. I implemented 12 targeted PostgreSQL indexes (37.6x faster), in-flight request deduplication (37,500x cache hits), and vector caching (5.2x faster RAG retrieval). All 109 unit tests (adversarial, invariant, edge cases, performance) and 22 Playwright journeys pass—optimization never means sacrificing verification.
 
 **"How do you handle AI reliability?"**
 > I prevent hallucinations through a hybrid architecture: LLM for intent/document parsing, deterministic calculators for all numerical outputs (weights, costs, times). Proven by 100% zero hallucination rate on 50 manufacturing test cases. The system knows when to defer to math instead of guessing.
@@ -88,10 +88,25 @@
 
 | For Recruiters | For Developers | For Technical Deep-Dive |
 |---|---|---|
-| 🚀 [Live Demo](https://forge-iq-gold.vercel.app) | 🏁 [Getting Started](#-getting-started-5-minutes) | 📈 [Performance Case Study](docs/CASE_STUDY_OPTIMIZATION.md) |
-| 📊 [Performance Metrics](#-by-the-numbers) | 🧪 [Testing Guide](#-testing--quality-assurance) | 🏗️ [Architecture Deep-Dive](docs/ARCHITECTURE_DEEP_DIVE.md) |
-| 💼 [Opportunities](#-open-to-opportunities) | 📚 [Tech Stack](#%EF%B8%8F-complete-tech-stack) | 📊 [Monitoring Dashboard](docs/MONITORING_DASHBOARD.md) |
-| 🆚 [vs Competitors](docs/COMPETITIVE_ANALYSIS.md) | 🗺️ [Routes](#%EF%B8%8F-key-application-routes) | 🔍 [AI Evaluation](ai-service/evaluation/reports/summary.md) |
+| 🚀 [Live Demo](https://forge-iq-gold.vercel.app) | 🏁 [Getting Started](#-getting-started-5-minutes) | 🏗️ [System Architecture](docs/ARCHITECTURE.md) |
+| 📊 [Performance Metrics](#-by-the-numbers) | 🧪 [Testing Guide (109 Tests)](#-testing--quality-assurance) | 📐 [Why Deterministic?](docs/WHY_DETERMINISTIC_FIRST.md) |
+| 💼 [Opportunities](#-open-to-opportunities) | 🛠️ [Build Log (20 Bugs)](BUILD_LOG.md) | 💥 [Failure Stories (4 Post-Mortems)](docs/FAILURE_STORIES.md) |
+| ⏱️ [5-Min Demo Script](docs/DEMO-SCRIPT.md) | 📈 [Performance Case Study](docs/CASE_STUDY_OPTIMIZATION.md) | 📊 [Monitoring Dashboard](docs/MONITORING_DASHBOARD.md) |
+
+---
+
+## 📚 Core Engineering Documentation Suite
+
+ForgeIQ is engineered with production-grade systems rigor and verifiable mathematical guarantees. Explore the 6 core engineering documents below:
+
+| Document | Scope & Focus | Key Architectural Contribution |
+| :--- | :--- | :--- |
+| 🏗️ **[System Architecture](docs/ARCHITECTURE.md)** | System Design & Multi-Tier Engine | End-to-end multi-tier architecture, Vector CAD intelligence, DIN 6935/ISO 9013 physical models, and Razorpay Track 04 escrow settlement layer |
+| 📐 **[Why Deterministic-First?](docs/WHY_DETERMINISTIC_FIRST.md)** | Engineering Philosophy & Manifesto | Why deterministic math and computational geometry beat probabilistic LLMs for physics, tooling, and financial ledgers |
+| 💥 **[Production Failure Stories](docs/FAILURE_STORIES.md)** | 4 Deep-Dive Post-Mortems | Unvarnished root cause analyses: non-semantic CAD layers, regex overmatching, distributed state drift, and submodule gitlink trap |
+| ⏱️ **[5-Minute Pitch & Demo Script](docs/DEMO-SCRIPT.md)** | Hackathon & Judge Script | Second-by-second presentation script, live CAD quotation cues, and top 5 judge Q&A defense playbook |
+| 🛠️ **[Master Engineering Build Log](BUILD_LOG.md)** | Bug Diagnosis & Post-Mortem | 20 hard technical bugs documented across computational geometry, tokenization, distributed state, CI/CD, and concurrency |
+| 📈 **[Performance Optimization](docs/CASE_STUDY_OPTIMIZATION.md)** | Scale & Infrastructure Case Study | 5.5x throughput acceleration (860 → 4,589 req/s), 12 PostgreSQL indexes, and in-flight request deduplication benchmarks |
 
 ---
 
@@ -454,11 +469,19 @@ npm run dev -p 3000
 
 ---
 
-## 📖 Additional Resources
+## 📖 Core Documentation & Additional Resources
 
+### 🏛️ Engineering Suite
+- [System Architecture](docs/ARCHITECTURE.md) — Multi-tier engine, Vector CAD costing, and Razorpay Track 04 Escrow
+- [Why Deterministic-First?](docs/WHY_DETERMINISTIC_FIRST.md) — Why deterministic math/physics beats LLMs in manufacturing and finance
+- [Production Failure Stories](docs/FAILURE_STORIES.md) — 4 detailed post-mortems with root causes, diffs, and lessons
+- [5-Minute Judge Demo Script](docs/DEMO-SCRIPT.md) — 300-second live pitch script, cues, and judge Q&A handling
+- [Master Build Log](BUILD_LOG.md) — 20 hard technical bugs diagnosed & solved across CAD, regex, and state
+- [Performance Optimization Case Study](docs/CASE_STUDY_OPTIMIZATION.md) — 5.5x throughput optimization (860 → 4,589 req/s)
+
+### 📊 Industry & Market Analysis
 - [Competitive Analysis](docs/COMPETITIVE_ANALYSIS.md) — Why ForgeIQ is different from Xometry, MFG.com, SAP
 - [Market Analysis](docs/MARKET_ANALYSIS.md) — $450B TAM, $5-10B SAM, $30M beachhead
-- [Performance Case Study](docs/CASE_STUDY_OPTIMIZATION.md) — How I optimized from 860 to 4,589 req/sec
 - [Architecture Deep-Dive](docs/ARCHITECTURE_DEEP_DIVE.md) — System design and why each choice matters
 - [AI Model Card](ai-service/MODEL_CARD.md) — Training data, architecture, benchmarks
 - [Monitoring Dashboard](docs/MONITORING_DASHBOARD.md) — Real-time production metrics
